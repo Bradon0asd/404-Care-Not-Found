@@ -23,6 +23,40 @@ const router = createRouter({
       name: 'auth-employer-setup',
       component: () => import('@/views/auth/EmployerSetupView.vue'),
     },
+    {
+      path: '/dashboard',
+      name: 'tab01-dashboard',
+      component: () => import('@/views/tab01-dashboard/DashboardView.vue'),
+    },
+    {
+      path: '/dashboard/add-schedule',
+      name: 'tab01-add-schedule',
+      component: () => import('@/views/tab01-dashboard/AddScheduleView.vue'),
+    },
+    {
+      path: '/diary',
+      name: 'tab02-diary',
+      component: () => import('@/components/common/PlaceholderView.vue'),
+      props: { title: '秘密日記' },
+    },
+    {
+      path: '/chat',
+      name: 'tab03-chat',
+      component: () => import('@/components/common/PlaceholderView.vue'),
+      props: { title: '跟我聊聊' },
+    },
+    {
+      path: '/board',
+      name: 'tab04-board',
+      component: () => import('@/components/common/PlaceholderView.vue'),
+      props: { title: '便利貼牆' },
+    },
+    {
+      path: '/account',
+      name: 'tab05-account',
+      component: () => import('@/components/common/PlaceholderView.vue'),
+      props: { title: '我的帳戶' },
+    },
   ],
 })
 

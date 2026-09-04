@@ -17,6 +17,6 @@ withDefaults(
       />
     </svg>
     <span class="text-sm font-bold text-ink-950">404: Care Be Found</span>
-    <span class="text-xs text-pink-600">{{ subtitle }}</span>
+    <span class="text-xs text-ink-700">{{ subtitle }}</span>
   </header>
 </template>
