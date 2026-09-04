@@ -12,12 +12,15 @@ import { useDiaryStore } from '@/stores/diary'
 
 const router = useRouter()
 const diaryStore = useDiaryStore()
+const dayAlignments = ['left', 'right', 'center', 'left', 'center', 'right', 'left'] as const
+const footprintAlignments = ['center', 'center', 'right', 'center', 'right', 'center'] as const
 
 // Newest day first, today (arrivalDay) highlighted; path renders bottom-up visually via column-reverse.
 const days = computed(() =>
   Array.from({ length: 7 }, (_, i) => diaryStore.arrivalDay + 6 - i).map((day, i) => ({
     day,
-    align: (i % 2 === 0 ? 'right' : 'left') as 'left' | 'right',
+    align: dayAlignments[i]!,
+    footprintAlign: footprintAlignments[i]!,
   })),
 )
 
@@ -31,9 +34,9 @@ function openDay(day: number) {
     <template #header><AppHeader /></template>
 
     <DiaryStatsBar :arrival-day="diaryStore.arrivalDay" :care-recipient-count="diaryStore.careRecipientCount" />
-    <p class="mt-1 px-6 text-center text-[10px] text-pink-600">每天撰寫日記，累積一定天數將獲得特定獎勵</p>
+    <p class="mt-3 px-6 text-center text-[10px] text-ink-600">每天撰寫日記，累積一定天數將獲得特定獎勵</p>
 
-    <div class="relative flex min-h-0 flex-1 flex-col justify-between px-6 py-1">
+    <div class="relative flex min-h-[520px] flex-1 flex-col justify-between px-12 pt-7 pb-2">
       <BackgroundBlobs />
       <template v-for="(item, i) in days" :key="item.day">
         <DiaryDayBubble
@@ -43,7 +46,7 @@ function openDay(day: number) {
           :highlighted="item.day === diaryStore.arrivalDay"
           @open="openDay(item.day)"
         />
-        <FootprintDots v-if="i < days.length - 1" class="relative z-10" :align="item.align" />
+        <FootprintDots v-if="i < days.length - 1" class="relative z-10" :align="item.footprintAlign" />
       </template>
     </div>
 

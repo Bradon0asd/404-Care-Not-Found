@@ -28,7 +28,7 @@ const weekendCols = [
 ] as const
 
 const columns = computed(() => (dayType.value === 'weekday' ? weekdayCols : weekendCols))
-const hours = Array.from({ length: 14 }, (_, i) => 7 + i) // 07:00–21:00
+const hours = Array.from({ length: 10 }, (_, i) => 7 + i) // 07:00–16:00
 
 function activityFor(day: string, hour: number) {
   return props.entries.find((e) => e.day === day && e.hour === hour)?.activity
@@ -38,11 +38,11 @@ function activityFor(day: string, hour: number) {
 <template>
   <div>
     <div class="mb-3 flex items-center justify-between">
-      <h2 class="text-sm font-bold text-ink-950">{{ careRecipientName }} 的日常照護統整排程表</h2>
+      <h2 class="text-base font-bold text-ink-950">{{ careRecipientName }} 的日常照護統整排程表</h2>
     </div>
 
     <SegmentedToggle
-      class="mb-3"
+      class="mx-auto mb-4 max-w-[200px]"
       variant="chip"
       :model-value="dayType"
       :options="[
@@ -52,28 +52,35 @@ function activityFor(day: string, hour: number) {
       @update:model-value="(v) => (dayType = v as 'weekday' | 'weekend')"
     />
 
-    <div class="overflow-x-auto rounded-xl border border-ink-400">
-      <table class="w-full min-w-[280px] border-collapse text-center text-[11px]">
+    <div class="overflow-hidden rounded-[20px] border border-ink-500">
+      <table class="w-full table-fixed border-collapse text-center text-xs">
         <thead>
-          <tr class="bg-accent text-ink-950">
-            <th class="w-14 border-r border-ink-300 py-2 font-bold">時間</th>
-            <th v-for="col in columns" :key="col.day" class="border-r border-ink-300 py-2 font-bold last:border-r-0">
+          <tr class="text-ink-950">
+            <th class="w-[60px] border-r border-accent bg-accent py-2 font-bold">時間</th>
+            <th
+              v-for="(col, index) in columns"
+              :key="col.day"
+              class="border-r border-accent py-2 font-bold last:border-r-0"
+              :class="index % 2 === 1 ? 'bg-accent' : 'bg-white'"
+            >
               {{ col.label }}
             </th>
           </tr>
         </thead>
         <tbody>
           <template v-for="hour in hours" :key="hour">
-            <tr v-if="hour === 12" class="h-2 bg-white">
+            <tr v-if="hour === 12" class="h-5 border-y border-accent bg-white">
               <td :colspan="columns.length + 1"></td>
             </tr>
-            <tr class="border-t border-ink-300">
-              <td class="border-r border-ink-300 py-2 text-ink-600">{{ String(hour).padStart(2, '0') }}:00</td>
+            <tr class="h-[51px] border-t border-accent">
+              <td class="border-r border-accent bg-accent py-2 text-sm font-medium text-ink-600">
+                {{ String(hour).padStart(2, '0') }}:00
+              </td>
               <td
-                v-for="col in columns"
+                v-for="(col, index) in columns"
                 :key="col.day"
-                class="border-r border-ink-300 py-2 last:border-r-0"
-                :class="activityFor(col.day, hour) ? 'bg-accent/20 font-medium text-ink-950' : ''"
+                class="border-r border-accent px-1 py-2 font-medium last:border-r-0"
+                :class="index % 2 === 1 ? 'bg-accent' : 'bg-white'"
               >
                 {{ activityFor(col.day, hour) ?? '' }}
               </td>

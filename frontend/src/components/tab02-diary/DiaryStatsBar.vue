@@ -6,13 +6,13 @@ defineProps<{
 </script>
 
 <template>
-  <div class="mx-4 mt-2 flex items-center justify-center gap-3 rounded-xl border border-ink-400 bg-white px-3 py-1.5 text-center text-[11px] text-ink-700 shadow-sm">
+  <div class="mx-10 mt-5 flex h-12 items-center justify-center gap-3 rounded-lg border border-ink-500 bg-white px-3 text-center text-[10px] text-ink-600 shadow-[0_2px_2px_rgba(0,0,0,0.18)]">
     <p>
-      這是我來臺灣的第 <span class="text-base font-bold text-ink-950">{{ arrivalDay }}</span> 天
+      這是我來臺灣的第 <span class="text-xl font-medium text-ink-950">{{ arrivalDay }}</span> 天
     </p>
-    <span class="h-4 w-px bg-ink-400"></span>
+    <span class="h-7 w-px bg-ink-400"></span>
     <p>
-      這是我照顧的第 <span class="text-base font-bold text-ink-950">{{ careRecipientCount }}</span> 個人
+      這是我照顧的第 <span class="text-xl font-medium text-ink-950">{{ careRecipientCount }}</span> 個人
     </p>
   </div>
 </template>

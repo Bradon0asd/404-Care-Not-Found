@@ -11,7 +11,7 @@ defineEmits<{ 'update:modelValue': [string] }>()
 <template>
   <div
     class="flex gap-1"
-    :class="variant === 'chip' ? 'gap-3' : 'rounded-full border border-ink-400 p-1'"
+    :class="variant === 'chip' ? 'gap-0 rounded-full bg-accent p-1' : 'rounded-xl bg-pink-200 p-1'"
   >
     <button
       v-for="option in options"
@@ -21,11 +21,11 @@ defineEmits<{ 'update:modelValue': [string] }>()
       :class="
         variant === 'chip'
           ? option.value === modelValue
-            ? 'bg-accent text-ink-950'
-            : 'border border-ink-400 bg-white text-ink-700'
+            ? 'bg-white text-ink-950 shadow-sm'
+            : 'text-ink-950'
           : option.value === modelValue
             ? 'bg-pink-500 text-white'
-            : 'text-pink-500'
+            : 'text-ink-950'
       "
       @click="$emit('update:modelValue', option.value)"
     >

@@ -23,6 +23,7 @@ const vitals = [
     weekAvgValue: '125/76',
     changeNote: '收縮壓下降 5 mmHg；舒張壓下降 6 mmHg',
     assessment: '與過去一週相近，數值穩定。如有疑慮，建議諮詢醫療人員。',
+    trendTone: 'positive' as const,
   },
   {
     label: '血糖',
@@ -31,6 +32,7 @@ const vitals = [
     weekAvgValue: '70',
     changeNote: '今日上升 10 mg/dL',
     assessment: '較過去一週略低，建議留意。如有疑慮，建議諮詢醫療人員。',
+    trendTone: 'positive' as const,
   },
   {
     label: '心跳',
@@ -39,6 +41,7 @@ const vitals = [
     weekAvgValue: '85',
     changeNote: '今日心跳一分鐘下降 5 次',
     assessment: '與過去一週相近，數值穩定。如有疑慮，建議諮詢醫療人員。',
+    trendTone: 'negative' as const,
   },
   {
     label: '血氧飽和度',
@@ -47,6 +50,7 @@ const vitals = [
     weekAvgValue: '95%',
     changeNote: '今日血氧飽和度上升 2%',
     assessment: '較過去一週略升。如有疑慮，建議諮詢醫療人員。',
+    trendTone: 'positive' as const,
   },
   {
     label: '體溫',
@@ -55,6 +59,7 @@ const vitals = [
     weekAvgValue: '36.6°C',
     changeNote: '今日體溫相較過去平均上升 0.3°C',
     assessment: '較過去一週略升 0.3°C。如有疑慮，建議諮詢醫療人員。',
+    trendTone: 'positive' as const,
   },
   {
     label: '呼吸頻率',
@@ -63,9 +68,9 @@ const vitals = [
     weekAvgValue: '22',
     changeNote: '今日呼吸頻率一分鐘提高 2 次',
     assessment: '較過去一週略高，建議留意。如有疑慮，建議諮詢醫療人員。',
+    trendTone: 'negative' as const,
   },
 ]
-
 </script>
 
 <template>
@@ -75,7 +80,7 @@ const vitals = [
       <MedicalDisclaimerBanner />
     </template>
 
-    <div class="flex-1 px-4 py-4">
+    <div class="flex-1 px-5 py-4">
       <SegmentedToggle
         class="mb-4"
         variant="tab"

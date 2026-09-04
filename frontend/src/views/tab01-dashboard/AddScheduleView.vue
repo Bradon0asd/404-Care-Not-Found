@@ -41,12 +41,13 @@ function submit() {
   <PageContainer>
     <template #header><AppHeader /></template>
 
-    <div class="flex-1 space-y-5 px-4 py-4">
-      <h1 class="text-base font-bold text-ink-950">新增排程</h1>
+    <div class="flex flex-1 flex-col px-5 py-7">
+      <h1 class="mb-3 text-lg font-bold tracking-[0.18em] text-ink-950">新增排程</h1>
 
-      <div>
-        <p class="mb-2 text-sm text-ink-700">選擇類別</p>
+      <div class="flex h-[60px] items-center gap-4 rounded-xl bg-ink-200 px-5">
+        <p class="shrink-0 text-sm font-bold tracking-[0.12em] text-ink-600">選擇類別</p>
         <SegmentedToggle
+          class="flex-1"
           variant="chip"
           :model-value="dayType"
           :options="[
@@ -62,33 +63,47 @@ function submit() {
         />
       </div>
 
-      <label class="block rounded-xl bg-ink-200 px-4 py-3">
-        <span class="text-sm text-ink-700">選擇星期</span>
-        <select v-model="day" class="mt-1 block w-full bg-transparent text-sm font-medium text-ink-950">
-          <option v-for="opt in dayType === 'weekday' ? weekdayOptions : weekendOptions" :key="opt.value" :value="opt.value">
+      <label class="mt-5 flex h-[60px] items-center rounded-xl bg-ink-200 px-5">
+        <span class="shrink-0 text-sm font-bold tracking-[0.12em] text-ink-600">選擇星期</span>
+        <select
+          v-model="day"
+          class="ml-auto bg-transparent text-right text-sm font-bold text-ink-600 outline-none"
+        >
+          <option
+            v-for="opt in dayType === 'weekday' ? weekdayOptions : weekendOptions"
+            :key="opt.value"
+            :value="opt.value"
+          >
             {{ opt.label }}
           </option>
         </select>
       </label>
 
-      <label class="block rounded-xl bg-ink-200 px-4 py-3">
-        <span class="text-sm text-ink-700">選擇詳細時間點</span>
-        <select v-model.number="hour" class="mt-1 block w-full bg-transparent text-sm font-medium text-ink-950">
-          <option v-for="h in hourOptions" :key="h" :value="h">{{ String(h).padStart(2, '0') }}:00</option>
+      <label class="mt-5 flex h-[60px] items-center rounded-xl bg-ink-200 px-5">
+        <span class="shrink-0 text-sm font-bold tracking-[0.12em] text-ink-600"
+          >選擇詳細時間點</span
+        >
+        <select
+          v-model.number="hour"
+          class="ml-auto bg-transparent text-right font-mono text-base font-bold tracking-[0.12em] text-ink-600 outline-none"
+        >
+          <option v-for="h in hourOptions" :key="h" :value="h">
+            {{ String(h).padStart(2, '0') }}:00
+          </option>
         </select>
       </label>
 
-      <label class="block">
-        <span class="mb-2 block text-sm text-ink-700">新增事項</span>
+      <label class="mt-5 block h-[200px] rounded-xl bg-ink-200 px-5 py-5">
+        <span class="mb-4 block text-sm font-bold tracking-[0.12em] text-ink-600">新增事項</span>
         <textarea
           v-model="note"
-          rows="4"
+          rows="5"
           placeholder="簡單概述 {{照顧者}} 日常紀錄"
-          class="w-full rounded-xl bg-ink-200 px-4 py-3 text-sm text-ink-950 placeholder:text-ink-600"
+          class="w-full resize-none bg-transparent px-5 text-sm text-ink-950 outline-none placeholder:text-ink-500"
         ></textarea>
       </label>
 
-      <div class="space-y-3 pt-2">
+      <div class="mt-auto space-y-5 pt-8">
         <BaseButton variant="primary" @click="submit">新增排程</BaseButton>
         <BaseButton variant="outline" @click="router.back()">取消</BaseButton>
       </div>

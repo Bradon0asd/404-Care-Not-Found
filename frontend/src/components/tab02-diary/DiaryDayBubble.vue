@@ -4,26 +4,29 @@ import IconPencil from './icons/IconPencil.vue'
 defineProps<{
   day: number
   highlighted: boolean
-  align: 'left' | 'right'
+  align: 'left' | 'center' | 'right'
 }>()
 
 defineEmits<{ open: [] }>()
 </script>
 
 <template>
-  <div class="flex flex-col items-center gap-0" :class="align === 'left' ? 'self-start' : 'self-end'">
+  <div
+    class="flex flex-col items-center gap-1"
+    :class="align === 'left' ? 'self-start' : align === 'right' ? 'self-end' : 'self-center'"
+  >
     <button
       type="button"
-      class="flex h-9 w-9 flex-col items-center justify-center rounded-full border-2 text-[10px] leading-tight font-bold"
-      :class="highlighted ? 'border-accent bg-accent text-ink-950' : 'border-ink-500 bg-white text-ink-700'"
+      class="relative flex h-12 w-12 flex-col items-center justify-center rounded-full border text-[10px] leading-tight font-bold shadow-[inset_0_0_0_2px_white] after:absolute after:inset-[3px] after:rounded-full after:border after:border-ink-700"
+      :class="highlighted ? 'border-ink-800 bg-accent text-ink-950' : 'border-ink-700 bg-white text-ink-700'"
       @click="$emit('open')"
     >
-      <span class="text-[6px] font-normal">Day</span>
+      <span class="text-[9px] font-normal">Day</span>
       {{ day }}
     </button>
     <button
       type="button"
-      class="flex items-center gap-0.5 rounded-full border border-ink-400 bg-white px-1.5 py-px text-[9px] text-ink-700"
+      class="flex h-5 items-center gap-1 rounded-full border border-ink-400 bg-ink-100 px-2 text-[8px] font-medium text-ink-800"
       @click="$emit('open')"
     >
       <IconPencil class="h-2 w-2" />
