@@ -17,10 +17,9 @@ Vue 3（`<script setup>` + TypeScript）、Vite、Vue Router、Pinia、Tailwind 
   - 建檔模式（僅首次）：說明頁 → System Prompt + Temperature + Guardrail 設定 → 一次性 5 題心理基準線問卷（單選、選完自動跳下一題，第五題才是「生成」按鈕）→ 完成後寫入 `stores/careAgent.ts`
   - 對話模式（每天）：`/chat` 首頁是心情天氣打卡 + 聊天室泡泡列表（浮動話題泡泡＝舊聊天室，中央大泡泡＝開新聊天），點進去是實際對話頁（文字輸入＋語音按鈕，AI 回覆目前是 stub，見下方「跟後端串接」）
 - Tab04 便利貼牆（`views/tab04-board/`）：清單頁（狀態/層級篩選、點卡片彈出放大版便利貼，深色遮罩、點外部關閉）＋ 新增頁（三色層級選擇、標題/標籤類別 tap-to-edit、內容+語音+圖片、「設定便利貼權限➨發布便利貼」開權限彈窗，彈窗選完才真的送出）
+- Tab05 帳戶管理（`views/tab05-account/`）：使用者卡片（樹的插圖是簡化版，實際插圖等 Figma 匯出素材）+ 變更語言（彈窗，共用 onboarding store 的語言狀態）/ 登出 / 訂閱方案三個入口，訂閱方案頁是免費/小資/進階三張方案卡（文案對應 CLAUDE.md 既有的定價表）
 
-**只有路由 stub、還沒做畫面：** Tab05 帳戶管理（`/account`，顯示「開發中」佔位頁）
-
-**目前所有資料都是前端本地假資料 / Pinia store，還沒接任何後端 API。**
+**五個 Tab 都有畫面了，全部路由可互動；目前所有資料都是前端本地假資料 / Pinia store，還沒接任何後端 API。**
 
 ## 路由總覽
 
@@ -42,7 +41,8 @@ Vue 3（`<script setup>` + TypeScript）、Vite、Vue Router、Pinia、Tailwind 
 | `/chat/room/:id` | ChatRoomView | 單一聊天室對話畫面 |
 | `/board` | BoardListView | Tab04，便利貼清單 + 篩選 |
 | `/board/new` | AddNoteView | 新增便利貼表單 |
-| `/account` | PlaceholderView | Tab05 佔位頁 |
+| `/account` | AccountView | Tab05，使用者資訊 + 變更語言/登出/訂閱方案入口 |
+| `/account/plans` | PlansView | 訂閱方案一覽表 |
 
 ## 目錄結構
 
@@ -56,9 +56,9 @@ src/
     tab02-diary/      Tab02 專用元件（日記氣泡、統計列、腳印裝飾）
     tab03-chat/       Tab03 專用元件（聊天泡泡、心情天氣、基準線問卷卡、Temperature/Guardrail 設定）
     tab04-board/      Tab04 專用元件（便利貼卡片、堆疊便利貼圖示、放大版便利貼彈窗、權限彈窗）
-    tab05-account/    預留給後續 Tab，目前是空的
+    tab05-account/    Tab05 專用元件（樹狀使用者卡片、分支導覽連結、方案卡片、語言彈窗）
   views/        每個路由對應一個 view，負責組裝 components + 串 store
-  stores/       Pinia，一個 Tab/流程一個 store（onboarding.ts、schedule.ts、diary.ts、careAgent.ts、board.ts）
+  stores/       Pinia，一個 Tab/流程一個 store（onboarding.ts、schedule.ts、diary.ts、careAgent.ts、board.ts、account.ts）
   utils/        跨元件共用的純函式（目前只有 date.ts 的民國曆轉換）
   router/
   assets/       main.css（Tailwind 進入點 + 色票 tokens）
@@ -88,11 +88,13 @@ Tailwind v4，色票定義在 `src/assets/main.css` 的 `@theme` block，對應 
   - 聊天室送出訊息後（`ChatInputBar.vue` → `store.sendMessage`），需要呼叫真正的 Care Agent API 拿到 AI 回覆；同一次呼叫也要做 CLAUDE.md 說的「情緒分析→高壓觸發雇主 LINE 告知（不傳內容）」＋「抽取照護資訊寫進 Tab01」，這兩件事前端完全看不到、也不應該看到
   - 聊天室語音輸入（`ChatInputBar.vue`）跟 System Prompt 語音輸入（`AgentSetupView.vue`）都是 stub，等印尼語 ASR
 - Tab04 便利貼（`stores/board.ts`）目前只存在瀏覽器記憶體，且「已讀取/尚未讀取」狀態是寫死的假資料：實際上這個狀態要對應雇主端 LINE 的已讀狀態（見 CLAUDE.md「雇主端走 LINE 後『已讀取』＝ LINE 已讀」），需要後端/LINE webhook 才能是真的
+- Tab05 訂閱方案（`stores/account.ts`）的「變更方案」按鈕是 stub（見 `PlansView.vue` TODO 註解），沒有實際付款流程，等付款方式決定後再接
 
 **已知還沒解決/需要後續確認的地方：**
 - Tab03 建檔流程有兩張新聞縮圖是 placeholder 灰色方塊（`NewsAwarenessBanner.vue`），還沒有 Figma 圖片素材
 - 產品名稱曾經在不同 Figma 稿裡打成「Care Be Found」/「Care Not Found」/「Care Can Be Found」，目前統一用「404: Care Can Be Found」（文法正確版本），之後如果 Figma 又出現不同版本要再跟設計對齊
 - Tab04 便利貼權限目前簡化成「只有自己／雇主」二選一（單一雇主帳號），功能規格文件裡原本想支援「指定給誰看」（多個家人聯絡人），等有多聯絡人資料模型再擴充
+- Tab05 的樹狀插圖（`CareTreeHeader.vue`）跟頭像都是簡化幾何圖形/emoji 佔位，Figma 原稿是手繪風插畫，還沒有可匯出的素材檔
 
 ## 本機開發
 

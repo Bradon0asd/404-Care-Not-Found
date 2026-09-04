@@ -86,8 +86,12 @@ const router = createRouter({
     {
       path: '/account',
       name: 'tab05-account',
-      component: () => import('@/components/common/PlaceholderView.vue'),
-      props: { title: '我的帳戶' },
+      component: () => import('@/views/tab05-account/AccountView.vue'),
+    },
+    {
+      path: '/account/plans',
+      name: 'tab05-account-plans',
+      component: () => import('@/views/tab05-account/PlansView.vue'),
     },
   ],
 })

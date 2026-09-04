@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import IconArrowLeft from './icons/IconArrowLeft.vue'
+import IconArrowLeft from '@/components/common/icons/IconArrowLeft.vue'
 import IconPencil from '@/components/tab02-diary/icons/IconPencil.vue'
 
 const title = defineModel<string>('title', { required: true })
