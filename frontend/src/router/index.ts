@@ -6,7 +6,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/auth/role',
+      redirect: '/dashboard',
     },
     {
       path: '/auth/role',
@@ -36,8 +36,12 @@ const router = createRouter({
     {
       path: '/diary',
       name: 'tab02-diary',
-      component: () => import('@/components/common/PlaceholderView.vue'),
-      props: { title: '秘密日記' },
+      component: () => import('@/views/tab02-diary/DiaryMapView.vue'),
+    },
+    {
+      path: '/diary/:day',
+      name: 'tab02-diary-entry',
+      component: () => import('@/views/tab02-diary/DiaryEntryView.vue'),
     },
     {
       path: '/chat',
