@@ -5,3 +5,10 @@ __pycache__/
 .pytest_cache/
 instance/
 .coverage
+
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vscode/*
+!.vscode/extensions.json
