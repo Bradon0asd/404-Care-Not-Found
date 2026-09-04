@@ -27,12 +27,25 @@ class User(db.Model):
         default=UserRole.NURSE.value,
         server_default=UserRole.NURSE.value,
     )
+    pair_user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        unique=True,
+        index=True,
+    )
     created_at = db.Column(
         db.DateTime,
         nullable=False,
         server_default=db.func.current_timestamp(),
     )
 
+    paired_user = db.relationship(
+        "User",
+        remote_side=[id],
+        foreign_keys=[pair_user_id],
+        uselist=False,
+    )
     owner_recipients = db.relationship(
         "CareRecipient",
         foreign_keys="CareRecipient.owner_id",

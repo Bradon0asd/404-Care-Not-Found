@@ -17,6 +17,11 @@ class UserAlreadyExistsError(AppError):
     code = "USER_ALREADY_EXISTS"
 
 
+class UserPairingError(AppError):
+    status_code = 400
+    code = "USER_PAIRING_ERROR"
+
+
 class LineConfigurationError(AppError):
     status_code = 503
     code = "LINE_NOT_CONFIGURED"

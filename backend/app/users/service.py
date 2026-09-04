@@ -1,8 +1,8 @@
 from sqlalchemy.exc import IntegrityError
 
-from app.common.errors import UserAlreadyExistsError, UserNotFoundError
+from app.common.errors import UserAlreadyExistsError, UserNotFoundError, UserPairingError
 from app.extensions import db
-from app.models import User
+from app.models import User, UserRole
 
 
 def create_user(*, line_id, name=None, language=None, role="nurse"):
@@ -28,3 +28,54 @@ def get_or_create_user(*, line_id, name=None):
     if user is not None:
         return user
     return create_user(line_id=line_id, name=name)
+
+
+def pair_users(user, target_user):
+    if user.id == target_user.id:
+        raise UserPairingError("Cannot pair user with itself")
+
+    owner, nurse = _normalize_pair(user, target_user)
+
+    if owner.pair_user_id is not None:
+        raise UserPairingError("Owner already paired")
+
+    if nurse.pair_user_id is not None:
+        raise UserPairingError("Nurse already paired")
+
+    owner.pair_user_id = nurse.id
+    nurse.pair_user_id = owner.id
+
+    try:
+        db.session.commit()
+    except IntegrityError as error:
+        db.session.rollback()
+        raise UserPairingError("User pairing violates uniqueness constraints") from error
+
+    return user
+
+
+def unpair_users(user):
+    paired_user = user.paired_user
+
+    if paired_user is None:
+        return user
+
+    user.pair_user_id = None
+
+    if paired_user.pair_user_id == user.id:
+        paired_user.pair_user_id = None
+
+    db.session.commit()
+    return user
+
+
+def _normalize_pair(first_user, second_user):
+    roles = {first_user.role, second_user.role}
+    expected_roles = {UserRole.OWNER.value, UserRole.NURSE.value}
+    if roles != expected_roles:
+        raise UserPairingError("Owner and nurse roles are required")
+
+    if first_user.role == UserRole.OWNER.value:
+        return first_user, second_user
+
+    return second_user, first_user
