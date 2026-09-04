@@ -7,8 +7,8 @@ import BottomTabBar from '@/components/layout/BottomTabBar.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import IconPencil from '@/components/tab02-diary/icons/IconPencil.vue'
 import IconCalendar from '@/components/tab02-diary/icons/IconCalendar.vue'
-import IconMic from '@/components/tab02-diary/icons/IconMic.vue'
 import IconImage from '@/components/tab02-diary/icons/IconImage.vue'
+import AiVoiceButton from '@/components/common/AiVoiceButton.vue'
 import IconLine from '@/components/auth/icons/IconLine.vue'
 import { useDiaryStore } from '@/stores/diary'
 import { toMinguoDate } from '@/utils/date'
@@ -88,14 +88,7 @@ function save(visibility: 'private' | 'shared') {
       <div class="rounded-xl bg-ink-200 p-4">
         <div class="mb-2 flex items-center justify-between">
           <span class="text-sm text-ink-700">日記內容</span>
-          <button
-            type="button"
-            class="flex items-center gap-1 rounded-full bg-pink-500 px-3 py-1.5 text-xs font-bold text-white"
-            @click="startVoiceInput"
-          >
-            <IconMic class="h-3.5 w-3.5" />
-            AI 語音辨識
-          </button>
+          <AiVoiceButton @click="startVoiceInput" />
         </div>
         <textarea
           v-model="entry.content"

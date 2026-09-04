@@ -13,8 +13,11 @@ Vue 3（`<script setup>` + TypeScript）、Vite、Vue Router、Pinia、Tailwind 
 - 登入/邀請碼綁定流程（`views/auth/`）：選身分（看護/雇主）→ LINE 註冊（目前只是導頁，未接真的 LINE OAuth）→ 看護填基本資訊 / 雇主生成邀請碼
 - Tab01 照護紀錄 Dashboard（`views/tab01-dashboard/`）：儀錶板（6 張生命徵象卡）＋ 每日排程表（平日/周末切換）＋ 新增排程表單
 - Tab02 秘密日記（`views/tab02-diary/`）：破關地圖（Day 氣泡路徑，今日高亮）＋ 日記撰寫頁（標題/民國曆日期/內容/單張圖片/AI 語音辨識按鈕待接 ASR/僅自己或分享給 LINE 好友）
+- Tab03 跟我聊聊（`views/tab03-chat/`）★核心頁，分兩種模式：
+  - 建檔模式（僅首次）：說明頁 → System Prompt + Temperature + Guardrail 設定 → 一次性 5 題心理基準線問卷（單選、選完自動跳下一題，第五題才是「生成」按鈕）→ 完成後寫入 `stores/careAgent.ts`
+  - 對話模式（每天）：`/chat` 首頁是心情天氣打卡 + 聊天室泡泡列表（浮動話題泡泡＝舊聊天室，中央大泡泡＝開新聊天），點進去是實際對話頁（文字輸入＋語音按鈕，AI 回覆目前是 stub，見下方「跟後端串接」）
 
-**只有路由 stub、還沒做畫面：** Tab03 跟我聊聊、Tab04 便利貼牆、Tab05 帳戶管理（`/chat`、`/board`、`/account`，目前都顯示「開發中」佔位頁）
+**只有路由 stub、還沒做畫面：** Tab04 便利貼牆、Tab05 帳戶管理（`/board`、`/account`，目前都顯示「開發中」佔位頁）
 
 **目前所有資料都是前端本地假資料 / Pinia store，還沒接任何後端 API。**
 
@@ -30,7 +33,13 @@ Vue 3（`<script setup>` + TypeScript）、Vite、Vue Router、Pinia、Tailwind 
 | `/dashboard/add-schedule` | AddScheduleView | 新增排程表單，寫回 schedule store |
 | `/diary` | DiaryMapView | Tab02，破關地圖 |
 | `/diary/:day` | DiaryEntryView | 單日日記撰寫/編輯頁 |
-| `/chat` `/board` `/account` | PlaceholderView | Tab03-05 佔位頁 |
+| `/chat` | ChatHomeView | Tab03 首頁，心情打卡 + 聊天室列表；沒有 Agent 時自動導去 `/chat/intro` |
+| `/chat/intro` | IntroView | 首次使用說明頁 |
+| `/chat/setup` | AgentSetupView | 建檔 Step1：System Prompt / Temperature / Guardrail |
+| `/chat/baseline` | BaselineIntroView | 建檔 Step2 任務入口 |
+| `/chat/baseline/questions` | BaselineQuestionsView | 5 題一次性基準線問卷 |
+| `/chat/room/:id` | ChatRoomView | 單一聊天室對話畫面 |
+| `/board` `/account` | PlaceholderView | Tab04-05 佔位頁 |
 
 ## 目錄結構
 
@@ -42,9 +51,10 @@ src/
     auth/         登入/邀請碼流程專用元件
     tab01-dashboard/  Tab01 專用元件（生命徵象卡、排程表格）
     tab02-diary/      Tab02 專用元件（日記氣泡、統計列、腳印裝飾）
-    tab03-chat/ tab04-board/ tab05-account/  預留給後續 Tab，目前是空的
+    tab03-chat/       Tab03 專用元件（聊天泡泡、心情天氣、基準線問卷卡、Temperature/Guardrail 設定）
+    tab04-board/ tab05-account/  預留給後續 Tab，目前是空的
   views/        每個路由對應一個 view，負責組裝 components + 串 store
-  stores/       Pinia，一個 Tab/流程一個 store（onboarding.ts、schedule.ts、diary.ts）
+  stores/       Pinia，一個 Tab/流程一個 store（onboarding.ts、schedule.ts、diary.ts、careAgent.ts）
   utils/        跨元件共用的純函式（目前只有 date.ts 的民國曆轉換）
   router/
   assets/       main.css（Tailwind 進入點 + 色票 tokens）
@@ -68,6 +78,15 @@ Tailwind v4，色票定義在 `src/assets/main.css` 的 `@theme` block，對應 
 - `POST /api/line/webhook`：目前「使用 LINE 註冊」按鈕只是前端導頁，之後要接真的 LINE Login/OAuth
 - Tab01 的生命徵象卡、排程表（`stores/schedule.ts`）目前是寫死的假資料，之後要換成打 API 讀寫
 - Tab02 日記（`stores/diary.ts`）目前只存在瀏覽器記憶體：需要一個存/讀日記的 API，以及印尼語 ASR 服務（`DiaryEntryView.vue` 的「AI 語音辨識」按鈕目前是空的 stub，見檔案內 TODO 註解）
+- Tab03（`stores/careAgent.ts`）是目前缺口最大的地方：
+  - System Prompt / Temperature / Guardrail 需要送到後端去實際生成 Care Agent persona（目前只是存在本地 store）
+  - 5 題基準線問卷答案需要送出去建立心理基準線
+  - 聊天室送出訊息後（`ChatInputBar.vue` → `store.sendMessage`），需要呼叫真正的 Care Agent API 拿到 AI 回覆；同一次呼叫也要做 CLAUDE.md 說的「情緒分析→高壓觸發雇主 LINE 告知（不傳內容）」＋「抽取照護資訊寫進 Tab01」，這兩件事前端完全看不到、也不應該看到
+  - 聊天室語音輸入（`ChatInputBar.vue`）跟 System Prompt 語音輸入（`AgentSetupView.vue`）都是 stub，等印尼語 ASR
+
+**已知還沒解決/需要後續確認的地方：**
+- Tab03 建檔流程有兩張新聞縮圖是 placeholder 灰色方塊（`NewsAwarenessBanner.vue`），還沒有 Figma 圖片素材
+- 產品名稱曾經在不同 Figma 稿裡打成「Care Be Found」/「Care Not Found」/「Care Can Be Found」，目前統一用「404: Care Can Be Found」（文法正確版本），之後如果 Figma 又出現不同版本要再跟設計對齊
 
 ## 本機開發
 

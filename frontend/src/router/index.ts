@@ -46,8 +46,32 @@ const router = createRouter({
     {
       path: '/chat',
       name: 'tab03-chat',
-      component: () => import('@/components/common/PlaceholderView.vue'),
-      props: { title: '跟我聊聊' },
+      component: () => import('@/views/tab03-chat/ChatHomeView.vue'),
+    },
+    {
+      path: '/chat/intro',
+      name: 'tab03-chat-intro',
+      component: () => import('@/views/tab03-chat/IntroView.vue'),
+    },
+    {
+      path: '/chat/setup',
+      name: 'tab03-chat-setup',
+      component: () => import('@/views/tab03-chat/AgentSetupView.vue'),
+    },
+    {
+      path: '/chat/baseline',
+      name: 'tab03-chat-baseline-intro',
+      component: () => import('@/views/tab03-chat/BaselineIntroView.vue'),
+    },
+    {
+      path: '/chat/baseline/questions',
+      name: 'tab03-chat-baseline-questions',
+      component: () => import('@/views/tab03-chat/BaselineQuestionsView.vue'),
+    },
+    {
+      path: '/chat/room/:id',
+      name: 'tab03-chat-room',
+      component: () => import('@/views/tab03-chat/ChatRoomView.vue'),
     },
     {
       path: '/board',
