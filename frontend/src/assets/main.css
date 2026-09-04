@@ -1,35 +1,34 @@
-@import './base.css';
+@import 'tailwindcss';
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+@theme {
+  /* pink scale — Figma swatch, light to saturated */
+  --color-pink-100: #ffdee7;
+  --color-pink-200: #ffd3df;
+  --color-pink-300: #ffc8d7;
+  --color-pink-400: #ffbdcf;
+  --color-pink-500: #ffb2c7;
+  --color-pink-600: #ffa7bf;
+
+  /* neutral scale — Figma "Balck" swatch, light to core black */
+  --color-ink-100: #f9f9f9;
+  --color-ink-200: #f6f6f6;
+  --color-ink-300: #f2f2f2;
+  --color-ink-400: #ececec;
+  --color-ink-500: #c4c4c4;
+  --color-ink-600: #909090;
+  --color-ink-700: #6f6f6f;
+  --color-ink-800: #4b4b4b;
+  --color-ink-900: #2d2d2d;
+  --color-ink-950: #000000;
+
+  /* single accent yellow from Figma swatch */
+  --color-accent: #fcd856;
+
+  --font-sans:
+    'Noto Sans TC', 'Noto Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+body {
+  background-color: var(--color-ink-100);
+  color: var(--color-ink-950);
 }

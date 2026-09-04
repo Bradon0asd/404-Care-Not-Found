@@ -1,21 +1,27 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import RoleSelectView from '@/views/auth/RoleSelectView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
+      redirect: '/auth/role',
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      path: '/auth/role',
+      name: 'auth-role-select',
+      component: RoleSelectView,
+    },
+    {
+      path: '/auth/caregiver/onboarding',
+      name: 'auth-caregiver-onboarding',
+      component: () => import('@/views/auth/CaregiverOnboardingView.vue'),
+    },
+    {
+      path: '/auth/employer/setup',
+      name: 'auth-employer-setup',
+      component: () => import('@/views/auth/EmployerSetupView.vue'),
     },
   ],
 })
