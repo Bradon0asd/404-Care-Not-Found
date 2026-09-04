@@ -15,3 +15,8 @@ def create_user(args):
     user = user_service.create_user(**args)
     return UserSchema().dump(user), 201
 
+
+@api_bp.get("/users/<int:user_id>")
+def get_user(user_id):
+    user = user_service.get_user(user_id=user_id)
+    return UserSchema().dump(user), 200
