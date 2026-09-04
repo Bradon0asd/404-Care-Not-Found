@@ -1,3 +1,5 @@
+import logging
+
 from flask import current_app, request
 from linebot.v3.exceptions import InvalidSignatureError
 from linebot.v3.webhook import WebhookParser
@@ -7,6 +9,9 @@ from app.shared.errors import InvalidLineSignatureError, LineConfigurationError
 from app.shared.response import api_success
 from app.line import line_bp
 from app.line.service import handle_text_message
+
+
+logger = logging.getLogger(__name__)
 
 
 @line_bp.post("/webhook")
@@ -22,6 +27,8 @@ def webhook():
         events = WebhookParser(secret).parse(body, signature)
     except InvalidSignatureError as error:
         raise InvalidLineSignatureError("Invalid LINE signature") from error
+
+    logger.info("line webhook received: events=%s", len(events))
 
     for event in events:
         if isinstance(event, MessageEvent) and isinstance(event.message, TextMessageContent):

@@ -1,3 +1,5 @@
+import logging
+
 from flask import Flask
 from flask_smorest import Blueprint
 from marshmallow import ValidationError
@@ -11,6 +13,7 @@ def create_app(config_object=Config):
     app = Flask(__name__)
     app.config.from_object(config_object)
     configure_api_docs(app)
+    configure_logging(app)
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -49,6 +52,14 @@ def create_app(config_object=Config):
 
     register_error_handlers(app)
     return app
+
+
+def configure_logging(app):
+    # Hosting platforms only surface stdout/stderr, and the default level hides INFO.
+    logging.basicConfig(
+        level=logging.WARNING if app.config.get("TESTING") else logging.INFO,
+        format="[%(asctime)s] %(levelname)s %(name)s: %(message)s",
+    )
 
 
 def configure_api_docs(app):
