@@ -24,7 +24,7 @@ def webhook():
     for event in events:
         if isinstance(event, MessageEvent) and isinstance(event.message, TextMessageContent):
             handle_text_message(
-                line_user_id=event.source.user_id,
+                line_id=event.source.user_id,
                 reply_token=event.reply_token,
                 text=event.message.text,
             )

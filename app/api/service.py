@@ -5,8 +5,8 @@ from app.extensions import db
 from app.models import User
 
 
-def create_user(*, line_user_id, name=None):
-    user = User(line_user_id=line_user_id, name=name)
+def create_user(*, line_id, name=None, language=None, role="nurse"):
+    user = User(line_id=line_id, name=name, language=language, role=role)
     db.session.add(user)
     try:
         db.session.commit()
@@ -23,8 +23,8 @@ def get_user(*, user_id):
     return user
 
 
-def get_or_create_user(*, line_user_id, name=None):
-    user = User.query.filter_by(line_user_id=line_user_id).first()
+def get_or_create_user(*, line_id, name=None):
+    user = User.query.filter_by(line_id=line_id).first()
     if user is not None:
         return user
-    return create_user(line_user_id=line_user_id, name=name)
+    return create_user(line_id=line_id, name=name)
