@@ -70,8 +70,10 @@ const vitals = [
 
 <template>
   <PageContainer>
-    <AppHeader />
-    <MedicalDisclaimerBanner />
+    <template #header>
+      <AppHeader />
+      <MedicalDisclaimerBanner />
+    </template>
 
     <div class="relative flex-1 px-4 py-4">
       <SegmentedToggle
@@ -94,6 +96,6 @@ const vitals = [
       <FloatingAddButton @click="router.push('/dashboard/add-schedule')" />
     </div>
 
-    <BottomTabBar />
+    <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>

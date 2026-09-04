@@ -14,10 +14,12 @@ const router = useRouter()
 
 <template>
   <PageContainer>
-    <AppHeader />
-    <UpgradeLimitBanner message="免費版最多生成「1 個」Agent，" upgrade-text="立即升級享有更完整體驗" />
-    <StepProgressIndicator :current="1" />
+    <template #header>
+      <AppHeader />
+      <UpgradeLimitBanner message="免費版最多生成「1 個」Agent，" upgrade-text="立即升級享有更完整體驗" />
+    </template>
 
+    <StepProgressIndicator :current="1" />
     <div class="flex-1 space-y-4 px-4 pb-4">
       <div class="space-y-3 rounded-xl bg-ink-200 p-4 text-center">
         <p class="text-sm text-ink-700">一起聊聊你最近的狀態吧</p>
@@ -34,6 +36,6 @@ const router = useRouter()
       </ExpandableSection>
     </div>
 
-    <BottomTabBar />
+    <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>

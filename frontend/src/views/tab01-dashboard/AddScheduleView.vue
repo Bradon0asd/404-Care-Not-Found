@@ -39,7 +39,7 @@ function submit() {
 
 <template>
   <PageContainer>
-    <AppHeader />
+    <template #header><AppHeader /></template>
 
     <div class="flex-1 space-y-5 px-4 py-4">
       <h1 class="text-base font-bold text-ink-950">新增排程</h1>
@@ -94,6 +94,6 @@ function submit() {
       </div>
     </div>
 
-    <BottomTabBar />
+    <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>

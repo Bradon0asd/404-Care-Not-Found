@@ -22,28 +22,19 @@ function isActive(to: string) {
 </script>
 
 <template>
-  <nav class="flex items-end justify-between bg-pink-200 px-2 pt-3 pb-2">
-    <RouterLink
-      v-for="tab in tabs"
-      :key="tab.name"
-      :to="tab.to"
-      class="flex flex-1 flex-col items-center gap-1 text-[11px]"
-      :class="tab.raised ? '-mt-6' : ''"
-    >
-      <span
-        class="flex items-center justify-center rounded-full"
-        :class="[
-          tab.raised ? 'h-14 w-14 bg-white shadow-md' : 'h-9 w-9',
-          !tab.raised && isActive(tab.to) ? 'bg-pink-500' : '',
-        ]"
-      >
-        <component
-          :is="tab.icon"
-          class="h-5 w-5"
-          :class="tab.raised ? 'text-pink-500' : isActive(tab.to) ? 'text-white' : 'text-ink-600'"
-        />
-      </span>
-      <span :class="isActive(tab.to) ? 'font-bold text-ink-950' : 'text-ink-600'">{{ tab.label }}</span>
-    </RouterLink>
-  </nav>
+  <div class="shrink-0 bg-white px-3 pt-1 pb-3">
+    <nav class="flex items-center justify-between rounded-full bg-pink-300 px-3 py-2.5">
+      <RouterLink v-for="tab in tabs" :key="tab.name" :to="tab.to" class="flex flex-1 flex-col items-center gap-1">
+        <span
+          class="flex items-center justify-center rounded-full bg-white transition-all"
+          :class="[tab.raised ? 'h-14 w-14' : 'h-11 w-11', isActive(tab.to) ? 'ring-[3px] ring-pink-500' : '']"
+        >
+          <component :is="tab.icon" class="h-5 w-5" :class="isActive(tab.to) ? 'text-pink-600' : 'text-ink-500'" />
+        </span>
+        <span class="text-[11px]" :class="isActive(tab.to) ? 'font-bold text-ink-950' : 'text-ink-700'">{{
+          tab.label
+        }}</span>
+      </RouterLink>
+    </nav>
+  </div>
 </template>

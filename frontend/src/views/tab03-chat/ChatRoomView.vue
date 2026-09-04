@@ -25,12 +25,12 @@ function send(text: string) {
 
 <template>
   <PageContainer v-if="room">
-    <ChatRoomHeader v-model:title="room.title" />
+    <template #header><ChatRoomHeader v-model:title="room.title" /></template>
 
-    <div class="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-4">
+    <div class="flex flex-1 flex-col gap-3 px-4 py-4">
       <ChatMessageBubble v-for="(message, i) in room.messages" :key="i" :message="message" />
     </div>
 
-    <ChatInputBar @send="send" />
+    <template #footer><ChatInputBar @send="send" /></template>
   </PageContainer>
 </template>

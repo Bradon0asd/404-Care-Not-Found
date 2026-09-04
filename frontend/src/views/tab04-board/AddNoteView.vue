@@ -55,7 +55,7 @@ function publish(visibility: NoteVisibility) {
 
 <template>
   <PageContainer>
-    <AppHeader />
+    <template #header><AppHeader /></template>
 
     <div class="flex-1 space-y-4 px-4 py-4">
       <NoteLevelPicker v-model="level" />
@@ -135,6 +135,6 @@ function publish(visibility: NoteVisibility) {
     </div>
 
     <NotePermissionModal :open="permissionModalOpen" @close="permissionModalOpen = false" @publish="publish" />
-    <BottomTabBar />
+    <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>

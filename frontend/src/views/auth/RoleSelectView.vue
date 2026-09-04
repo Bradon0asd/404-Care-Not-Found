@@ -36,7 +36,7 @@ function handleLineRegister() {
 
 <template>
   <PageContainer>
-    <AppHeader />
+    <template #header><AppHeader /></template>
 
     <div class="flex flex-1 flex-col items-center gap-6 px-6 py-10">
       <div class="text-center">

@@ -1,5 +1,9 @@
 <template>
-  <div class="mx-auto flex min-h-screen w-full max-w-sm flex-col bg-white">
-    <slot />
+  <div class="mx-auto flex h-dvh w-full max-w-sm flex-col overflow-hidden bg-white">
+    <slot name="header" />
+    <div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
+      <slot />
+    </div>
+    <slot name="footer" />
   </div>
 </template>

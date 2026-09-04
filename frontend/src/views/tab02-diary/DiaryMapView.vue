@@ -27,7 +27,7 @@ function openDay(day: number) {
 
 <template>
   <PageContainer>
-    <AppHeader />
+    <template #header><AppHeader /></template>
 
     <DiaryStatsBar :arrival-day="diaryStore.arrivalDay" :care-recipient-count="diaryStore.careRecipientCount" />
     <p class="mt-3 px-6 text-center text-xs text-ink-600">每天撰寫日記，累積一定天數將獲得特定獎勵</p>
@@ -44,6 +44,6 @@ function openDay(day: number) {
       </template>
     </div>
 
-    <BottomTabBar />
+    <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>

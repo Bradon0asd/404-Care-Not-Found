@@ -53,7 +53,7 @@ function save(visibility: 'private' | 'shared') {
 
 <template>
   <PageContainer>
-    <AppHeader />
+    <template #header><AppHeader /></template>
 
     <div class="flex-1 space-y-4 px-4 py-4">
       <div class="flex justify-center">
@@ -146,6 +146,6 @@ function save(visibility: 'private' | 'shared') {
       <p class="text-center text-xs text-ink-600">提醒：平台絕不會擅自分享你的日記內容，請放心抒發</p>
     </div>
 
-    <BottomTabBar />
+    <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>

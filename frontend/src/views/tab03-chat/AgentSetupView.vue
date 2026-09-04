@@ -32,10 +32,12 @@ function next() {
 
 <template>
   <PageContainer>
-    <AppHeader />
-    <UpgradeLimitBanner message="免費版最多生成「1 個」Agent，" upgrade-text="立即升級享有更完整體驗" />
-    <StepProgressIndicator :current="1" />
+    <template #header>
+      <AppHeader />
+      <UpgradeLimitBanner message="免費版最多生成「1 個」Agent，" upgrade-text="立即升級享有更完整體驗" />
+    </template>
 
+    <StepProgressIndicator :current="1" />
     <div class="flex-1 space-y-4 px-4 pb-4">
       <h1 class="text-base font-bold text-ink-950">建置你的客製化 Care Agent</h1>
 
@@ -58,6 +60,6 @@ function next() {
       <BaseButton variant="primary" @click="next">下一步：協助 Agent 建立心理基準線</BaseButton>
     </div>
 
-    <BottomTabBar />
+    <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>

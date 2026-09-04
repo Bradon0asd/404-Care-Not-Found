@@ -50,9 +50,9 @@ function submit() {
 
 <template>
   <PageContainer>
-    <AppHeader />
-    <StepProgressIndicator :current="1" />
+    <template #header><AppHeader /></template>
 
+    <StepProgressIndicator :current="1" />
     <div class="flex-1 space-y-4 px-4 pb-4">
       <BaselineQuestionCard
         :key="currentIndex"
@@ -70,6 +70,6 @@ function submit() {
       <BaseButton v-if="currentIndex > 0" variant="outline" @click="goBack">返回上一題</BaseButton>
     </div>
 
-    <BottomTabBar />
+    <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>

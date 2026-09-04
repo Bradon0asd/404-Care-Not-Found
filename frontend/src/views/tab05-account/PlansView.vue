@@ -48,8 +48,10 @@ const plans: {
 
 <template>
   <PageContainer>
-    <AppHeader />
-    <SubPageHeader title="訂閱方案一覽表" />
+    <template #header>
+      <AppHeader />
+      <SubPageHeader title="訂閱方案一覽表" />
+    </template>
 
     <div class="flex-1 space-y-4 px-4 pb-4">
       <PlanCard
@@ -66,6 +68,6 @@ const plans: {
       <BaseButton variant="outline" @click="changePlan">變更方案</BaseButton>
     </div>
 
-    <BottomTabBar />
+    <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>

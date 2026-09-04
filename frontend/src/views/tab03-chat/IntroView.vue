@@ -13,8 +13,10 @@ const router = useRouter()
 
 <template>
   <PageContainer>
-    <AppHeader />
-    <NewsAwarenessBanner />
+    <template #header>
+      <AppHeader />
+      <NewsAwarenessBanner />
+    </template>
 
     <div class="flex-1 space-y-5 px-5 py-5">
       <div class="flex justify-center">
@@ -43,6 +45,6 @@ const router = useRouter()
       <IntroStepCard :number="5"><p>歷程回顧</p></IntroStepCard>
     </div>
 
-    <BottomTabBar />
+    <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>

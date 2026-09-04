@@ -36,12 +36,13 @@ const filteredNotes = computed(() =>
 
 <template>
   <PageContainer>
-    <AppHeader />
-
-    <div class="flex items-center justify-between bg-ink-200 px-4 py-3">
-      <FilterSelect v-model="statusFilter" label="狀態" :options="statusOptions" />
-      <FilterSelect v-model="levelFilter" label="層級" :options="levelOptions" />
-    </div>
+    <template #header>
+      <AppHeader />
+      <div class="flex items-center justify-between bg-ink-200 px-4 py-3">
+        <FilterSelect v-model="statusFilter" label="狀態" :options="statusOptions" />
+        <FilterSelect v-model="levelFilter" label="層級" :options="levelOptions" />
+      </div>
+    </template>
 
     <div class="grid flex-1 grid-cols-2 gap-3 px-4 py-4">
       <NoteCard v-for="note in filteredNotes" :key="note.id" :note="note" @click="activeNote = note" />
@@ -56,6 +57,6 @@ const filteredNotes = computed(() =>
     </div>
 
     <NoteDetailModal :note="activeNote" @close="activeNote = null" />
-    <BottomTabBar />
+    <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>

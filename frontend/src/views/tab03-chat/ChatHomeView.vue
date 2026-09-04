@@ -36,7 +36,7 @@ function startNewChat() {
 
 <template>
   <PageContainer>
-    <AppHeader />
+    <template #header><AppHeader /></template>
 
     <div class="pt-4">
       <WeatherMoodPicker @submit="logMood" />
@@ -68,6 +68,6 @@ function startNewChat() {
       </div>
     </div>
 
-    <BottomTabBar />
+    <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>

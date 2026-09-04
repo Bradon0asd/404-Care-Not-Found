@@ -8,10 +8,10 @@ defineProps<{ title: string }>()
 
 <template>
   <PageContainer>
-    <AppHeader />
+    <template #header><AppHeader /></template>
     <div class="flex flex-1 items-center justify-center px-6 text-center">
       <p class="text-sm text-ink-600">{{ title }} 開發中</p>
     </div>
-    <BottomTabBar />
+    <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>
