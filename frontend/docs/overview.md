@@ -25,7 +25,7 @@ Vue 3（`<script setup>` + TypeScript）、Vite、Vue Router、Pinia、Tailwind 
 
 | 路徑 | 頁面 | 說明 |
 |---|---|---|
-| `/` | — | redirect 到 `/dashboard`（開發階段先跳過 auth，方便直接測 Tab） |
+| `/` | — | redirect 到 `/auth/role`（正式入口，走登入流程） |
 | `/auth/role` | RoleSelectView | 選身分，帶 `?invite=` 參數會自動選看護 |
 | `/auth/caregiver/onboarding` | CaregiverOnboardingView | 看護：語言/入境日期/第幾位照護者 |
 | `/auth/employer/setup` | EmployerSetupView | 雇主：設定看護資訊 + 生成邀請碼 |
@@ -43,6 +43,7 @@ Vue 3（`<script setup>` + TypeScript）、Vite、Vue Router、Pinia、Tailwind 
 | `/board/new` | AddNoteView | 新增便利貼表單 |
 | `/account` | AccountView | Tab05，使用者資訊 + 變更語言/登出/訂閱方案入口 |
 | `/account/plans` | PlansView | 訂閱方案一覽表 |
+| `/:pathMatch(.*)*` | — | 任何不存在的路徑都 redirect 回 `/` |
 
 ## 目錄結構
 
@@ -94,7 +95,8 @@ Tailwind v4，色票定義在 `src/assets/main.css` 的 `@theme` block，對應 
 - Tab03 建檔流程有兩張新聞縮圖是 placeholder 灰色方塊（`NewsAwarenessBanner.vue`），還沒有 Figma 圖片素材
 - 產品名稱曾經在不同 Figma 稿裡打成「Care Be Found」/「Care Not Found」/「Care Can Be Found」，目前統一用「404: Care Can Be Found」（文法正確版本），之後如果 Figma 又出現不同版本要再跟設計對齊
 - Tab04 便利貼權限目前簡化成「只有自己／雇主」二選一（單一雇主帳號），功能規格文件裡原本想支援「指定給誰看」（多個家人聯絡人），等有多聯絡人資料模型再擴充
-- Tab05 的樹狀插圖（`CareTreeHeader.vue`）跟頭像都是簡化幾何圖形/emoji 佔位，Figma 原稿是手繪風插畫，還沒有可匯出的素材檔
+- Tab05 的樹狀插圖（`CareTreeHeader.vue`）用簡化幾何圖形逼近，頭像是 pravatar.cc 佔位照片，Figma 原稿是手繪風插畫，還沒有可匯出的素材檔
+- **目前完全沒有路由守衛（route guard）**：`/` 會導去 `/auth/role`，但直接打 `/dashboard`、`/chat`、`/board`、`/account` 這些網址還是可以完全繞過登入流程直接進去，沒有任何「必須先登入/完成 onboarding」的攔截。MVP demo 階段這是刻意的（方便直接測任一頁），但正式串接後端後要補上
 
 ## 本機開發
 

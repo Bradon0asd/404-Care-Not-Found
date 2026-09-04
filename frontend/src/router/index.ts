@@ -6,7 +6,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/dashboard',
+      redirect: '/auth/role',
     },
     {
       path: '/auth/role',
@@ -92,6 +92,10 @@ const router = createRouter({
       path: '/account/plans',
       name: 'tab05-account-plans',
       component: () => import('@/views/tab05-account/PlansView.vue'),
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/',
     },
   ],
 })
