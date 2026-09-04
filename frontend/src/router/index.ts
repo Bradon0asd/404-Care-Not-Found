@@ -76,8 +76,12 @@ const router = createRouter({
     {
       path: '/board',
       name: 'tab04-board',
-      component: () => import('@/components/common/PlaceholderView.vue'),
-      props: { title: '便利貼牆' },
+      component: () => import('@/views/tab04-board/BoardListView.vue'),
+    },
+    {
+      path: '/board/new',
+      name: 'tab04-board-new',
+      component: () => import('@/views/tab04-board/AddNoteView.vue'),
     },
     {
       path: '/account',
