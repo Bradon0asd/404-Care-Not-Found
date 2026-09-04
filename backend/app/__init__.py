@@ -19,16 +19,22 @@ def create_app(config_object=Config):
     # Import models before Flask-Migrate inspects SQLAlchemy metadata.
     from app import models  # noqa: F401
     from app.auth import auth_bp
+    from app.care_recipients import care_recipient_bp
+    from app.care_schedules import care_schedule_bp
     from app.diaries import diary_bp
     from app.line import line_bp
     from app.sticky_notes import sticky_note_bp
     from app.users import user_bp
+    from app.vital_signs import vital_sign_bp
 
     api.register_blueprint(auth_bp, url_prefix="/api/auth")
+    api.register_blueprint(care_recipient_bp, url_prefix="/api")
+    api.register_blueprint(care_schedule_bp, url_prefix="/api")
     api.register_blueprint(diary_bp, url_prefix="/api")
     api.register_blueprint(line_bp, url_prefix="/api/line")
     api.register_blueprint(sticky_note_bp, url_prefix="/api")
     api.register_blueprint(user_bp, url_prefix="/api")
+    api.register_blueprint(vital_sign_bp, url_prefix="/api")
 
     health_bp = Blueprint("health", __name__, description="Service health checks")
 

@@ -42,6 +42,21 @@ class StickyNoteNotFoundError(AppError):
     code = "STICKY_NOTE_NOT_FOUND"
 
 
+class CareRecipientNotFoundError(AppError):
+    status_code = 404
+    code = "CARE_RECIPIENT_NOT_FOUND"
+
+
+class CareRecipientOwnerRequiredError(AppError):
+    status_code = 400
+    code = "CARE_RECIPIENT_OWNER_REQUIRED"
+
+
+class CareScheduleNotFoundError(AppError):
+    status_code = 404
+    code = "CARE_SCHEDULE_NOT_FOUND"
+
+
 class LineConfigurationError(AppError):
     status_code = 503
     code = "LINE_NOT_CONFIGURED"

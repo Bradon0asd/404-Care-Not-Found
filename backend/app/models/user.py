@@ -70,6 +70,16 @@ class User(db.Model):
         back_populates="creator",
         lazy="select",
     )
+    created_schedules = db.relationship(
+        "CareSchedule",
+        back_populates="creator",
+        lazy="select",
+    )
+    created_vital_sign_logs = db.relationship(
+        "VitalSignLog",
+        back_populates="creator",
+        lazy="select",
+    )
 
     @property
     def care_recipients(self):
@@ -111,4 +121,16 @@ class CareRecipient(db.Model):
         foreign_keys=[nurse_id],
         lazy="select",
         back_populates="nurse_recipients",
+    )
+    schedules = db.relationship(
+        "CareSchedule",
+        back_populates="care_recipient",
+        lazy="select",
+        cascade="all, delete-orphan",
+    )
+    vital_sign_logs = db.relationship(
+        "VitalSignLog",
+        back_populates="care_recipient",
+        lazy="select",
+        cascade="all, delete-orphan",
     )
