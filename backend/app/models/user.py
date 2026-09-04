@@ -8,7 +8,6 @@ class UserRole(StrEnum):
     NURSE = "nurse"
 
 
-
 class User(db.Model):
     __tablename__ = "users"
     __table_args__ = (
@@ -33,6 +32,7 @@ class User(db.Model):
         nullable=False,
         server_default=db.func.current_timestamp(),
     )
+
     owner_recipients = db.relationship(
         "CareRecipient",
         foreign_keys="CareRecipient.owner_id",
@@ -46,6 +46,14 @@ class User(db.Model):
         back_populates="nurse",
         lazy="select",
         passive_deletes=True,
+    )
+    sticky_notes = db.relationship(
+        "StickyNote",
+        back_populates="creator",
+    )
+    diary_entries = db.relationship(
+        "DiaryEntry",
+        back_populates="creator",
     )
 
     @property

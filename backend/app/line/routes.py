@@ -4,6 +4,7 @@ from linebot.v3.webhook import WebhookParser
 from linebot.v3.webhooks import MessageEvent, TextMessageContent
 
 from app.common.errors import InvalidLineSignatureError, LineConfigurationError
+from app.common.response import api_success
 from app.line import line_bp
 from app.line.service import handle_text_message
 
@@ -28,4 +29,4 @@ def webhook():
                 reply_token=event.reply_token,
                 text=event.message.text,
             )
-    return "OK", 200
+    return api_success({"status": "ok"})

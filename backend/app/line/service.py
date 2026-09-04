@@ -1,4 +1,4 @@
-from app.api.service import get_or_create_user
+from app.users.service import get_or_create_user
 from app.line.client import LineClient
 
 
