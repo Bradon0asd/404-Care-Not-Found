@@ -1,8 +1,8 @@
 <template>
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="8" r="4" fill="currentColor" />
-    <path d="M4 21c0-4.418 3.582-8 8-8s8 3.582 8 8" fill="currentColor" />
-    <circle cx="18" cy="7" r="3" fill="currentColor" stroke="white" stroke-width="1.5" />
-    <path d="M18 5.5v3M16.5 7h3" stroke="white" stroke-width="1.2" stroke-linecap="round" />
+    <circle cx="10" cy="8.2" r="3.6" fill="currentColor" />
+    <path d="M3.2 20.5c0-4.14 3.04-6.7 6.8-6.7s6.8 2.56 6.8 6.7" fill="currentColor" />
+    <circle cx="18" cy="6.5" r="3.6" fill="currentColor" stroke="white" stroke-width="1.6" />
+    <path d="M18 4.9v3.2M16.4 6.5h3.2" stroke="white" stroke-width="1.3" stroke-linecap="round" />
   </svg>
 </template>

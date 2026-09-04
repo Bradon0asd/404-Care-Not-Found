@@ -1,9 +1,10 @@
 <template>
-  <div class="mx-auto flex h-dvh w-full max-w-sm flex-col overflow-hidden bg-white">
+  <div class="relative mx-auto flex h-dvh w-full max-w-sm flex-col overflow-hidden bg-white">
     <slot name="header" />
     <div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
       <slot />
     </div>
+    <slot name="fab" />
     <slot name="footer" />
   </div>
 </template>

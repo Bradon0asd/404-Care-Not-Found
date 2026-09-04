@@ -22,16 +22,23 @@ function isActive(to: string) {
 </script>
 
 <template>
-  <div class="shrink-0 bg-white px-3 pt-1 pb-3">
-    <nav class="flex items-center justify-between rounded-full bg-pink-300 px-3 py-2.5">
-      <RouterLink v-for="tab in tabs" :key="tab.name" :to="tab.to" class="flex flex-1 flex-col items-center gap-1">
+  <div class="shrink-0 bg-white px-3 pt-4 pb-2">
+    <nav class="flex items-end justify-between rounded-full bg-pink-300 px-2 pt-1.5 pb-2">
+      <RouterLink v-for="tab in tabs" :key="tab.name" :to="tab.to" class="relative flex flex-1 flex-col items-center">
+        <!-- active highlight: one capsule covering icon + label -->
         <span
-          class="flex items-center justify-center rounded-full bg-white transition-all"
-          :class="[tab.raised ? 'h-14 w-14' : 'h-11 w-11', isActive(tab.to) ? 'ring-[3px] ring-pink-500' : '']"
+          v-if="isActive(tab.to)"
+          class="absolute inset-x-1 bottom-0 rounded-2xl bg-pink-400"
+          :style="{ top: tab.raised ? '-22px' : '-2px' }"
+        ></span>
+
+        <span
+          class="relative z-10 flex items-center justify-center rounded-full bg-white"
+          :class="tab.raised ? '-mt-6 h-14 w-14 shadow-md' : 'h-8 w-8'"
         >
-          <component :is="tab.icon" class="h-5 w-5" :class="isActive(tab.to) ? 'text-pink-600' : 'text-ink-500'" />
+          <component :is="tab.icon" class="h-4 w-4" :class="isActive(tab.to) ? 'text-pink-600' : 'text-ink-500'" />
         </span>
-        <span class="text-[11px]" :class="isActive(tab.to) ? 'font-bold text-ink-950' : 'text-ink-700'">{{
+        <span class="relative z-10 mt-0.5 text-[10px]" :class="isActive(tab.to) ? 'font-bold text-ink-950' : 'text-ink-700'">{{
           tab.label
         }}</span>
       </RouterLink>

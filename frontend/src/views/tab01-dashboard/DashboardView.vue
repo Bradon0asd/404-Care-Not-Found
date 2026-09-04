@@ -75,7 +75,7 @@ const vitals = [
       <MedicalDisclaimerBanner />
     </template>
 
-    <div class="relative flex-1 px-4 py-4">
+    <div class="flex-1 px-4 py-4">
       <SegmentedToggle
         class="mb-4"
         variant="tab"
@@ -92,10 +92,9 @@ const vitals = [
       </div>
 
       <ScheduleTable v-else care-recipient-name="{{照顧者姓名}}" :entries="scheduleStore.entries" />
-
-      <FloatingAddButton @click="router.push('/dashboard/add-schedule')" />
     </div>
 
+    <template #fab><FloatingAddButton @click="router.push('/dashboard/add-schedule')" /></template>
     <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>

@@ -5,7 +5,7 @@ defineEmits<{ click: [] }>()
 <template>
   <button
     type="button"
-    class="absolute right-4 bottom-24 flex h-12 w-12 items-center justify-center rounded-full bg-pink-500 text-white shadow-lg"
+    class="absolute right-4 bottom-20 flex h-12 w-12 items-center justify-center rounded-full bg-pink-500 text-white shadow-lg"
     aria-label="新增"
     @click="$emit('click')"
   >

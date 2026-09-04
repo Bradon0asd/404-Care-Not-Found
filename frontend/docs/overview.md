@@ -4,7 +4,7 @@
 
 ## 技術棧
 
-Vue 3（`<script setup>` + TypeScript）、Vite、Vue Router、Pinia、Tailwind CSS v4。設計稿來自 Figma，色票已轉成 Tailwind theme tokens（見「樣式系統」）。
+Vue 3（`<script setup>` + TypeScript）、Vite、Vue Router、Pinia、Tailwind CSS v4、vue3-carousel（Tab03 新聞影片滑動用）。設計稿來自 Figma，色票已轉成 Tailwind theme tokens（見「樣式系統」）。
 
 ## 專案結構
 
@@ -36,8 +36,8 @@ frontend/
     │   ├── tab04-board/
     │   └── tab05-account/
     └── components/
-        ├── common/            跨頁共用元件（BaseButton、SegmentedToggle、免責聲明橫幅...）
-        ├── layout/             App 殼層（AppHeader、BottomTabBar、PageContainer、SubPageHeader）
+        ├── common/            跨頁共用元件（BaseButton、SegmentedToggle、免責聲明橫幅、BackgroundBlobs 裝飾背景...）
+        ├── layout/             App 殼層（AppHeader、BottomTabBar、PageContainer（含 #header/#fab/#footer slot）、SubPageHeader）
         ├── auth/               登入流程專用元件
         ├── tab01-dashboard/
         ├── tab02-diary/
@@ -60,6 +60,18 @@ frontend/
 | Tab03 跟我聊聊 ★核心 | 完成 | 見下方「Tab03 細節」 |
 | Tab04 便利貼牆 | 完成 | 清單頁（篩選、點卡片放大彈窗）＋ 新增頁（三色層級、設定權限彈窗、彈窗內才真的送出） |
 | Tab05 帳戶管理 | 完成 | 樹狀使用者卡片（變更語言/登出/訂閱方案三分支）＋ 訂閱方案頁 |
+
+### 近期 UI 精緻度修正（跟 Figma 原稿逐項比對後的調整）
+
+這些是設計稿比對後修正的共用元件/樣式，會影響到全部頁面，記錄下來避免之後又被改回舊版：
+
+- **AppHeader**：底色改 `bg-pink-500`（`#FFB2C7`，設計稿命名 "Primary 05"），副標題文字改白色（不是灰色 — 灰色是之前對比度 bug 的錯誤修法），愛心圖示換成乾淨版本
+- **MedicalDisclaimerBanner**：整個重做，從刺眼的深紅色長條改成淺灰卡片（`bg-ink-200`）+ 紅色圓形 i icon + 只有「不」字紅色加粗 + 灰色方形關閉鈕；props 從單一 `message` 改成 `before`/`highlight`/`after` 三段式，方便只標紅中間那個字
+- **BottomTabBar**：改成膠囊型浮動列。五個都是白色圓底圖示，中間「跟我聊聊」固定比較大且明顯往上突出（不是對稱上下凸）；選中的分頁用一整塊粉色膠囊蓋住「圖示+文字」，不是只圈圖示；尺寸整體縮小過（原本太肥，佔畫面比例跟設計稿差太多）
+- **VitalSignCard（Tab01）**：改成雙層卡片效果（`border-pink-400` 框住白底），標題置中加底線。**刻意保留中性顏色，沒有加紅/綠判斷邏輯**——使用者一度要求依數值好壞標紅綠色，但這違反 CLAUDE.md「不用紅色標示異常」鐵則，已確認過維持中性
+- **FloatingAddButton（Tab01 新增鈕）**：改用 `PageContainer` 新的 `#fab` slot，固定在整個手機畫面右下角，不會再跟著內容捲動跑掉
+- **Tab02 破關地圖大改版**：加了 4 個裝飾 blob 背景（`BackgroundBlobs.vue`，共用元件，其他頁要用同款背景可以直接重用）、腳印換成真的腳掌圖示（`IconFootprint.vue`，不是灰點）、版面全面縮小 + 改用 `flex justify-between` 自動撐開間距，而不是寫死 gap 數值——這樣不管螢幕多高都會剛好塞滿一頁不用捲動（**寫死間距在矮螢幕上會爆版面，一定要用彈性撐開的寫法**）
+- **Tab03 新聞影片區**：從灰色 placeholder 換成 `vue3-carousel` 滑動容器 + 真的 YouTube 縮圖（`img.youtube.com/vi/{id}/hqdefault.jpg`），點縮圖開新分頁到 YouTube
 
 ### Tab03 細節（★核心頁，邏輯較複雜）
 
@@ -129,10 +141,11 @@ Tailwind v4，色票定義在 `src/assets/main.css` 的 `@theme` block，對應 
 ## 已知缺口
 
 - **沒有路由守衛**：直接打 `/dashboard`、`/chat`、`/board`、`/account` 等網址可以完全繞過登入流程。MVP demo 階段刻意如此（方便直接測任一頁），正式串接後端後要補上
-- Tab03 建檔流程的兩張新聞縮圖是灰色 placeholder（`NewsAwarenessBanner.vue`），還沒有 Figma 圖片素材
+- Tab03 新聞影片是寫死的兩個 YouTube 影片 ID（`NewsAwarenessBanner.vue` 的 `videos` 陣列），影片下架或要換片要手動改
 - Tab04 便利貼權限簡化成「只有自己／雇主」二選一（單一雇主帳號），規格文件原本想支援指定多個家人聯絡人，等有多聯絡人資料模型再擴充
 - Tab05 樹狀插圖（`CareTreeHeader.vue`）用簡化幾何圖形逼近，頭像是 pravatar.cc 佔位照片，Figma 原稿是手繪風插畫，還沒有可匯出的素材檔
 - 產品名稱曾在不同 Figma 稿打成三種寫法，目前統一用「404: Care Can Be Found」（文法正確版本），之後 Figma 若又有新版本要再對齊
+- Tab02 破關地圖在極短螢幕（< 568px 可視高度，例如很舊的小手機）還是會差一點點空間，600px 以上都確認沒問題
 
 ## 開發與部署
 
