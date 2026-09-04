@@ -28,6 +28,9 @@ db.create_all()
 
 ## API
 
+- Swagger UI: `GET /api/docs/swagger`
+- OpenAPI JSON: `GET /api/docs/openapi.json`
+
 - `GET /api/health`
 - `POST /api/users`，JSON：`{"line_user_id": "U...", "name": "Ada"}`
 - `GET /api/users/<id>`

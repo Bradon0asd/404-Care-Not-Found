@@ -8,7 +8,7 @@ from linebot.v3.messaging import (
     TextMessage,
 )
 
-from app.common.errors import LineConfigurationError
+from app.shared.errors import LineConfigurationError
 
 
 class LineClient:

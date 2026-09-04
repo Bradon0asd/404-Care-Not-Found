@@ -3,13 +3,14 @@ from linebot.v3.exceptions import InvalidSignatureError
 from linebot.v3.webhook import WebhookParser
 from linebot.v3.webhooks import MessageEvent, TextMessageContent
 
-from app.common.errors import InvalidLineSignatureError, LineConfigurationError
-from app.common.response import api_success
+from app.shared.errors import InvalidLineSignatureError, LineConfigurationError
+from app.shared.response import api_success
 from app.line import line_bp
 from app.line.service import handle_text_message
 
 
 @line_bp.post("/webhook")
+@line_bp.doc(summary="Receive LINE webhook events", security=[{"LineSignature": []}])
 def webhook():
     secret = current_app.config["LINE_CHANNEL_SECRET"]
     if not secret:

@@ -1,6 +1,6 @@
 from sqlalchemy.exc import IntegrityError
 
-from app.common.errors import UserAlreadyExistsError, UserNotFoundError, UserPairingError
+from app.shared.errors import UserAlreadyExistsError, UserNotFoundError, UserPairingError
 from app.extensions import db
 from app.models import User, UserRole
 

@@ -1,0 +1,36 @@
+from datetime import datetime, timezone
+
+from app.extensions import db
+
+
+def utc_now():
+    return datetime.now(timezone.utc)
+
+
+class Diary(db.Model):
+    __tablename__ = "diaries"
+
+    id = db.Column(db.Integer, primary_key=True)
+    creator_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=False,
+        index=True,
+    )
+    title = db.Column(db.String(100), nullable=True)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=utc_now,
+        server_default=db.func.current_timestamp(),
+    )
+    updated_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=utc_now,
+        onupdate=utc_now,
+        server_default=db.func.current_timestamp(),
+    )
+
+    creator = db.relationship("User", back_populates="diaries")

@@ -1,10 +1,12 @@
 from app.models.user import CareRecipient, User, UserRole
-from app.models.note import DiaryEntry, StickyNote, StickyNotePriority
+from app.models.diary import Diary
+from app.models.sticky_note import StickyNote, StickyNoteCategory, StickyNotePriority
 
 __all__ = [
     "CareRecipient",
-    "DiaryEntry",
+    "Diary",
     "StickyNote",
+    "StickyNoteCategory",
     "StickyNotePriority",
     "User",
     "UserRole",

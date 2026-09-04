@@ -31,6 +31,29 @@ def build_database_uri():
 
 
 class Config:
+    API_TITLE = "Hackathon Backend API"
+    API_VERSION = "v1"
+    OPENAPI_VERSION = "3.0.3"
+    OPENAPI_URL_PREFIX = "/api/docs"
+    OPENAPI_JSON_PATH = "openapi.json"
+    OPENAPI_SWAGGER_UI_PATH = "/swagger"
+    OPENAPI_SWAGGER_UI_URL = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
+    API_SPEC_OPTIONS = {
+        "components": {
+            "securitySchemes": {
+                "UserIdHeader": {
+                    "type": "apiKey",
+                    "in": "header",
+                    "name": "X-User-Id",
+                },
+                "LineSignature": {
+                    "type": "apiKey",
+                    "in": "header",
+                    "name": "X-Line-Signature",
+                },
+            }
+        }
+    }
     SQLALCHEMY_DATABASE_URI = build_database_uri()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     LINE_CHANNEL_ACCESS_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN", "")

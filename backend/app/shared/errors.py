@@ -22,6 +22,26 @@ class UserPairingError(AppError):
     code = "USER_PAIRING_ERROR"
 
 
+class AuthenticationError(AppError):
+    status_code = 401
+    code = "AUTHENTICATION_REQUIRED"
+
+
+class PermissionDeniedError(AppError):
+    status_code = 403
+    code = "PERMISSION_DENIED"
+
+
+class DiaryNotFoundError(AppError):
+    status_code = 404
+    code = "DIARY_NOT_FOUND"
+
+
+class StickyNoteNotFoundError(AppError):
+    status_code = 404
+    code = "STICKY_NOTE_NOT_FOUND"
+
+
 class LineConfigurationError(AppError):
     status_code = 503
     code = "LINE_NOT_CONFIGURED"

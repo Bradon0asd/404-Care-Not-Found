@@ -63,10 +63,12 @@ class User(db.Model):
     sticky_notes = db.relationship(
         "StickyNote",
         back_populates="creator",
+        lazy="select",
     )
-    diary_entries = db.relationship(
-        "DiaryEntry",
+    diaries = db.relationship(
+        "Diary",
         back_populates="creator",
+        lazy="select",
     )
 
     @property
