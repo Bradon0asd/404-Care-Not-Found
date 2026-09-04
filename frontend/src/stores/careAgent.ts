@@ -34,8 +34,9 @@ function welcomeMessage(): ChatMessage {
 }
 
 export const useCareAgentStore = defineStore('careAgent', () => {
-  // Seeded so /chat lands on the daily home screen during dev; the
-  // build flow (/chat/intro) is still reachable directly by URL.
+  // Seeded so /chat shows the daily view by default during dev; use
+  // the "模擬首次使用畫面" link on that page to null this out and see
+  // the build flow instead.
   const agent = ref<CareAgent | null>({
     systemPrompt: '你是一位來自印尼的專業照護員，正在照顧一位 90 歲、有阿茲海默症的女性病患。',
     temperature: 0.3,

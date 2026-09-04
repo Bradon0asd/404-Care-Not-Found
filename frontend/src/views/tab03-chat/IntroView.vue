@@ -7,8 +7,17 @@ import BaseButton from '@/components/common/BaseButton.vue'
 import NewsAwarenessBanner from '@/components/tab03-chat/NewsAwarenessBanner.vue'
 import FamilyIllustration from '@/components/auth/FamilyIllustration.vue'
 import IntroStepCard from '@/components/tab03-chat/IntroStepCard.vue'
+import DailyChatHome from '@/components/tab03-chat/DailyChatHome.vue'
+import { useCareAgentStore } from '@/stores/careAgent'
 
 const router = useRouter()
+const store = useCareAgentStore()
+
+// Dev-only: lets you preview the first-time build flow without a real
+// reset/logout feature. Only clears the agent, not chat rooms/moods.
+function simulateFirstLogin() {
+  store.agent = null
+}
 </script>
 
 <template>
@@ -18,7 +27,7 @@ const router = useRouter()
       <NewsAwarenessBanner />
     </template>
 
-    <div class="flex-1 space-y-5 px-5 py-5">
+    <div v-if="!store.agent" class="flex-1 space-y-5 px-5 py-5">
       <div class="flex justify-center">
         <FamilyIllustration />
       </div>
@@ -44,6 +53,16 @@ const router = useRouter()
       <IntroStepCard :number="4"><p>查看 Care Agent 回應與紀錄</p></IntroStepCard>
       <IntroStepCard :number="5"><p>歷程回顧</p></IntroStepCard>
     </div>
+
+    <template v-else>
+      <div class="flex items-center justify-between px-5 pt-3">
+        <p class="text-xs text-ink-600">你的 Care Agent 已經準備好了，陪你一起聊聊今天的心情</p>
+        <button type="button" class="shrink-0 text-[11px] text-ink-500 underline" @click="simulateFirstLogin">
+          模擬首次使用畫面
+        </button>
+      </div>
+      <DailyChatHome />
+    </template>
 
     <template #footer><BottomTabBar /></template>
   </PageContainer>

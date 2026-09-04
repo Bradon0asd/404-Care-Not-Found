@@ -46,11 +46,6 @@ const router = createRouter({
     {
       path: '/chat',
       name: 'tab03-chat',
-      component: () => import('@/views/tab03-chat/ChatHomeView.vue'),
-    },
-    {
-      path: '/chat/intro',
-      name: 'tab03-chat-intro',
       component: () => import('@/views/tab03-chat/IntroView.vue'),
     },
     {

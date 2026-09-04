@@ -14,8 +14,11 @@ Vue 3（`<script setup>` + TypeScript）、Vite、Vue Router、Pinia、Tailwind 
 - Tab01 照護紀錄 Dashboard（`views/tab01-dashboard/`）：儀錶板（6 張生命徵象卡）＋ 每日排程表（平日/周末切換）＋ 新增排程表單
 - Tab02 秘密日記（`views/tab02-diary/`）：破關地圖（Day 氣泡路徑，今日高亮）＋ 日記撰寫頁（標題/民國曆日期/內容/單張圖片/AI 語音辨識按鈕待接 ASR/僅自己或分享給 LINE 好友）
 - Tab03 跟我聊聊（`views/tab03-chat/`）★核心頁，分兩種模式：
-  - 建檔模式（僅首次）：說明頁 → System Prompt + Temperature + Guardrail 設定 → 一次性 5 題心理基準線問卷（單選、選完自動跳下一題，第五題才是「生成」按鈕）→ 完成後寫入 `stores/careAgent.ts`
-  - 對話模式（每天）：`/chat` 首頁是心情天氣打卡 + 聊天室泡泡列表（浮動話題泡泡＝舊聊天室，中央大泡泡＝開新聊天），點進去是實際對話頁（文字輸入＋語音按鈕，AI 回覆目前是 stub，見下方「跟後端串接」）
+  - `/chat`（IntroView）是持久首頁，**兩支新聞影片永遠顯示在最上面**，下方內容依是否已建檔切換：
+    - 未建檔：「建置你的第一個 Care Agent」5 步驟說明 + CTA
+    - 已建檔：`DailyChatHome.vue`（心情天氣打卡 + 聊天室泡泡列表，浮動話題泡泡＝舊聊天室，中央大泡泡＝開新聊天）；頁面右上角有「模擬首次使用畫面」連結，點下去會把 `store.agent` 設回 `null`，方便demo/測試不用真的清資料庫
+  - 建檔流程（僅未建檔時會走到）：`/chat/setup`（System Prompt + Temperature + Guardrail）→ `/chat/baseline` → `/chat/baseline/questions`（一次性 5 題心理基準線問卷，單選、選完自動跳下一題，第五題才是「生成」按鈕）→ 完成後寫入 `stores/careAgent.ts`，導回 `/chat` 就會看到已建檔的畫面
+  - 點聊天室泡泡進 `/chat/room/:id`（文字輸入＋語音按鈕，AI 回覆目前是 stub，見下方「跟後端串接」）
 - Tab04 便利貼牆（`views/tab04-board/`）：清單頁（狀態/層級篩選、點卡片彈出放大版便利貼，深色遮罩、點外部關閉）＋ 新增頁（三色層級選擇、標題/標籤類別 tap-to-edit、內容+語音+圖片、「設定便利貼權限➨發布便利貼」開權限彈窗，彈窗選完才真的送出）
 - Tab05 帳戶管理（`views/tab05-account/`）：使用者卡片（樹的插圖是簡化版，實際插圖等 Figma 匯出素材）+ 變更語言（彈窗，共用 onboarding store 的語言狀態）/ 登出 / 訂閱方案三個入口，訂閱方案頁是免費/小資/進階三張方案卡（文案對應 CLAUDE.md 既有的定價表）
 
@@ -33,8 +36,7 @@ Vue 3（`<script setup>` + TypeScript）、Vite、Vue Router、Pinia、Tailwind 
 | `/dashboard/add-schedule` | AddScheduleView | 新增排程表單，寫回 schedule store |
 | `/diary` | DiaryMapView | Tab02，破關地圖 |
 | `/diary/:day` | DiaryEntryView | 單日日記撰寫/編輯頁 |
-| `/chat` | ChatHomeView | Tab03 首頁，心情打卡 + 聊天室列表；沒有 Agent 時自動導去 `/chat/intro` |
-| `/chat/intro` | IntroView | 首次使用說明頁 |
+| `/chat` | IntroView | Tab03 持久首頁，影片固定顯示，下方依建檔狀態切換說明頁／DailyChatHome |
 | `/chat/setup` | AgentSetupView | 建檔 Step1：System Prompt / Temperature / Guardrail |
 | `/chat/baseline` | BaselineIntroView | 建檔 Step2 任務入口 |
 | `/chat/baseline/questions` | BaselineQuestionsView | 5 題一次性基準線問卷 |
@@ -55,7 +57,7 @@ src/
     auth/         登入/邀請碼流程專用元件
     tab01-dashboard/  Tab01 專用元件（生命徵象卡、排程表格）
     tab02-diary/      Tab02 專用元件（日記氣泡、統計列、腳印裝飾）
-    tab03-chat/       Tab03 專用元件（聊天泡泡、心情天氣、基準線問卷卡、Temperature/Guardrail 設定）
+    tab03-chat/       Tab03 專用元件（DailyChatHome 已建檔首頁內容、聊天泡泡、心情天氣、基準線問卷卡、Temperature/Guardrail 設定）
     tab04-board/      Tab04 專用元件（便利貼卡片、堆疊便利貼圖示、放大版便利貼彈窗、權限彈窗）
     tab05-account/    Tab05 專用元件（樹狀使用者卡片、分支導覽連結、方案卡片、語言彈窗）
   views/        每個路由對應一個 view，負責組裝 components + 串 store
