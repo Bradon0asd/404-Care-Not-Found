@@ -3,8 +3,9 @@ from app.extensions import db
 from app.models import Diary
 
 
-def create_diary(*, current_user, title=None, content):
-    diary = Diary(creator_id=current_user.id, title=title, content=content)
+
+def create_diary(*, current_user, title=None, content, is_private):
+    diary = Diary(creator_id=current_user.id, title=title, content=content, is_private=is_private)
     db.session.add(diary)
     db.session.commit()
     return diary
@@ -28,7 +29,7 @@ def get_diary(*, current_user, diary_id):
 
 def update_diary(*, current_user, diary_id, **changes):
     diary = get_diary(current_user=current_user, diary_id=diary_id)
-    for field in ("title", "content"):
+    for field in ("title", "content", "is_private"):
         if field in changes:
             setattr(diary, field, changes[field])
     db.session.commit()

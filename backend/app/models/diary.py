@@ -19,6 +19,12 @@ class Diary(db.Model):
     )
     title = db.Column(db.String(100), nullable=True)
     content = db.Column(db.Text, nullable=False)
+    is_private = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=True,
+        server_default=db.true(),
+    )
     created_at = db.Column(
         db.DateTime,
         nullable=False,

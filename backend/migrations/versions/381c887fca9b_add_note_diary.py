@@ -23,6 +23,7 @@ def upgrade():
         sa.Column('creator_id', sa.Integer(), nullable=False),
         sa.Column('title', sa.String(length=100), nullable=True),
         sa.Column('content', sa.Text(), nullable=False),
+        sa.Column('is_private', sa.Boolean(), server_default=sa.true(), nullable=False),
         sa.Column('created_at', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
         sa.Column('updated_at', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
         sa.ForeignKeyConstraint(['creator_id'], ['users.id'], ),
