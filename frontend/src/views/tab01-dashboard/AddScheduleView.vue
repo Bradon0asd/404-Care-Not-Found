@@ -107,7 +107,7 @@ function submit() {
           v-model="note"
           rows="5"
           :placeholder="$t('簡單概述 {name} 的日常紀錄', { name: account.careRecipient.name })"
-          class="w-full resize-none bg-transparent px-5 text-sm text-ink-950 outline-none placeholder:text-ink-500"
+          class="w-full resize-none bg-transparent p-0 text-sm text-ink-950 outline-none placeholder:text-ink-500"
         ></textarea>
       </label>
 

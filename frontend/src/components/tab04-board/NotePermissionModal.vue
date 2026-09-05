@@ -2,6 +2,9 @@
 import { ref } from 'vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import type { NoteVisibility } from '@/stores/board'
+import { useAccountStore } from '@/stores/account'
+
+const account = useAccountStore()
 
 defineProps<{ open: boolean }>()
 const emit = defineEmits<{ close: []; publish: [NoteVisibility] }>()
@@ -34,7 +37,7 @@ function publish() {
           class="flex items-center gap-2 rounded-xl border border-ink-400 px-4 py-3 text-sm text-ink-950"
         >
           <input v-model="visibility" type="radio" value="employer" class="accent-pink-500" />{{
-            $t('雇主')
+            $t('雇主：{name}', { name: account.employer.name })
           }}</label
         >
 

@@ -76,7 +76,7 @@ frontend/
 - **MedicalDisclaimerBanner**：整個重做，從刺眼的深紅色長條改成淺灰卡片（`bg-ink-200`）+ 紅色圓形 i icon + 只有「不」字紅色加粗 + 灰色方形關閉鈕；props 從單一 `message` 改成 `before`/`highlight`/`after` 三段式，方便只標紅中間那個字
 - **VitalSignCard（Tab01）**：改成雙層卡片效果（`border-pink-400` 框住白底），標題置中加底線。原本刻意保留中性顏色（不加紅/綠），但後續 Codex 加回 `trendTone` 紅綠標示，見下方「CLAUDE.md 規則變動」
 - **FloatingAddButton（Tab01 新增鈕）**：改用 `PageContainer` 新的 `#fab` slot，固定在整個手機畫面右下角，不會再跟著內容捲動跑掉
-- **NewsAwarenessBanner（Tab03）**：從灰色 placeholder 換成 `vue3-carousel` 滑動容器 + 真的 YouTube 縮圖（`img.youtube.com/vi/{id}/hqdefault.jpg`），點縮圖開新分頁到 YouTube；底色改 `bg-ink-200`、縮圖拿掉圓角，跟 Figma 對齊
+- **NewsAwarenessBanner（Tab03）**：從灰色 placeholder 換成 `vue3-carousel` 滑動容器 + 真的 YouTube 縮圖（`img.youtube.com/vi/{id}/hqdefault.jpg`），點縮圖開新分頁到 YouTube；底色改 `bg-ink-200`（縮圖圓角後續被 Codex 加回來了，見下方「第六輪」）
 - **IntroView（Tab03）**：「你的 Care Agent 已經準備好了」從常駐文字改成可關閉的提示卡（`bg-ink-200` 灰底，非粉色，+ X 按鈕），開發用的「模擬首次使用畫面」連結獨立一行、不受提示卡開關影響
 - **WeatherMoodPicker + 5 個天氣 icon（Tab03）**：選中的天氣圖示現在會從外框變實心（`filled` prop 切換 `fill: none → currentColor`），不再只是變色，跟未選取的區別更明顯
 - **NoteDetailModal（Tab04）**：「普通」（黃色）層級原本用 `bg-accent/30`（30% 透明度），疊在深色遮罩上完全看不清楚文字；改成跟緊急/不重要一樣不透明的 `bg-accent`
@@ -123,6 +123,14 @@ frontend/
 - **`IconLine`**：LINE icon 重畫，改成白底＋綠色線稿的版本
 - **`RoleSelectView`**：標題「歡迎使用照見」拆成兩個字級不同的 `<span>`，印尼文版本字級縮小，避免譯文較長被截斷
 - **`IntroView`**：「建置你的第一個 Care Agent」按鈕加寬、固定高度/字級，同樣是為了容納較長的印尼文按鈕文字
+
+**Codex 改的（第六輪）：**
+
+- **`stores/account.ts` 新增 `employer`（`id`/`name`）欄位**：Tab04 的 `NoteCard`／`NoteDetailModal`／`NotePermissionModal` 原本寫死的「雇主」文字，改成讀 `account.employer.name` 帶真名字（例如「雇主：林小姐」、「林小姐已讀取」），套用第三輪就開始的模式（account.ts 是跨 Tab 佔位字串的資料來源）
+- **`frontend/index.html`**：`favicon.ico`（Vite 預設圖示）換成真的品牌 `favicon.svg`；順手清了 HTML 格式（自closing tag 加 `/>`）
+- **`NewsAwarenessBanner`（Tab03）**：影片縮圖從 `h-24` 加高到 `h-36`，並把圓角加回來（`rounded-lg`）——**跟上面「Claude 改的」那條「縮圖拿掉圓角，跟 Figma 對齊」的記錄不同，目前實際樣式是有圓角的，那條舊紀錄已經過期**
+- **`PlanCard`（Tab05 訂閱方案）**：卡片內容改成 `flex-wrap` 版面避免長文案擠爆，費用數字字級加大（`text-lg` → `text-3xl`）
+- `AddScheduleView` 表單 textarea padding 微調
 
 ### Tab03 細節（★核心頁，邏輯較複雜）
 
@@ -200,7 +208,7 @@ Tailwind v4，色票定義在 `src/assets/main.css` 的 `@theme` block，對應 
   - 聊天室與 System Prompt 的語音輸入都是 stub，等印尼語 ASR
 - Tab04 便利貼（`stores/board.ts`）的「已讀取/尚未讀取」是寫死假資料，實際要對應雇主端 LINE 已讀狀態——**待確認可行性**：LINE Messaging API 目前沒有提供「使用者是否已讀某則推播訊息」的事件或查詢，一般作法是退而求其次用「雇主是否點擊過訊息裡的連結」之類的替代訊號來模擬已讀，需要後端這邊評估怎麼做，不是單純接 webhook 就能拿到
 - Tab05 訂閱方案（`stores/account.ts`）的「變更方案」是 stub，沒有實際付款流程
-- `stores/account.ts` 現在也存了 `careRecipient`／`agentName`，跨 Tab01/Tab03 共用，之後應該對應到「使用者基本資料 + 照顧對象資料」的 API
+- `stores/account.ts` 現在也存了 `careRecipient`／`agentName`／`employer`，跨 Tab01/Tab03/Tab04 共用，之後應該對應到「使用者基本資料 + 照顧對象資料 + 雇主資料」的 API
 - **前後端角色命名不一致**：前端（`stores/onboarding.ts`、`RoleSelectView` 等）用 `caregiver`／`employer`；後端（`backend/app/models/user.py` 的 `UserRole`）用 `nurse`／`owner`。接 API 時要在某一層做映射（`caregiver` ↔ `nurse`、`employer` ↔ `owner`），目前兩邊都還沒有人統一或轉換
 - **UI 介面文字的中/印尼文切換是純前端靜態對照表**（`src/i18n/`），不需要後端翻譯 API。後端真正需要處理的翻譯只有「使用者實際輸入內容」的印尼語→中文（CLAUDE.md 待定技術選型那條），跟這組介面切換是兩回事，不要搞混
 

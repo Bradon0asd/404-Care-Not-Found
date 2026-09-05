@@ -3,6 +3,9 @@ import { computed } from 'vue'
 import NoteStackIcon from './NoteStackIcon.vue'
 import NoteMetaIcon from './NoteMetaIcon.vue'
 import type { StickyNote } from '@/stores/board'
+import { useAccountStore } from '@/stores/account'
+
+const account = useAccountStore()
 
 const props = defineProps<{ note: StickyNote }>()
 defineEmits<{ click: [] }>()
@@ -10,9 +13,9 @@ defineEmits<{ click: [] }>()
 const statusLabel = computed(
   () =>
     ({
-      read: '{雇主}已讀取',
-      unread: '{雇主}尚未讀取',
-      'no-access': '{雇主}未獲得瀏覽權限',
+      read: '{name}已讀取',
+      unread: '{name}尚未讀取',
+      'no-access': '{name}未獲得瀏覽權限',
     })[props.note.employerStatus],
 )
 
@@ -32,7 +35,9 @@ const levelLabel = computed(
         note.demo ? $t(note.tag) : note.tag
       }}</span>
     </NoteStackIcon>
-    <p class="text-[11px] text-ink-600">{{ $t('目前狀態：') }}{{ $t(statusLabel) }}</p>
+    <p class="text-[11px] text-ink-600">
+      {{ $t('目前狀態：') }}{{ $t(statusLabel, { name: account.employer.name }) }}
+    </p>
     <p class="flex w-full items-center gap-2 text-xs leading-5 text-ink-700">
       <NoteMetaIcon kind="title" />
       <span class="min-w-0 truncate"
@@ -42,7 +47,12 @@ const levelLabel = computed(
     <p class="flex items-center gap-2 text-xs leading-5 text-ink-700">
       <NoteMetaIcon kind="permission" />
       <span
-        >{{ $t('權限：') }}{{ $t(note.visibility === 'employer' ? '你、雇主' : '只有你') }}</span
+        >{{ $t('權限：')
+        }}{{
+          $t(note.visibility === 'employer' ? '你、{name}' : '只有你', {
+            name: account.employer.name,
+          })
+        }}</span
       >
     </p>
     <p class="flex items-center gap-2 text-xs leading-5 text-ink-700">

@@ -59,7 +59,7 @@ const collapsed = ref(false)
             :href="`https://youtu.be/${video.youtubeId}`"
             target="_blank"
             rel="noopener noreferrer"
-            class="relative block h-24 w-full overflow-hidden bg-ink-300"
+            class="relative block h-36 w-full overflow-hidden rounded-lg bg-ink-300"
           >
             <img
               :src="`https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`"
