@@ -11,6 +11,7 @@ import IconImage from '@/components/tab02-diary/icons/IconImage.vue'
 import NoteLevelPicker from '@/components/tab04-board/NoteLevelPicker.vue'
 import NotePermissionModal from '@/components/tab04-board/NotePermissionModal.vue'
 import { useBoardStore, type NoteLevel, type NoteVisibility } from '@/stores/board'
+import { uploadImage } from '@/api/uploads'
 
 const router = useRouter()
 const store = useBoardStore()
@@ -20,6 +21,7 @@ const title = ref('')
 const tag = ref('')
 const content = ref('')
 const imageUrl = ref<string | null>(null)
+const imageFile = ref<File | null>(null)
 const permissionModalOpen = ref(false)
 
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -31,7 +33,13 @@ function pickImage() {
 function onImageSelected(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
+  imageFile.value = file
   imageUrl.value = URL.createObjectURL(file)
+}
+
+function clearSelectedImage() {
+  imageUrl.value = null
+  imageFile.value = null
 }
 
 // TODO: wire up once the Indonesian ASR service is available.
@@ -44,13 +52,14 @@ function openPermissionModal() {
   permissionModalOpen.value = true
 }
 
-function publish(visibility: NoteVisibility) {
-  store.addNote({
+async function publish(visibility: NoteVisibility) {
+  const uploadedImageUrl = imageFile.value ? await uploadImage(imageFile.value) : imageUrl.value
+  await store.addNote({
     level: level.value,
     title: title.value,
     tag: tag.value,
     content: content.value,
-    imageUrl: imageUrl.value,
+    imageUrl: uploadedImageUrl,
     visibility,
   })
   permissionModalOpen.value = false
@@ -123,7 +132,7 @@ function publish(visibility: NoteVisibility) {
             type="button"
             class="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-ink-950 text-xs text-white"
             :aria-label="$t('移除圖片')"
-            @click="imageUrl = null"
+            @click="clearSelectedImage"
           >
             ×
           </button>

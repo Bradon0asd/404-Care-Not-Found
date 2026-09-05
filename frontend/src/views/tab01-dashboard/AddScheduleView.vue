@@ -32,9 +32,17 @@ const weekendOptions = [
   { value: 'sun', label: '星期日' },
 ]
 
-function submit() {
+async function submit() {
   if (!note.value.trim()) return
-  scheduleStore.addEntry({ day: day.value, hour: hour.value, activity: note.value.trim() })
+  if (!account.currentCareRecipientId) {
+    await account.loadAccount()
+  }
+  if (!account.currentCareRecipientId) return
+  await scheduleStore.addEntry(account.currentCareRecipientId, {
+    day: day.value,
+    hour: hour.value,
+    activity: note.value.trim(),
+  })
   router.push('/dashboard')
 }
 </script>

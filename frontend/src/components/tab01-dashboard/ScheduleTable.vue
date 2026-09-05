@@ -7,11 +7,18 @@ export interface ScheduleEntry {
   day: 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'
   hour: number
   activity: string
+  id?: number
+  description?: string | null
 }
 
 const props = defineProps<{
   careRecipientName: string
   entries: ScheduleEntry[]
+}>()
+
+defineEmits<{
+  edit: [ScheduleEntry]
+  delete: [ScheduleEntry]
 }>()
 
 const dayType = ref<'weekday' | 'weekend'>('weekday')
@@ -30,8 +37,8 @@ const weekendCols = [
 
 const columns = computed(() => (dayType.value === 'weekday' ? weekdayCols : weekendCols))
 
-function activityFor(day: string, hour: number) {
-  return props.entries.find((e) => e.day === day && e.hour === hour)?.activity
+function entryFor(day: string, hour: number) {
+  return props.entries.find((e) => e.day === day && e.hour === hour)
 }
 </script>
 
@@ -83,10 +90,34 @@ function activityFor(day: string, hour: number) {
               <td
                 v-for="(col, index) in columns"
                 :key="col.day"
-                class="border-r border-accent px-1 py-2 font-medium last:border-r-0"
+                class="border-r border-accent px-1 py-1 font-medium last:border-r-0"
                 :class="index % 2 === 1 ? 'bg-accent' : 'bg-white'"
               >
-                {{ $t(activityFor(col.day, hour) ?? '') }}
+                <div v-if="entryFor(col.day, hour)" class="flex flex-col items-center gap-1">
+                  <button
+                    type="button"
+                    class="min-h-6 max-w-full truncate rounded-md px-1.5 text-[11px] text-ink-950 hover:bg-white/70"
+                    @click="$emit('edit', entryFor(col.day, hour)!)"
+                  >
+                    {{ $t(entryFor(col.day, hour)!.activity) }}
+                  </button>
+                  <div class="flex gap-1">
+                    <button
+                      type="button"
+                      class="rounded bg-white/70 px-1.5 py-0.5 text-[10px] text-ink-700"
+                      @click="$emit('edit', entryFor(col.day, hour)!)"
+                    >
+                      {{ $t('編輯') }}
+                    </button>
+                    <button
+                      type="button"
+                      class="rounded bg-red-100 px-1.5 py-0.5 text-[10px] text-red-600"
+                      @click="$emit('delete', entryFor(col.day, hour)!)"
+                    >
+                      {{ $t('刪除') }}
+                    </button>
+                  </div>
+                </div>
               </td>
             </tr>
           </template>

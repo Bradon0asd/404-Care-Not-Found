@@ -1,5 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import {
+  createNote,
+  deleteNote,
+  listNotes,
+  updateNote,
+  type StickyNoteDto,
+  type StickyNotePriority,
+} from '@/api/notes'
 
 export type NoteLevel = 'urgent' | 'normal' | 'minor'
 export type NoteVisibility = 'private' | 'employer'
@@ -17,84 +25,114 @@ export interface StickyNote {
   employerStatus: EmployerReadStatus
 }
 
+const PRIORITY_TO_BACKEND: Record<NoteLevel, StickyNotePriority> = {
+  urgent: 'urgent',
+  normal: 'normal',
+  minor: 'low',
+}
+
+const PRIORITY_FROM_BACKEND: Record<StickyNotePriority, NoteLevel> = {
+  urgent: 'urgent',
+  normal: 'normal',
+  low: 'minor',
+}
+
+function toNote(note: StickyNoteDto): StickyNote {
+  const visibility: NoteVisibility = note.is_private ? 'private' : 'employer'
+  return {
+    id: String(note.id),
+    level: PRIORITY_FROM_BACKEND[note.priority],
+    title: note.title,
+    tag: note.category ?? 'other',
+    content: note.content,
+    imageUrl: note.images[0] ?? null,
+    visibility,
+    employerStatus: visibility === 'private' ? 'no-access' : note.is_reviewed ? 'read' : 'unread',
+  }
+}
+
 export const useBoardStore = defineStore('board', () => {
-  const notes = ref<StickyNote[]>([
-    {
-      id: 'seed-1',
-      level: 'urgent',
-      title: '我印尼家人上週生病住院了，想跟雇主請假回去看看',
-      tag: '家人生病',
-      content: '我印尼家人上週生病住院了，想跟雇主請假回去看看，不確定假期怎麼安排比較好。',
-      imageUrl: null,
-      visibility: 'employer',
-      employerStatus: 'read',
-    },
-    {
-      id: 'seed-2',
-      level: 'urgent',
-      title: '我印尼家人上週生病住院了，想跟雇主請假回去看看',
-      tag: '家人生病',
-      content: '我印尼家人上週生病住院了，想跟雇主請假回去看看，不確定假期怎麼安排比較好。',
-      imageUrl: null,
-      visibility: 'employer',
-      employerStatus: 'unread',
-    },
-    {
-      id: 'seed-3',
-      level: 'urgent',
-      title: '我印尼家人上週生病住院了，想跟雇主請假回去看看',
-      tag: '家人生病',
-      content: '我印尼家人上週生病住院了，想跟雇主請假回去看看，不確定假期怎麼安排比較好。',
-      imageUrl: null,
-      visibility: 'private',
-      employerStatus: 'no-access',
-    },
-    {
-      id: 'seed-4',
-      level: 'normal',
-      title: '禮拜三想請假',
-      tag: '請假',
-      content:
-        '我印尼非常好的朋友來臺灣旅遊，他們很久才來一次，我想請教他們出去玩，不知道可不可以。',
-      imageUrl: null,
-      visibility: 'private',
-      employerStatus: 'no-access',
-    },
-    {
-      id: 'seed-5',
-      level: 'urgent',
-      title: '阿嬤睡不著一直吵著要下床',
-      tag: '照護',
-      content: '阿嬤今天9:00開始就一直吵著要下床，一路吵到下午15:00自己累了睡著。',
-      imageUrl: null,
-      visibility: 'employer',
-      employerStatus: 'unread',
-    },
-    {
-      id: 'seed-6',
-      level: 'normal',
-      title: '超市紙尿布補貨',
-      tag: '額外開銷',
-      content: '家裡紙尿布快用完了，想跟雇主說一聲要補貨。',
-      imageUrl: null,
-      visibility: 'employer',
-      employerStatus: 'read',
-    },
-  ])
+  const notes = ref<StickyNote[]>([])
+  const loading = ref(false)
+  const saving = ref(false)
+  const error = ref<string | null>(null)
 
-  notes.value.forEach((note) => {
-    note.demo = true
-  })
-
-  function addNote(note: Omit<StickyNote, 'id' | 'employerStatus'>) {
-    const id = crypto.randomUUID()
-    notes.value.unshift({
-      ...note,
-      id,
-      employerStatus: note.visibility === 'employer' ? 'unread' : 'no-access',
-    })
-    return id
+  async function loadNotes() {
+    loading.value = true
+    error.value = null
+    try {
+      notes.value = (await listNotes()).map(toNote)
+      return notes.value
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to load notes'
+      throw err
+    } finally {
+      loading.value = false
+    }
   }
 
-  return { notes, addNote }
+  async function addNote(note: Omit<StickyNote, 'id' | 'employerStatus'>) {
+    saving.value = true
+    error.value = null
+    try {
+      const saved = toNote(
+        await createNote({
+          title: note.title.trim() || note.content.trim().slice(0, 40),
+          content: note.content.trim(),
+          category: note.tag.trim() ? 'other' : null,
+          priority: PRIORITY_TO_BACKEND[note.level],
+          images: note.imageUrl ? [note.imageUrl] : [],
+          is_private: note.visibility === 'private',
+        }),
+      )
+      notes.value.unshift(saved)
+      return saved.id
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to save note'
+      throw err
+    } finally {
+      saving.value = false
+    }
+  }
+
+  async function editNote(note: StickyNote) {
+    saving.value = true
+    error.value = null
+    try {
+      const saved = toNote(
+        await updateNote(Number(note.id), {
+          title: note.title.trim() || note.content.trim().slice(0, 40),
+          content: note.content.trim(),
+          category: note.tag.trim() ? 'other' : null,
+          priority: PRIORITY_TO_BACKEND[note.level],
+          images: note.imageUrl ? [note.imageUrl] : [],
+          is_private: note.visibility === 'private',
+        }),
+      )
+      const index = notes.value.findIndex((item) => item.id === note.id)
+      if (index >= 0) notes.value[index] = saved
+      return saved
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to update note'
+      throw err
+    } finally {
+      saving.value = false
+    }
+  }
+
+  async function removeNote(note: StickyNote) {
+    saving.value = true
+    error.value = null
+    try {
+      await deleteNote(Number(note.id))
+      notes.value = notes.value.filter((item) => item.id !== note.id)
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to delete note'
+      throw err
+    } finally {
+      saving.value = false
+    }
+  }
+
+  return { notes, loading, saving, error, loadNotes, addNote, editNote, removeNote }
 })

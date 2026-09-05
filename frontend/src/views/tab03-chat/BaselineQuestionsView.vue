@@ -54,8 +54,12 @@ function goBack() {
   currentIndex.value--
 }
 
-function submit() {
-  store.completeBaseline(answers.value as number[])
+async function submit() {
+  const payload = questions.map((question, index) => ({
+    key: `q${index + 1}`,
+    answer: question.options[answers.value[index] ?? 0] ?? '',
+  }))
+  await store.completeBaseline(payload)
   router.push('/chat')
 }
 </script>

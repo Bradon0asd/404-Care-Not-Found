@@ -11,9 +11,11 @@ import StepProgressIndicator from '@/components/tab03-chat/StepProgressIndicator
 import TemperatureSlider from '@/components/tab03-chat/TemperatureSlider.vue'
 import GuardrailField from '@/components/tab03-chat/GuardrailField.vue'
 import { useCareAgentStore } from '@/stores/careAgent'
+import { useAccountStore } from '@/stores/account'
 
 const router = useRouter()
 const store = useCareAgentStore()
+const account = useAccountStore()
 
 const systemPrompt = ref('')
 const temperature = ref(0)
@@ -24,8 +26,13 @@ function startVoiceInput() {
   console.info('System Prompt 語音輸入 — 待接 ASR 服務')
 }
 
-function next() {
-  store.createAgent({
+async function next() {
+  if (!account.currentCareRecipientId) {
+    await account.loadAccount()
+  }
+  if (!account.currentCareRecipientId) return
+  await store.createAgent({
+    careRecipientId: account.currentCareRecipientId,
     systemPrompt: systemPrompt.value,
     temperature: temperature.value,
     guardrail: guardrail.value,

@@ -17,8 +17,8 @@ const aboveCount = computed(() => Math.ceil(store.chatRooms.length / 2))
 const aboveRooms = computed(() => store.chatRooms.slice(0, aboveCount.value))
 const belowRooms = computed(() => store.chatRooms.slice(aboveCount.value))
 
-function logMood(weather: Weather) {
-  store.logMood(weather)
+async function logMood(weather: Weather) {
+  await store.logMood(weather)
   clearTimeout(noticeTimer)
   showMoodNotice.value = true
   noticeTimer = setTimeout(() => {
@@ -30,8 +30,8 @@ function openRoom(id: string) {
   router.push(`/chat/room/${id}`)
 }
 
-function startNewChat() {
-  const id = store.createRoom()
+async function startNewChat() {
+  const id = await store.createRoom()
   router.push(`/chat/room/${id}`)
 }
 </script>

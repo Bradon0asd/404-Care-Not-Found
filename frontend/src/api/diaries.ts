@@ -1,4 +1,5 @@
-import { del, get, patch, post, postForm } from './client'
+import { del, get, patch, post } from './client'
+import { uploadImage } from './uploads'
 
 export interface DiaryDto {
   id: number
@@ -37,8 +38,5 @@ export function deleteDiary(id: number) {
 }
 
 export async function uploadDiaryImage(file: File) {
-  const formData = new FormData()
-  formData.append('file', file)
-  const data = await postForm<{ image_url: string }>('/api/uploads/image', formData)
-  return data.image_url
+  return uploadImage(file)
 }

@@ -9,6 +9,7 @@ import BaseButton from '@/components/common/BaseButton.vue'
 import ExpandableSection from '@/components/common/ExpandableSection.vue'
 import FamilyIllustration from '@/components/auth/FamilyIllustration.vue'
 import InviteCodeModal from '@/components/auth/InviteCodeModal.vue'
+import { createInvite } from '@/api/invites'
 
 const router = useRouter()
 const store = useOnboardingStore()
@@ -17,6 +18,7 @@ const auth = useAuthStore()
 const modalOpen = ref(false)
 const saving = ref(false)
 const failed = ref(false)
+const inviteLink = ref('')
 
 async function generateInviteCode() {
   if (saving.value) return
@@ -26,8 +28,9 @@ async function generateInviteCode() {
     // Handing out the invite is all an employer sets up here, so it is the moment
     // the account counts as registered and later logins skip this page.
     await auth.completeOnboarding({})
-    const code = crypto.randomUUID().slice(0, 8)
-    store.setInviteCode(code)
+    const invite = await createInvite()
+    store.setInviteCode(invite.code)
+    inviteLink.value = invite.invite_url
     modalOpen.value = true
   } catch {
     failed.value = true
@@ -36,7 +39,9 @@ async function generateInviteCode() {
   }
 }
 
-const inviteLink = () => `${window.location.origin}/auth/role?invite=${store.inviteCode}`
+function fallbackInviteLink() {
+  return `${window.location.origin}/auth/role?invite=${store.inviteCode}`
+}
 </script>
 
 <template>
@@ -62,6 +67,10 @@ const inviteLink = () => `${window.location.origin}/auth/role?invite=${store.inv
       </div>
     </div>
 
-    <InviteCodeModal :open="modalOpen" :invite-link="inviteLink()" @close="modalOpen = false" />
+    <InviteCodeModal
+      :open="modalOpen"
+      :invite-link="inviteLink || fallbackInviteLink()"
+      @close="modalOpen = false"
+    />
   </PageContainer>
 </template>

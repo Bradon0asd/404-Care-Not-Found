@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import PageContainer from '@/components/layout/PageContainer.vue'
@@ -35,6 +35,20 @@ const filteredNotes = computed(() =>
       (!levelFilter.value || n.level === levelFilter.value),
   ),
 )
+
+onMounted(() => {
+  void store.loadNotes()
+})
+
+async function saveNote(note: StickyNote) {
+  const saved = await store.editNote(note)
+  activeNote.value = saved
+}
+
+async function deleteNote(note: StickyNote) {
+  await store.removeNote(note)
+  activeNote.value = null
+}
 </script>
 
 <template>
@@ -56,7 +70,12 @@ const filteredNotes = computed(() =>
       />
     </div>
 
-    <NoteDetailModal :note="activeNote" @close="activeNote = null" />
+    <NoteDetailModal
+      :note="activeNote"
+      @close="activeNote = null"
+      @save="saveNote"
+      @delete="deleteNote"
+    />
     <template #fab><AddNoteButton @click="router.push('/board/new')" /></template>
     <template #footer><BottomTabBar /></template>
   </PageContainer>

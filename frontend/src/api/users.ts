@@ -10,6 +10,10 @@ export function fetchCurrentUser() {
   return get<CurrentUser>('/api/users/me')
 }
 
+export function fetchUser(id: number) {
+  return get<CurrentUser>(`/api/users/${id}`)
+}
+
 export function updateCurrentUserProfile(payload: { name?: string; language?: string }) {
   return post<CurrentUser>('/api/users/me/onboarding', payload)
 }

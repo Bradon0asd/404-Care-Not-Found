@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import PageContainer from '@/components/layout/PageContainer.vue'
 import ChatRoomHeader from '@/components/tab03-chat/ChatRoomHeader.vue'
@@ -13,13 +13,18 @@ const store = useCareAgentStore()
 
 const room = computed(() => store.roomById(route.params.id as string))
 
-if (!room.value) {
-  router.replace('/chat')
-}
+onMounted(async () => {
+  if (room.value) return
+  try {
+    await store.loadRoom(route.params.id as string)
+  } catch {
+    router.replace('/chat')
+  }
+})
 
-function send(text: string) {
+async function send(text: string) {
   if (!room.value) return
-  store.sendMessage(room.value.id, text)
+  await store.sendMessage(room.value.id, text)
 }
 </script>
 

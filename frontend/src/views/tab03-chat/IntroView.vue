@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import PageContainer from '@/components/layout/PageContainer.vue'
@@ -14,6 +14,13 @@ const router = useRouter()
 const store = useCareAgentStore()
 
 const showReadyNotice = ref(true)
+
+onMounted(async () => {
+  const agent = await store.loadAgent()
+  if (agent) {
+    await store.loadRooms()
+  }
+})
 
 // Dev-only: lets you preview the first-time build flow without a real
 // reset/logout feature. Only clears the agent, not chat rooms/moods.
