@@ -146,6 +146,7 @@ frontend/
 **Claude 改的（路由邏輯）：**
 
 - **看護登入後預設頁面改為 Tab03**：`CaregiverOnboardingView.vue` 的 `startUsing()`（onboarding 完成「開始使用」按鈕）從 `router.push('/dashboard')` 改成 `router.push('/chat')`，呼應核心頁是 Tab03 跟我聊聊，不是 Tab01 儀錶板
+- **`stores/schedule.ts` 假資料加多**：原本平日只有「吃胃藥/復健/公廟拜拜」寥寥幾筆，改成平日（一～五）、周末（六日）各自完整的一天流程（起床盥洗→服藥→量血壓→復健運動或社區日照中心→午餐/午休→點心→散步→晚餐服藥→陪伴看電視），周末換成較晚起床、公廟拜拜/家人來訪等不同安排，看起來更像真的排程表；新增的活動字串同步補上 `id.ts` 印尼文翻譯
 
 **Codex 改的（第九輪）：**
 
