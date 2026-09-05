@@ -41,7 +41,7 @@ function openDatePicker(event: MouseEvent) {
 
 function updateDate(event: Event) {
   const input = event.currentTarget as HTMLInputElement
-  if (input.value && input.validity.valid) entry.date = input.value
+  if (input.value === diaryStore.todayDate() && input.validity.valid) entry.date = input.value
   else input.value = entry.date
 }
 
@@ -68,6 +68,7 @@ function startVoiceInput() {
 }
 
 function save(visibility: 'private' | 'shared') {
+  if (!diaryStore.canWriteDay(day) || entry.date !== diaryStore.todayDate()) return
   entry.visibility = visibility
   router.push('/diary')
 }
@@ -110,6 +111,8 @@ function save(visibility: 'private' | 'shared') {
           type="date"
           :aria-label="$t('日記日期')"
           :value="entry.date"
+          :min="diaryStore.todayDate()"
+          :max="diaryStore.todayDate()"
           class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
           @click="openDatePicker"
           @change="updateDate"

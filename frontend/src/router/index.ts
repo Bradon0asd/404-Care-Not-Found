@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import RoleSelectView from '@/views/auth/RoleSelectView.vue'
+import { useDiaryStore } from '@/stores/diary'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -93,6 +94,12 @@ const router = createRouter({
       redirect: '/',
     },
   ],
+})
+
+router.beforeEach((to) => {
+  if (to.name === 'tab02-diary-entry' && !useDiaryStore().canWriteDay(Number(to.params.day))) {
+    return { name: 'tab02-diary', replace: true }
+  }
 })
 
 export default router

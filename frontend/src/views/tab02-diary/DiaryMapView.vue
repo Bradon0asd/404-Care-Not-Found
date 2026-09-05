@@ -36,6 +36,7 @@ const footsteps = computed(() =>
 )
 
 function openDay(day: number) {
+  if (!diaryStore.canWriteDay(day)) return
   router.push(`/diary/${day}`)
 }
 </script>
@@ -63,6 +64,7 @@ function openDay(day: number) {
         >
           <DiaryDayBubble
             :day="item.day"
+            :disabled="!diaryStore.canWriteDay(item.day)"
             align="center"
             :highlighted="item.day === diaryStore.arrivalDay"
             @open="openDay(item.day)"

@@ -61,7 +61,7 @@ frontend/
 |---|---|---|
 | 登入/邀請碼 | 完成 | 選身分（看護/雇主）→ LINE 註冊（只是導頁，未接真的 OAuth）→ 看護填基本資訊 / 雇主生成邀請碼 |
 | Tab01 照護紀錄 | 完成 | 儀錶板（6 張生命徵象卡）＋ 每日排程表（平日/周末）＋ 新增排程表單 |
-| Tab02 秘密日記 | 完成 | 破關地圖（Day 氣泡路徑）＋ 日記撰寫頁（民國曆日期、AI 語音辨識為 stub、僅自己或分享給 LINE 好友） |
+| Tab02 秘密日記 | 完成 | 破關地圖（Day 氣泡路徑，只有今天可以點開寫，過去/未來的天數是灰色 disabled）＋ 日記撰寫頁（民國曆日期、AI 語音辨識為 stub、僅自己或分享給 LINE 好友） |
 | Tab03 跟我聊聊 ★核心 | 完成 | 見下方「Tab03 細節」 |
 | Tab04 便利貼牆 | 完成 | 清單頁（篩選、點卡片放大彈窗）＋ 新增頁（三色層級、設定權限彈窗、彈窗內才真的送出） |
 | Tab05 帳戶管理 | 完成 | 樹狀使用者卡片（變更語言/登出/訂閱方案三分支）＋ 訂閱方案頁 |
@@ -141,6 +141,12 @@ frontend/
 **Codex 改的（第八輪）：**
 
 - **`BaselineQuestionsView`（Tab03 心理基準線問卷）修正選項邏輯錯誤**：原本 5 題基準線問卷裡「心情如何」「壓力有多大」這兩題都套用同一組頻率選項（完全沒有/很少/有時候/常常/幾乎每天），語意對不上（心情、壓力程度不該用「頻率」問法）；改成各自專屬選項——心情題用「很好/還不錯/普通/不太好/非常不好」，壓力題用「完全沒有/有一點/普通/很大/非常大」，並在 `id.ts` 補上對應印尼文譯文
+
+**Codex 改的（第九輪）：**
+
+- **日記只能寫「今天」**：`stores/diary.ts` 新增 `canWriteDay(day)`（只有等於 `arrivalDay` 才算可寫），`entryForDay` 對非今天的日期會 `throw`；`router/index.ts` 加了 `beforeEach` 守衛，直接打 `/diary/:day` 網址如果不是今天會被導回 `/diary`；`DiaryMapView`/`DiaryDayBubble` 對應加上 `disabled` 樣式（灰底、`cursor-not-allowed`），過去/未來的 Day 泡泡點了沒反應；`DiaryEntryView` 的日期選擇器也鎖 `min`/`max` 都是今天，`save()` 額外檢查日期沒被改到非今天才會真的存
+- **`todayDate()` 改用正確時區**：原本 `new Date().toISOString().slice(0, 10)` 是用 UTC 時間切日期，在台灣時區半夜可能會抓到前一天；改用 `Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Taipei' })` 正確抓台灣當地日期
+- **`CareTreeHeader`（Tab05）頭像**：從隨機的 `pravatar.cc` 佔位照片換成真的產生的人物頭像（`frontend/public/mia-avatar.png`，AI 生成的印尼籍看護角色照片，對應 `account.ts` 的 `userName: 'Mia'`），下方「已知缺口」那條 pravatar 佔位照片的紀錄已更新
 
 ### Tab03 細節（★核心頁，邏輯較複雜）
 
@@ -227,7 +233,7 @@ Tailwind v4，色票定義在 `src/assets/main.css` 的 `@theme` block，對應 
 - **沒有路由守衛**：直接打 `/dashboard`、`/chat`、`/board`、`/account` 等網址可以完全繞過登入流程。MVP demo 階段刻意如此（方便直接測任一頁），正式串接後端後要補上
 - Tab03 新聞影片是寫死的兩個 YouTube 影片 ID（`NewsAwarenessBanner.vue` 的 `videos` 陣列），影片下架或要換片要手動改
 - Tab04 便利貼權限簡化成「只有自己／雇主」二選一（單一雇主帳號），規格文件原本想支援指定多個家人聯絡人，等有多聯絡人資料模型再擴充
-- Tab05 樹狀插圖（`CareTreeHeader.vue`）用簡化幾何圖形逼近，頭像是 pravatar.cc 佔位照片，Figma 原稿是手繪風插畫，還沒有可匯出的素材檔
+- Tab05 樹狀插圖（`CareTreeHeader.vue`）用簡化幾何圖形逼近，Figma 原稿是手繪風插畫，還沒有可匯出的素材檔；頭像已換成真的產生的人物照片（`mia-avatar.png`），不再是 pravatar.cc 隨機照片
 - 產品名稱曾在不同 Figma 稿打成三種寫法，目前統一用「404: Care Can Be Found」（文法正確版本），之後 Figma 若又有新版本要再對齊
 
 ## 開發與部署
