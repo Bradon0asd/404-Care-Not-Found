@@ -188,6 +188,10 @@ npm run build
 | [Willy](https://github.com/weiLiao225) |  |
 | 冠冠 | Demo架構、錄音 |
 
+## 授權
+
+本專案以 MIT License 釋出，完整條款見 [LICENSE](LICENSE)。
+
 ## 補充文件
 
 - 前端說明：[frontend/docs/overview.md](frontend/docs/overview.md)
