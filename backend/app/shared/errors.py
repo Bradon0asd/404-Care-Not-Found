@@ -65,3 +65,8 @@ class LineConfigurationError(AppError):
 class InvalidLineSignatureError(AppError):
     status_code = 400
     code = "INVALID_LINE_SIGNATURE"
+
+
+class LineRecipientNotPairedError(AppError):
+    status_code = 400
+    code = "LINE_RECIPIENT_NOT_PAIRED"

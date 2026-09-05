@@ -6,6 +6,7 @@ import json
 import pytest
 
 from app.line.client import LineClient
+from app.line.menu import HELP_REPLY
 
 
 SECRET = "test-channel-secret"
@@ -84,12 +85,13 @@ def test_webhook_rejects_invalid_signature(line_app, client):
     assert body["error"]["code"] == "INVALID_LINE_SIGNATURE"
 
 
-def test_webhook_echoes_text_message(line_app, client, sent_replies):
+def test_webhook_guides_unrecognised_text_to_the_menu(line_app, client, sent_replies):
     response = _signed_post(client, _text_message_body(text="halo"))
 
     assert response.status_code == 200
     assert response.get_json() == {"success": True, "data": {"status": "ok"}}
-    assert sent_replies == [{"reply_token": "reply-token", "text": "收到：halo"}]
+    assert sent_replies[0]["reply_token"] == "reply-token"
+    assert sent_replies[0]["text"] == HELP_REPLY
 
 
 def test_webhook_registers_unknown_sender(line_app, client, sent_replies):
