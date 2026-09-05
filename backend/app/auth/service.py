@@ -22,7 +22,12 @@ def login(*, line_id):
     if user is None:
         raise AuthenticationError("Invalid credentials")
 
-    # A fresh session id on login keeps a pre-login cookie from being reused.
+    return start_session(user)
+
+
+def start_session(user):
+    """Put a user into the session. Used by login and by invite links alike."""
+    # A fresh session id keeps a pre-login cookie from being reused.
     session.clear()
     session.permanent = True
     session[SESSION_USER_ID] = user.id

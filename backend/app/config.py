@@ -70,6 +70,7 @@ class Config:
     }
     SQLALCHEMY_DATABASE_URI = build_database_uri()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    WEB_APP_BASE_URL = os.getenv("WEB_APP_BASE_URL", "")
     LINE_CHANNEL_ACCESS_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN", "")
     LINE_CHANNEL_SECRET = os.getenv("LINE_CHANNEL_SECRET", "")
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")

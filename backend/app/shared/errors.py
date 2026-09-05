@@ -86,3 +86,12 @@ class GoogleAiApiError(AppError):
     status_code = 502
     code = "GOOGLE_AI_API_ERROR"
 
+
+class InviteNotFoundError(AppError):
+    status_code = 404
+    code = "INVITE_NOT_FOUND"
+
+
+class InviteRevokedError(AppError):
+    status_code = 410
+    code = "INVITE_REVOKED"

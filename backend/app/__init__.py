@@ -43,6 +43,7 @@ def create_app(config_object=Config):
     from app.care_schedules import care_schedule_bp
     from app.chat import chat_bp
     from app.diaries import diary_bp
+    from app.invites import invite_bp
     from app.line import line_bp
     from app.sticky_notes import sticky_note_bp
     from app.uploads import media_bp, upload_bp
@@ -54,6 +55,7 @@ def create_app(config_object=Config):
     api.register_blueprint(care_schedule_bp, url_prefix="/api")
     api.register_blueprint(chat_bp, url_prefix="/api")
     api.register_blueprint(diary_bp, url_prefix="/api")
+    api.register_blueprint(invite_bp, url_prefix="/api")
     api.register_blueprint(line_bp, url_prefix="/api/line")
     api.register_blueprint(sticky_note_bp, url_prefix="/api")
     api.register_blueprint(upload_bp, url_prefix="/api")

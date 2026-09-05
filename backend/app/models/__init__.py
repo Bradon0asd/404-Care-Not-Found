@@ -1,6 +1,7 @@
 from app.models.user import CareRecipient, User, UserRole
 from app.models.care_schedule import CareSchedule, ScheduleType
 from app.models.diary import Diary
+from app.models.invite import Invite
 from app.models.sticky_note import StickyNote, StickyNoteCategory, StickyNotePriority
 from app.models.vital_sign_log import VITAL_SIGN_UNITS, VitalSignLog, VitalSignType
 
@@ -9,6 +10,7 @@ __all__ = [
     "CareRecipient",
     "CareSchedule",
     "Diary",
+    "Invite",
     "ScheduleType",
     "StickyNote",
     "StickyNoteCategory",

@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 from app.care_schedules.service import list_schedules
+from app.invites.service import build_invite_url, create_invite
 from app.models import ScheduleType, StickyNotePriority, VitalSignType
 from app.sticky_notes.service import list_notes
 from app.vital_signs.dashboard_service import build_dashboard
@@ -74,6 +75,20 @@ def _sticky_notes_reply(user):
         lines.append(f"【{priority}】{note.title}")
         lines.append(f"{note.created_at:%m/%d}　{_shorten(note.content)}")
     return "\n".join(lines)
+
+
+def _invite_reply(user):
+    invite = create_invite(owner=user)
+    return "\n".join(
+        [
+            "邀請看護加入",
+            "",
+            "把這條連結傳給看護，她點開填好基本資料就能直接開始使用，不需要註冊或密碼：",
+            build_invite_url(invite),
+            "",
+            "同一條連結可以重複使用，她每次點開都會回到自己的紀錄。",
+        ]
+    )
 
 
 def _stress_notice_reply(user):
@@ -165,6 +180,8 @@ MENU_HANDLERS = {
     "交流板便利貼": _sticky_notes_reply,
     "交流板": _sticky_notes_reply,
     "壓力告知": _stress_notice_reply,
+    "邀請看護": _invite_reply,
+    "邀請": _invite_reply,
 }
 
 
