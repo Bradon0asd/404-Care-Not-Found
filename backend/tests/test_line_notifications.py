@@ -128,6 +128,7 @@ def _paired_nurse_and_owner(client):
     response = client.post(
         f"/api/users/{owner_id}/pair",
         json={"pair_user_id": nurse_id},
+        headers=_auth(owner_id),
     )
     assert response.status_code == 200
     return nurse_id, owner_id

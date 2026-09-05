@@ -53,7 +53,7 @@ def test_diary_visibility_respects_pairing_and_privacy(client):
     nurse_id = _create_user(client, "diary-nurse-pair", role="nurse")
     owner_id = _create_user(client, "diary-owner-pair", role="owner")
     stranger_id = _create_user(client, "diary-stranger", role="owner")
-    client.post(f"/api/users/{nurse_id}/pair", json={"pair_user_id": owner_id})
+    client.post(f"/api/users/{nurse_id}/pair", json={"pair_user_id": owner_id}, headers=_headers(nurse_id))
 
     private_id = _create_diary(client, nurse_id, "Kept to myself", is_private=True)
     shared_id = _create_diary(client, nurse_id, "Shared on purpose", is_private=False)
@@ -71,7 +71,7 @@ def test_diary_visibility_respects_pairing_and_privacy(client):
 def test_shared_diary_cannot_be_changed_by_the_paired_user(client):
     nurse_id = _create_user(client, "diary-nurse-readonly", role="nurse")
     owner_id = _create_user(client, "diary-owner-readonly", role="owner")
-    client.post(f"/api/users/{nurse_id}/pair", json={"pair_user_id": owner_id})
+    client.post(f"/api/users/{nurse_id}/pair", json={"pair_user_id": owner_id}, headers=_headers(nurse_id))
 
     shared_id = _create_diary(client, nurse_id, "Shared", is_private=False)
 

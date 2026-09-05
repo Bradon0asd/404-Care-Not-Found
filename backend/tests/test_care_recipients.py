@@ -1,7 +1,7 @@
 def test_owner_creates_recipient_and_paired_nurse_sees_it(client):
     owner_id = _create_user(client, "recipient-owner", role="owner")
     nurse_id = _create_user(client, "recipient-nurse", role="nurse")
-    paired = client.post(f"/api/users/{owner_id}/pair", json={"pair_user_id": nurse_id})
+    paired = client.post(f"/api/users/{owner_id}/pair", json={"pair_user_id": nurse_id}, headers=_headers(owner_id))
     assert paired.status_code == 200
 
     created = client.post(
@@ -35,7 +35,7 @@ def test_owner_creates_recipient_and_paired_nurse_sees_it(client):
 def test_nurse_creates_recipient_for_its_paired_owner(client):
     owner_id = _create_user(client, "nurse-side-owner", role="owner")
     nurse_id = _create_user(client, "nurse-side-nurse", role="nurse")
-    client.post(f"/api/users/{owner_id}/pair", json={"pair_user_id": nurse_id})
+    client.post(f"/api/users/{owner_id}/pair", json={"pair_user_id": nurse_id}, headers=_headers(owner_id))
 
     created = client.post(
         "/api/care-recipients",
@@ -109,7 +109,7 @@ def test_recipient_create_rejects_server_controlled_fields(client):
 def test_recipient_endpoints_support_the_schedule_and_dashboard_flow(client):
     owner_id = _create_user(client, "flow-owner", role="owner")
     nurse_id = _create_user(client, "flow-nurse", role="nurse")
-    client.post(f"/api/users/{owner_id}/pair", json={"pair_user_id": nurse_id})
+    client.post(f"/api/users/{owner_id}/pair", json={"pair_user_id": nurse_id}, headers=_headers(owner_id))
 
     created = client.post(
         "/api/care-recipients",

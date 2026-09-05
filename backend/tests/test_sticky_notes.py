@@ -43,7 +43,7 @@ def test_sticky_note_visibility_respects_pairing_and_privacy(client):
     owner_id = _create_user(client, "note-owner-pair", role="owner")
     nurse_id = _create_user(client, "note-nurse-pair", role="nurse")
     stranger_id = _create_user(client, "note-stranger", role="nurse")
-    client.post(f"/api/users/{owner_id}/pair", json={"pair_user_id": nurse_id})
+    client.post(f"/api/users/{owner_id}/pair", json={"pair_user_id": nurse_id}, headers=_headers(owner_id))
 
     public_note_id = _create_note(client, owner_id, "Public", is_private=False)
     private_note_id = _create_note(client, owner_id, "Private", is_private=True)
@@ -70,7 +70,7 @@ def test_public_sticky_note_is_marked_read_by_the_paired_reader(client):
     nurse_id = _create_user(client, "note-nurse-review", role="nurse")
     owner_id = _create_user(client, "note-owner-review", role="owner")
     stranger_id = _create_user(client, "note-stranger-review", role="nurse")
-    client.post(f"/api/users/{nurse_id}/pair", json={"pair_user_id": owner_id})
+    client.post(f"/api/users/{nurse_id}/pair", json={"pair_user_id": owner_id}, headers=_headers(nurse_id))
 
     public_note_id = _create_note(client, nurse_id, "Leave request", is_private=False)
     private_note_id = _create_note(client, nurse_id, "Just for me", is_private=True)

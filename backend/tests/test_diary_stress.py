@@ -177,7 +177,7 @@ def _paired_nurse(client):
     nurse_id = _create_user(client, "nurse-line-id", role="nurse")
     owner_id = _create_user(client, "owner-line-id", role="owner")
     assert client.post(
-        f"/api/users/{owner_id}/pair", json={"pair_user_id": nurse_id}
+        f"/api/users/{owner_id}/pair", json={"pair_user_id": nurse_id}, headers=_auth(owner_id)
     ).status_code == 200
     return nurse_id
 
