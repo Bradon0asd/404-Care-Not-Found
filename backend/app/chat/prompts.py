@@ -52,6 +52,31 @@ neutrally as observations, never as diagnoses.
 Write every value in Indonesian."""
 
 
+# --- Opening a room -------------------------------------------------------
+
+# Written, not generated: it must appear instantly and be there even when the model
+# is down. Indonesian, because every other line the agent speaks is Indonesian and a
+# Chinese greeting would break the illusion that someone is here with her.
+WELCOME_TEMPLATE = (
+    "Selamat datang di 404: Care Not Found{nurse}. "
+    "Aku menemani kamu di sini.{patient}{condition} "
+    "Cerita aja pelan-pelan, aku dengerin."
+)
+WELCOME_NURSE = ", {name}"
+WELCOME_PATIENT = " Kamu merawat {name}."
+WELCOME_CONDITION = " Kondisinya: {summary}"
+
+ROOM_TITLE_PROMPT = """Give this conversation a short topic label, the way a friend \
+would name it when looking back: "Nenek jatuh", "Nenek tidak mau mandi".
+
+Her message:
+{text}
+
+At most 6 words, in Indonesian, no punctuation at the end, no quotes.
+
+Return JSON: {{"title": "..."}}"""
+
+
 # --- Baseline (one-off, framed as small talk, never as a test) -------------
 
 BASELINE_QUESTIONS_PROMPT = """Write {count} short questions that help a friend get a \

@@ -119,6 +119,8 @@ Dashboard 每項指標回 `latest`、`current_average`、`previous_average`、`d
 
 `guardrail` 不是存起來就算，它每次對話都會併進 system instruction 一起送出。
 
+回應含 `care_recipient_name`，前端不用再打一次被照顧者的 API 就能顯示名字。
+
 baseline 問句由 AI 生成成聊天句（「最近有睡飽嗎？」），文案不得出現測驗／檢測字眼。完成後 `baseline_completed_at` 有值，Tab 03 從此走對話模式。
 
 ### 對話模式（每天）
@@ -130,7 +132,11 @@ baseline 問句由 AI 生成成聊天句（「最近有睡飽嗎？」），文�
 | GET | `/api/chat/rooms/<room_id>` | 讀聊天室與其訊息 | session |
 | POST | `/api/chat/rooms/<room_id>/messages` | 送出訊息並取得回覆 | session |
 
-`mood_weather` 四種：`sunny`、`cloudy`、`rainy`、`storm`。免費版一天一間，超過回 `CHAT_ROOM_QUOTA_REACHED`；未完成 baseline 就開房回 `BASELINE_REQUIRED`。
+`mood_weather` 四種：`sunny`、`cloudy`、`rainy`、`storm`，會一併餵進情緒分析，不只是存起來顯示。免費版一天一間，超過回 `CHAT_ROOM_QUOTA_REACHED`；未完成 baseline 就開房回 `BASELINE_REQUIRED`。
+
+**開房時會自動產生一則 AI 歡迎訊息**（印尼語，含看護稱呼、被照顧者名字與大致狀況），所以 `GET /api/chat/rooms/<id>` 的 `messages` 一開始就有一則。這句是寫死的模板不是模型生成，因此即時出現，且模型掛掉時照常顯示。
+
+`title` 沒給的話，**第一則訊息送出後 AI 會自動命名**（如「Nenek jatuh」）；看護自己取過名字就不會被覆蓋。
 
 送出訊息時，後端在同一次請求裡做三件事，但**回應只含前者**：
 
@@ -141,6 +147,8 @@ baseline 問句由 AI 生成成聊天句（「最近有睡飽嗎？」），文�
 **回應永遠不含壓力分數、風險等級或觀察清單**，`ChatMessage` 的欄位只有 `id`、`room_id`、`sender`、`text`、`created_at`。第 2、3 步失敗時靜默略過並記 log，第 1 步失敗時回預先寫好的陪伴語句，**端點一律不因 AI 失敗而回 5xx**。
 
 組 prompt 時只帶存檔的病患摘要加最近 6 則對話，不送完整歷史。
+
+醫療界線由 system instruction 強制：遇到要不要送醫、要不要給藥這類判斷，AI 一律導向聯繫家屬／就醫，不自行判斷。這條有實際呼叫模型的測試把關（`tests/test_chat_live.py`，預設跳過，用 `RUN_LIVE_AI_TESTS=1 pytest tests/test_chat_live.py` 執行）。
 
 ## Tab04 交流板便利貼
 

@@ -38,6 +38,7 @@ def model(monkeypatch):
         "extraction": {"schedules": [], "vital_signs": []},
         "reply": COMPANION_REPLY,
         "fail": False,
+        "title": "Nenek jatuh",
     }
 
     def fake_generate(self, prompt, *, system_instruction=None, temperature=0.7, json_mode=False):
@@ -55,6 +56,8 @@ def model(monkeypatch):
             return json.dumps(state["extraction"])
         if prompt.startswith("From the patient context"):
             return json.dumps({"care_context": "Nenek 90 tahun, alzheimer."})
+        if prompt.startswith("Give this conversation"):
+            return json.dumps({"title": state["title"]})
         if prompt.startswith("Write "):
             return json.dumps({"questions": [{"key": "sleep", "text": "Sudah cukup tidur?"}]})
         return state["reply"]
@@ -163,7 +166,7 @@ def test_daily_prompt_stays_short(chat_app, client, model):
     companion_prompts = [
         prompt
         for prompt in model["prompts"]
-        if not prompt.startswith(("Rate", "Assess", "Extract", "From", "Write"))
+        if not prompt.startswith(("Rate", "Assess", "Extract", "From", "Write", "Give"))
     ]
     last = companion_prompts[-1]
     assert "pesan-0" not in last
@@ -331,8 +334,12 @@ def _complete_baseline(client, nurse_id):
     assert response.status_code == 200
 
 
-def _open_room(client, nurse_id, mood_weather=None):
-    payload = {"mood_weather": mood_weather} if mood_weather else {}
+def _open_room(client, nurse_id, mood_weather=None, title=None):
+    payload = {}
+    if mood_weather:
+        payload["mood_weather"] = mood_weather
+    if title:
+        payload["title"] = title
     response = client.post("/api/chat/rooms", json=payload, headers=_auth(nurse_id))
     assert response.status_code == 201
     return response.get_json()["data"]["id"]
@@ -354,3 +361,89 @@ def _create_user(client, line_id, *, role):
 
 def _auth(user_id):
     return {"X-User-Id": str(user_id)}
+
+
+# --- Opening a room and naming it ----------------------------------------
+
+def test_room_opens_with_a_greeting_that_names_who_she_cares_for(chat_app, client, model):
+    """She never lands on an empty screen (PRD: 聊天室開頭帶入歡迎語 + 照顧者資訊)."""
+    nurse_id = _ready_nurse(client)
+    room_id = _open_room(client, nurse_id)
+
+    response = client.get(f"/api/chat/rooms/{room_id}", headers=_auth(nurse_id))
+
+    messages = response.get_json()["data"]["messages"]
+    assert len(messages) == 1
+    greeting = messages[0]
+    assert greeting["sender"] == "ai"
+    assert "404: Care Not Found" in greeting["text"]
+    # The patient's name and stored summary are both in it.
+    assert "Nenek" in greeting["text"]
+    assert "Nenek 90 tahun, alzheimer." in greeting["text"]
+
+
+def test_greeting_needs_no_model_call(chat_app, client, model):
+    """Written, not generated: it must still appear when the model is down."""
+    nurse_id = _ready_nurse(client)
+    model["fail"] = True
+    model["prompts"].clear()
+
+    room_id = _open_room(client, nurse_id)
+
+    assert model["prompts"] == []
+    response = client.get(f"/api/chat/rooms/{room_id}", headers=_auth(nurse_id))
+    assert "404: Care Not Found" in response.get_json()["data"]["messages"][0]["text"]
+
+
+def test_agent_exposes_the_patient_name(chat_app, client, model):
+    nurse_id = _ready_nurse(client)
+
+    response = client.get("/api/chat/agent", headers=_auth(nurse_id))
+
+    assert response.get_json()["data"]["care_recipient_name"] == "Nenek"
+
+
+def test_first_message_names_an_unnamed_room(chat_app, client, model):
+    nurse_id = _ready_nurse(client)
+    room_id = _open_room(client, nurse_id)
+    model["title"] = "Nenek jatuh"
+
+    client.post(
+        f"/api/chat/rooms/{room_id}/messages",
+        json={"text": "Nenek jatuh pagi ini."},
+        headers=_auth(nurse_id),
+    )
+
+    listed = client.get("/api/chat/rooms", headers=_auth(nurse_id)).get_json()["data"]
+    assert listed[0]["title"] == "Nenek jatuh"
+
+
+def test_a_room_she_named_is_left_alone(chat_app, client, model):
+    nurse_id = _ready_nurse(client)
+    room_id = _open_room(client, nurse_id, title="Judul saya")
+    model["title"] = "Nenek jatuh"
+
+    client.post(
+        f"/api/chat/rooms/{room_id}/messages",
+        json={"text": "Nenek jatuh pagi ini."},
+        headers=_auth(nurse_id),
+    )
+
+    listed = client.get("/api/chat/rooms", headers=_auth(nurse_id)).get_json()["data"]
+    assert listed[0]["title"] == "Judul saya"
+    assert not [p for p in model["prompts"] if p.startswith("Give this conversation")]
+
+
+def test_mood_weather_reaches_the_analysis(chat_app, client, model):
+    """B6: the one-tap weather is an input to the reading, not just a stored value."""
+    nurse_id = _ready_nurse(client)
+    room_id = _open_room(client, nurse_id, mood_weather="storm")
+
+    client.post(
+        f"/api/chat/rooms/{room_id}/messages",
+        json={"text": "hari ini berat"},
+        headers=_auth(nurse_id),
+    )
+
+    triage = [p for p in model["prompts"] if p.startswith("Rate the emotional strain")][0]
+    assert "storm" in triage

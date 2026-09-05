@@ -20,6 +20,9 @@ class CareAgentSchema(Schema):
     id = fields.Int(required=True)
     user_id = fields.Int(required=True)
     care_recipient_id = fields.Int(required=True)
+    # The name, not just the id, so the caregiver's screens can say who she cares for
+    # without a second request.
+    care_recipient_name = fields.Str(attribute="care_recipient.name", allow_none=True)
     system_prompt = fields.Str(required=True)
     temperature = fields.Float(required=True)
     guardrail = fields.Str(allow_none=True)

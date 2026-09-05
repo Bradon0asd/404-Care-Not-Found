@@ -20,6 +20,11 @@ from app.chat.prompts import (
     CARE_LOG_EXTRACTION_PROMPT,
     FALLBACK_REPLY,
     GUARDRAIL_BLOCK,
+    ROOM_TITLE_PROMPT,
+    WELCOME_CONDITION,
+    WELCOME_NURSE,
+    WELCOME_PATIENT,
+    WELCOME_TEMPLATE,
 )
 from app.care_schedules.service import create_schedule
 from app.extensions import db
@@ -136,9 +141,27 @@ def create_room(*, current_user, title=None, mood_weather=None):
         title=title,
         mood_weather=mood_weather,
     )
+    # She should never open a room to an empty screen. The greeting is written, not
+    # generated, so it is instant and survives the model being down.
+    room.messages.append(
+        ChatMessage(
+            sender=MessageSender.AI.value,
+            text=welcome_text(agent=agent, nurse=current_user),
+        )
+    )
     db.session.add(room)
     db.session.commit()
     return room
+
+
+def welcome_text(*, agent, nurse):
+    recipient = agent.care_recipient
+    summary = (agent.generated_profile or {}).get("care_context")
+    return WELCOME_TEMPLATE.format(
+        nurse=WELCOME_NURSE.format(name=nurse.name) if nurse.name else "",
+        patient=WELCOME_PATIENT.format(name=recipient.name) if recipient else "",
+        condition=WELCOME_CONDITION.format(summary=summary) if summary else "",
+    )
 
 
 def list_rooms(*, current_user):
@@ -192,8 +215,28 @@ def process_user_message(*, current_user, room_id, text):
         recent_turns=_recent_turns(room),
     )
     _run_quietly("care log extraction", _extract_care_log, agent=agent, nurse=current_user, text=text)
+    _run_quietly("room naming", _name_room, room=room, text=text)
 
     return user_message, ai_message
+
+
+def _name_room(*, room, text):
+    """Name the room after her first message, so the list reads like her own topics.
+
+    Only once, only when she did not name it herself, and on the cheap model.
+    """
+    if room.title:
+        return
+
+    named = _ask_for_json(
+        prompt=ROOM_TITLE_PROMPT.format(text=text),
+        temperature=0.3,
+        model=current_app.config.get("GEMINI_MODEL_FAST"),
+    )
+    title = (named or {}).get("title")
+    if title:
+        room.title = title.strip()[:100]
+        db.session.commit()
 
 
 def room_messages(*, current_user, room_id):
@@ -330,9 +373,11 @@ def _rooms_started_today(current_user):
     ).count()
 
 
-def _ask_for_json(*, prompt, temperature):
+def _ask_for_json(*, prompt, temperature, model=None):
     try:
-        raw = GeminiClient().generate_content(prompt, temperature=temperature, json_mode=True)
+        raw = GeminiClient(model=model).generate_content(
+            prompt, temperature=temperature, json_mode=True
+        )
         return json.loads(raw)
     except AppError as error:
         logger.warning("model call failed: %s", error)
