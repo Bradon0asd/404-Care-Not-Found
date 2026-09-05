@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 SESSION_USER_ID = "user_id"
 SESSION_ROLE = "role"
+SESSION_PICTURE_URL = "picture_url"
 SESSION_LOGGED_IN_AT = "logged_in_at"
 
 
@@ -44,6 +45,7 @@ def start_session(user):
     session.permanent = True
     session[SESSION_USER_ID] = user.id
     session[SESSION_ROLE] = user.role
+    session[SESSION_PICTURE_URL] = user.picture_url
     session[SESSION_LOGGED_IN_AT] = datetime.now(timezone.utc).isoformat()
     return user
 
@@ -114,27 +116,36 @@ def complete_line_login(*, code, state, client=None):
 
     selected_role = consume_login_state(state)
     client = client or LineLoginClient()
-    line_id, display_name = client.fetch_identity(code=code)
+    line_id, display_name, picture_url = client.fetch_identity(code=code)
     if not line_id:
         raise LineLoginError("LINE identity carried no user id")
 
     user = resolve_line_user(
         line_id=line_id,
         display_name=display_name,
+        picture_url=picture_url,
         selected_role=selected_role,
     )
     return start_session(user)
 
 
-def resolve_line_user(*, line_id, display_name, selected_role):
-    """First login creates the user with the selected role; later logins never rewrite it."""
+def resolve_line_user(*, line_id, display_name, picture_url, selected_role):
+    """First login creates the user; later logins keep the role and refresh LINE profile data."""
     user = User.query.filter_by(line_id=line_id).first()
     if user is not None:
         if user.role != selected_role:
             raise RoleMismatchError("The selected role does not match this account.")
+        if picture_url and user.picture_url != picture_url:
+            user.picture_url = picture_url
+            db.session.commit()
         return user
 
-    user = User(line_id=line_id, name=display_name, role=UserRole(selected_role).value)
+    user = User(
+        line_id=line_id,
+        name=display_name,
+        picture_url=picture_url,
+        role=UserRole(selected_role).value,
+    )
     db.session.add(user)
     try:
         db.session.commit()

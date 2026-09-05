@@ -18,6 +18,8 @@ export interface SessionUser {
   id: number
   line_id: string
   name: string | null
+  picture_url: string | null
+  language: string | null
   role: BackendRole
   pair_user_id: number | null
   // The backend decides whether this account has finished its one-off setup.

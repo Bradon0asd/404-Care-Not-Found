@@ -20,6 +20,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     line_id = db.Column(db.String(128), unique=True, nullable=False, index=True)
     name = db.Column(db.String(100), nullable=True)
+    picture_url = db.Column(db.String(512), nullable=True)
     language = db.Column(db.String(10), nullable=True)
     role = db.Column(
         db.String(20),

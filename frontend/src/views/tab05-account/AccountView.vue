@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import AppHeader from '@/components/layout/AppHeader.vue'
@@ -16,8 +16,25 @@ const onboarding = useOnboardingStore()
 const { language } = storeToRefs(onboarding)
 
 const languageModalOpen = ref(false)
+const savingLanguage = ref(false)
 
-function logout() {
+onMounted(() => {
+  void account.loadAccount()
+})
+
+async function updateLanguage(value: typeof language.value) {
+  if (savingLanguage.value) return
+  savingLanguage.value = true
+  try {
+    await account.updateLanguage(value)
+    languageModalOpen.value = false
+  } finally {
+    savingLanguage.value = false
+  }
+}
+
+async function logout() {
+  await account.logout()
   router.push('/auth/role')
 }
 </script>
@@ -29,7 +46,8 @@ function logout() {
     <div class="account-tree-space flex min-h-0 flex-1 items-center justify-center">
       <CareTreeHeader
         :user-name="account.userName"
-        :role="$t('看護端')"
+        :picture-url="account.pictureUrl"
+        :role="account.roleLabel"
         @language="languageModalOpen = true"
         @logout="logout"
         @plans="router.push('/account/plans')"
@@ -40,12 +58,7 @@ function logout() {
       :open="languageModalOpen"
       :language="language"
       @close="languageModalOpen = false"
-      @update:language="
-        (v) => {
-          language = v
-          languageModalOpen = false
-        }
-      "
+      @update:language="updateLanguage"
     />
     <template #footer><BottomTabBar /></template>
   </PageContainer>

@@ -66,19 +66,19 @@ class LineLoginClient:
         return f"{AUTHORIZATION_ENDPOINT}?{urlencode(params)}"
 
     def fetch_identity(self, *, code):
-        """Exchange the code and return (line_user_id, display_name)."""
+        """Exchange the code and return (line_user_id, display_name, picture_url)."""
         token_payload = self._exchange_code(code=code)
 
         id_token = token_payload.get("id_token")
         if id_token:
             claims = self._verify_id_token(id_token=id_token)
-            return claims["sub"], claims.get("name")
+            return claims["sub"], claims.get("name"), claims.get("picture")
 
         access_token = token_payload.get("access_token")
         if not access_token:
             raise LineLoginError("LINE token response carried no usable token")
         profile = self._fetch_profile(access_token=access_token)
-        return profile["userId"], profile.get("displayName")
+        return profile["userId"], profile.get("displayName"), profile.get("pictureUrl")
 
     def _exchange_code(self, *, code):
         self.require_config()

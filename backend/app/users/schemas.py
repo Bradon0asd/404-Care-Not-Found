@@ -32,6 +32,7 @@ class UserSchema(Schema):
     id = fields.Int(required=True)
     line_id = fields.Str(required=True)
     name = fields.Str(allow_none=True)
+    picture_url = fields.Url(allow_none=True)
     language = fields.Str(allow_none=True)
     role = fields.Str(required=True)
     pair_user_id = fields.Int(allow_none=True)

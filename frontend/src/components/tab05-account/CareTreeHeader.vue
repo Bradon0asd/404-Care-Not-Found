@@ -1,6 +1,7 @@
 <script setup lang="ts">
 defineProps<{
   userName: string
+  pictureUrl?: string | null
   role: string
 }>()
 
@@ -105,7 +106,7 @@ const leaves = [
       class="absolute top-[9.5%] left-1/2 flex w-[72%] -translate-x-1/2 flex-col items-center text-center"
     >
       <img
-        src="https://i.pravatar.cc/256?img=47"
+        :src="pictureUrl || 'https://i.pravatar.cc/256?img=47'"
         :alt="$t('使用者頭像')"
         class="aspect-square w-[40%] rounded-full border-2 border-white object-cover shadow-sm"
       />

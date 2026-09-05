@@ -21,11 +21,15 @@ def login_app(app):
 @pytest.fixture()
 def line_identity(monkeypatch):
     """Stub the LINE round trip; the test decides which LINE account comes back."""
-    identity = {"user_id": "U-line-login", "display_name": "Mia"}
+    identity = {
+        "user_id": "U-line-login",
+        "display_name": "Mia",
+        "picture_url": "https://profile.line-scdn.net/mia.png",
+    }
 
     def fetch_identity(self, *, code):
         assert code
-        return identity["user_id"], identity["display_name"]
+        return identity["user_id"], identity["display_name"], identity["picture_url"]
 
     monkeypatch.setattr(LineLoginClient, "fetch_identity", fetch_identity)
     return identity
@@ -69,11 +73,13 @@ def test_first_login_creates_the_user_with_the_selected_role(login_app, client, 
     user = User.query.filter_by(line_id="U-line-login").one()
     assert user.role == "owner"
     assert user.name == "Mia"
+    assert user.picture_url == "https://profile.line-scdn.net/mia.png"
 
     me = client.get("/api/users/me")
     assert me.status_code == 200
     body = me.get_json()["data"]
     assert (body["id"], body["name"], body["role"]) == (user.id, "Mia", "owner")
+    assert body["picture_url"] == "https://profile.line-scdn.net/mia.png"
 
 
 def test_second_login_reuses_the_user_and_keeps_the_stored_role(login_app, client, line_identity):
@@ -86,6 +92,16 @@ def test_second_login_reuses_the_user_and_keeps_the_stored_role(login_app, clien
     users = User.query.filter_by(line_id="U-line-login").all()
     assert [user.id for user in users] == [user_id]
     assert users[0].role == "nurse"
+
+
+def test_second_login_refreshes_the_line_picture(login_app, client, line_identity):
+    _login(client, "nurse")
+
+    line_identity["picture_url"] = "https://profile.line-scdn.net/new.png"
+    assert _login(client, "nurse").status_code == 302
+
+    session_read = client.get("/api/auth/session")
+    assert session_read.get_json()["data"]["picture_url"] == "https://profile.line-scdn.net/new.png"
 
 
 def test_login_cannot_rewrite_an_existing_role(login_app, client, line_identity):
