@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import NoteStackIcon from './NoteStackIcon.vue'
+import NoteMetaIcon from './NoteMetaIcon.vue'
 import type { StickyNote } from '@/stores/board'
 
 const props = defineProps<{ note: StickyNote }>()
@@ -15,19 +16,32 @@ const statusLabel = computed(
     })[props.note.employerStatus],
 )
 
-const levelLabel = computed(() => ({ urgent: '緊急', normal: '普通', minor: '不重要' })[props.note.level])
+const levelLabel = computed(
+  () => ({ urgent: '緊急', normal: '普通', minor: '不重要' })[props.note.level],
+)
 </script>
 
 <template>
-  <button type="button" class="flex flex-col items-start gap-2 rounded-xl bg-ink-100 p-3 text-left" @click="$emit('click')">
+  <button
+    type="button"
+    class="flex min-w-0 flex-col items-start gap-2 rounded-xl bg-ink-100 p-3 text-left"
+    @click="$emit('click')"
+  >
     <NoteStackIcon :level="note.level" class="mx-auto">
       <span class="px-2 text-center text-xs font-bold text-white">{{ note.tag }}</span>
     </NoteStackIcon>
     <p class="text-[11px] text-ink-600">目前狀態：{{ statusLabel }}</p>
-    <p class="w-full truncate text-xs text-ink-700">🏷 標題：{{ note.title }}</p>
-    <p class="text-xs text-ink-700">👤 權限：{{ note.visibility === 'employer' ? '你、雇主' : '只有你' }}</p>
-    <p class="flex items-center gap-1 text-xs text-ink-700">
-      ☰ 層級：{{ levelLabel }}
+    <p class="flex w-full items-center gap-2 text-xs leading-5 text-ink-700">
+      <NoteMetaIcon kind="title" />
+      <span class="min-w-0 truncate">標題：{{ note.title }}</span>
+    </p>
+    <p class="flex items-center gap-2 text-xs leading-5 text-ink-700">
+      <NoteMetaIcon kind="permission" />
+      <span>權限：{{ note.visibility === 'employer' ? '你、雇主' : '只有你' }}</span>
+    </p>
+    <p class="flex items-center gap-2 text-xs leading-5 text-ink-700">
+      <NoteMetaIcon kind="level" />
+      <span>層級：{{ levelLabel }}</span>
       <span v-if="note.level === 'urgent'">⚠</span>
     </p>
   </button>

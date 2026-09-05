@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import SegmentedToggle from '@/components/common/SegmentedToggle.vue'
+import { scheduleHours as hours } from '@/utils/schedule'
 
 export interface ScheduleEntry {
   day: 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'
@@ -28,7 +29,6 @@ const weekendCols = [
 ] as const
 
 const columns = computed(() => (dayType.value === 'weekday' ? weekdayCols : weekendCols))
-const hours = Array.from({ length: 10 }, (_, i) => 7 + i) // 07:00–16:00
 
 function activityFor(day: string, hour: number) {
   return props.entries.find((e) => e.day === day && e.hour === hour)?.activity

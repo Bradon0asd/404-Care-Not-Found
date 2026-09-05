@@ -17,7 +17,7 @@ const videos: NewsVideo[] = [
 </script>
 
 <template>
-  <div class="rounded-xl border border-ink-300 bg-white px-3 py-3 text-center">
+  <div class="bg-ink-200 px-3 py-3 text-center">
     <p class="text-xs font-bold text-ink-950">看看這些新聞...不要把所有責任往自己身上打</p>
     <p class="text-xs font-bold text-ink-950">Your mental health, we care.</p>
 
@@ -27,7 +27,7 @@ const videos: NewsVideo[] = [
           :href="`https://youtu.be/${video.youtubeId}`"
           target="_blank"
           rel="noopener noreferrer"
-          class="relative block h-24 w-full overflow-hidden rounded-lg bg-ink-300"
+          class="relative block h-24 w-full overflow-hidden bg-ink-300"
         >
           <img
             :src="`https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`"

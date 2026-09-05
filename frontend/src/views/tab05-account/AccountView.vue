@@ -26,7 +26,7 @@ function logout() {
   <PageContainer>
     <template #header><AppHeader /></template>
 
-    <div class="flex min-h-[640px] flex-1 overflow-hidden">
+    <div class="flex flex-1 items-start">
       <CareTreeHeader
         :user-name="account.userName"
         role="看護端"

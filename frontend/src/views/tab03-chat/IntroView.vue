@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import PageContainer from '@/components/layout/PageContainer.vue'
@@ -12,6 +13,8 @@ import { useCareAgentStore } from '@/stores/careAgent'
 
 const router = useRouter()
 const store = useCareAgentStore()
+
+const showReadyNotice = ref(true)
 
 // Dev-only: lets you preview the first-time build flow without a real
 // reset/logout feature. Only clears the agent, not chat rooms/moods.
@@ -55,12 +58,26 @@ function simulateFirstLogin() {
     </div>
 
     <template v-else>
-      <div class="flex items-center justify-between px-5 pt-3">
-        <p class="text-xs text-ink-600">你的 Care Agent 已經準備好了，陪你一起聊聊今天的心情</p>
-        <button type="button" class="shrink-0 text-[11px] text-ink-500 underline" @click="simulateFirstLogin">
+      <div v-if="showReadyNotice" class="mx-3 mt-3 flex items-center gap-2 rounded-xl bg-pink-100 px-3 py-2 text-xs">
+        <p class="flex-1 text-ink-700">你的 Care Agent 已經準備好了，陪你一起聊聊今天的心情</p>
+        <button
+          type="button"
+          class="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-ink-400 text-ink-700"
+          aria-label="關閉提示"
+          @click="showReadyNotice = false"
+        >
+          <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M6 6l12 12M18 6 6 18" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="px-5 pt-2 text-right">
+        <button type="button" class="text-[11px] text-ink-500 underline" @click="simulateFirstLogin">
           模擬首次使用畫面
         </button>
       </div>
+
       <DailyChatHome />
     </template>
 

@@ -3,7 +3,6 @@ import AppHeader from '@/components/layout/AppHeader.vue'
 import SubPageHeader from '@/components/layout/SubPageHeader.vue'
 import PageContainer from '@/components/layout/PageContainer.vue'
 import BottomTabBar from '@/components/layout/BottomTabBar.vue'
-import BaseButton from '@/components/common/BaseButton.vue'
 import PlanCard from '@/components/tab05-account/PlanCard.vue'
 import { useAccountStore, type Plan } from '@/stores/account'
 
@@ -53,7 +52,7 @@ const plans: {
       <SubPageHeader title="訂閱方案一覽表" />
     </template>
 
-    <div class="flex-1 space-y-4 px-4 pb-4">
+    <div class="flex-1 space-y-5 px-4 pt-2 pb-5">
       <PlanCard
         v-for="plan in plans"
         :key="plan.tier"
@@ -65,7 +64,13 @@ const plans: {
         :current="account.plan === plan.tier"
       />
 
-      <BaseButton variant="outline" @click="changePlan">變更方案</BaseButton>
+      <button
+        type="button"
+        class="min-h-11 w-full rounded-xl bg-ink-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-ink-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-700"
+        @click="changePlan"
+      >
+        變更方案
+      </button>
     </div>
 
     <template #footer><BottomTabBar /></template>

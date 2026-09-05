@@ -5,8 +5,8 @@ defineEmits<{ click: [] }>()
 <template>
   <button
     type="button"
-    aria-label="開新聊天"
-    class="relative flex h-48 w-48 items-center justify-center rounded-full shadow-lg"
+    aria-label="新增聊天室"
+    class="relative flex h-48 w-48 flex-col items-center justify-center gap-3 rounded-full shadow-lg"
     style="
       background: radial-gradient(
         circle at 35% 30%,
@@ -19,8 +19,22 @@ defineEmits<{ click: [] }>()
     "
     @click="$emit('click')"
   >
-    <svg class="h-10 w-10 text-ink-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-      <path d="M4 5h13a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-5 4V5Z" stroke-linejoin="round" />
+    <svg
+      aria-hidden="true"
+      class="h-16 w-20"
+      viewBox="0 0 120 104"
+      fill="white"
+      stroke="black"
+      stroke-width="1.2"
+      stroke-linejoin="round"
+    >
+      <path
+        d="M34 32H14A12 12 0 0 0 2 44V76A12 12 0 0 0 14 88H19V102L35 88H63A12 12 0 0 0 75 76V68H34Z"
+      />
+      <path
+        d="M54 4H103A12 12 0 0 1 115 16V48A12 12 0 0 1 103 60H98V76L82 60H42V16A12 12 0 0 1 54 4Z"
+      />
     </svg>
+    <span class="text-sm font-medium text-black">新增聊天室</span>
   </button>
 </template>

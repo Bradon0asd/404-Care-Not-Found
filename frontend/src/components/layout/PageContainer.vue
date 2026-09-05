@@ -4,7 +4,9 @@
     <div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
       <slot />
     </div>
-    <slot name="fab" />
+    <div v-if="$slots.fab" class="relative z-20 shrink-0">
+      <slot name="fab" />
+    </div>
     <slot name="footer" />
   </div>
 </template>

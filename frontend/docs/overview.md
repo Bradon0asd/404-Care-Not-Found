@@ -25,7 +25,8 @@ frontend/
     │   ├── board.ts           Tab04 便利貼資料
     │   └── account.ts         Tab05 使用者/訂閱方案資料
     ├── utils/
-    │   └── date.ts            民國曆日期格式化（toMinguoDate）
+    │   ├── date.ts            民國曆日期格式化（toMinguoDate）
+    │   └── schedule.ts        Tab01 時間表小時清單（scheduleHours，07:00–23:00）
     ├── assets/
     │   └── main.css           Tailwind 進入點 + 色票 @theme tokens
     ├── views/                 每個路由對應一個 view，負責組裝 components + 串 store
@@ -42,7 +43,7 @@ frontend/
         ├── tab01-dashboard/
         ├── tab02-diary/
         ├── tab03-chat/
-        ├── tab04-board/
+        ├── tab04-board/       含 NoteCard、NoteMetaIcon（卡片欄位小圖示）、AddNoteButton（新增鈕，獨立於共用 FloatingAddButton）
         └── tab05-account/
 ```
 
@@ -63,15 +64,31 @@ frontend/
 
 ### 近期 UI 精緻度修正（跟 Figma 原稿逐項比對後的調整）
 
-這些是設計稿比對後修正的共用元件/樣式，會影響到全部頁面，記錄下來避免之後又被改回舊版：
+分工：Claude 負責邏輯正確性/跟 Figma 細節比對，Codex 負責排版精緻度。以下按負責人記錄，避免之後又被改回舊版或搞混誰動過什麼。
+
+**Claude 改的：**
 
 - **AppHeader**：底色改 `bg-pink-500`（`#FFB2C7`，設計稿命名 "Primary 05"），副標題文字改白色（不是灰色 — 灰色是之前對比度 bug 的錯誤修法），愛心圖示換成乾淨版本
 - **MedicalDisclaimerBanner**：整個重做，從刺眼的深紅色長條改成淺灰卡片（`bg-ink-200`）+ 紅色圓形 i icon + 只有「不」字紅色加粗 + 灰色方形關閉鈕；props 從單一 `message` 改成 `before`/`highlight`/`after` 三段式，方便只標紅中間那個字
-- **BottomTabBar**：改成膠囊型浮動列。五個都是白色圓底圖示，中間「跟我聊聊」固定比較大且明顯往上突出（不是對稱上下凸）；選中的分頁用一整塊粉色膠囊蓋住「圖示+文字」，不是只圈圖示；尺寸整體縮小過（原本太肥，佔畫面比例跟設計稿差太多）
-- **VitalSignCard（Tab01）**：改成雙層卡片效果（`border-pink-400` 框住白底），標題置中加底線。**刻意保留中性顏色，沒有加紅/綠判斷邏輯**——使用者一度要求依數值好壞標紅綠色，但這違反 CLAUDE.md「不用紅色標示異常」鐵則，已確認過維持中性
+- **VitalSignCard（Tab01）**：改成雙層卡片效果（`border-pink-400` 框住白底），標題置中加底線。原本刻意保留中性顏色（不加紅/綠），但後續 Codex 加回 `trendTone` 紅綠標示，見下方「CLAUDE.md 規則變動」
 - **FloatingAddButton（Tab01 新增鈕）**：改用 `PageContainer` 新的 `#fab` slot，固定在整個手機畫面右下角，不會再跟著內容捲動跑掉
-- **Tab02 破關地圖大改版**：加了 4 個裝飾 blob 背景（`BackgroundBlobs.vue`，共用元件，其他頁要用同款背景可以直接重用）、腳印換成真的腳掌圖示（`IconFootprint.vue`，不是灰點）、版面全面縮小 + 改用 `flex justify-between` 自動撐開間距，而不是寫死 gap 數值——這樣不管螢幕多高都會剛好塞滿一頁不用捲動（**寫死間距在矮螢幕上會爆版面，一定要用彈性撐開的寫法**）
-- **Tab03 新聞影片區**：從灰色 placeholder 換成 `vue3-carousel` 滑動容器 + 真的 YouTube 縮圖（`img.youtube.com/vi/{id}/hqdefault.jpg`），點縮圖開新分頁到 YouTube
+- **NewsAwarenessBanner（Tab03）**：從灰色 placeholder 換成 `vue3-carousel` 滑動容器 + 真的 YouTube 縮圖（`img.youtube.com/vi/{id}/hqdefault.jpg`），點縮圖開新分頁到 YouTube；底色改 `bg-ink-200`、縮圖拿掉圓角，跟 Figma 對齊
+- **IntroView（Tab03）**：「你的 Care Agent 已經準備好了」從常駐文字改成可關閉的粉色提示卡（X 按鈕），開發用的「模擬首次使用畫面」連結獨立一行、不受提示卡開關影響
+- **WeatherMoodPicker + 5 個天氣 icon（Tab03）**：選中的天氣圖示現在會從外框變實心（`filled` prop 切換 `fill: none → currentColor`），不再只是變色，跟未選取的區別更明顯
+- **NoteDetailModal（Tab04）**：「普通」（黃色）層級原本用 `bg-accent/30`（30% 透明度），疊在深色遮罩上完全看不清楚文字；改成跟緊急/不重要一樣不透明的 `bg-accent`
+
+**Codex 改的：**
+
+- **BottomTabBar**：重做成膠囊型浮動列，中間「跟我聊聊」用絕對定位的圓角矩形做出突出剪影，選中分頁用膠囊蓋住圖示+文字
+- **PageContainer**：寬度上限微調（`max-w-sm` → `max-w-[402px]`，對齊 Figma 手機尺寸）
+- **BackgroundBlobs**：4 個裝飾 blob 顏色/形狀調整
+- **Tab01**：`ScheduleTable`／`SegmentedToggle` 改用 accent 黃色系配色重新設計；`AddScheduleView` 表單版面重排；新增 `utils/schedule.ts` 統一時間表小時範圍（07:00–23:00）
+- **Tab02 破關地圖**：`DiaryDayBubble`／`FootprintDots`／`IconFootprint` 重畫（雙層描邊圓圈、真的腳印形狀、依前後泡泡位置動態算角度的連接線）。**已知問題（尚未修復，Codex 負責中）**：目前版面在可視高度 ≲740px 的裝置上會溢出到底部導覽列下方看不見（Day101/Day100 這類後面的項目），根因是 flex 容器缺少 `min-h-0` 導致撐高不會自動收縮，且泡泡本身尺寸偏大、7 顆+6 個腳印的最小總高度超過矮螢幕能給的空間。Claude 這邊只記錄，沒有動這幾個檔案
+- **Tab04**：`NoteCard` 改用新的 `NoteMetaIcon`（標題/權限/層級小圖示）取代文字前綴 emoji；新增 `AddNoteButton.vue`（獨立的新增鈕樣式，不是共用 `FloatingAddButton`）
+- **Tab05**：`CareTreeHeader` 大幅重畫（更細緻的樹冠/樹枝/葉子 SVG 路徑）；`AccountView` 版面調整；`PlanCard`／`PlansView` 訂閱方案卡片配色與陰影調整
+- **根目錄 `README.md`**：整份重寫，含專案定位、功能對照表、本機啟動、建置指令、Railway 部署步驟、目錄結構——內容比這份 `overview.md` 更適合給第一次接觸專案的人看，建議先看那份再看這份的細節
+
+**CLAUDE.md 規則變動：**「不用紅色標示異常」改成「數值上升/下降可以用顏色簡單區分方向，但不能暗示醫療異常/危險」——因為 `VitalSignCard` 現在有 `trendTone`（positive/negative）紅綠標示變化方向，使用者確認這不算醫療判讀，鐵則已同步更新。
 
 ### Tab03 細節（★核心頁，邏輯較複雜）
 
@@ -145,22 +162,25 @@ Tailwind v4，色票定義在 `src/assets/main.css` 的 `@theme` block，對應 
 - Tab04 便利貼權限簡化成「只有自己／雇主」二選一（單一雇主帳號），規格文件原本想支援指定多個家人聯絡人，等有多聯絡人資料模型再擴充
 - Tab05 樹狀插圖（`CareTreeHeader.vue`）用簡化幾何圖形逼近，頭像是 pravatar.cc 佔位照片，Figma 原稿是手繪風插畫，還沒有可匯出的素材檔
 - 產品名稱曾在不同 Figma 稿打成三種寫法，目前統一用「404: Care Can Be Found」（文法正確版本），之後 Figma 若又有新版本要再對齊
-- Tab02 破關地圖在極短螢幕（< 568px 可視高度，例如很舊的小手機）還是會差一點點空間，600px 以上都確認沒問題
+- **Tab02 破關地圖在可視高度 ≲740px 會溢出、看不到後面幾個 Day 泡泡**（見上方「Codex 改的」段落），目前未修復
 
 ## 開發與部署
 
 ```bash
 cd frontend
-npm install
+npm ci           # 或 npm install
 npm run dev      # http://localhost:5173
 npm run build    # 型別檢查 + build，產出 dist/
 ```
 
-部署走 **Railway**（CLI 直接部署本機資料夾，沒有接 GitHub 自動部署）：
+部署走 **Railway**（CLI 直接上傳本機資料夾，沒有接 GitHub 自動部署，執行者需要目標 Railway 專案的部署權限）：
 
 ```bash
 cd frontend
-railway up
+railway login
+railway link       # 選正確的 project / environment / service
+railway status      # 確認部署目標對不對
+railway up . --path-as-root --service <前端服務名稱>
 ```
 
-`npm run start`（`serve -s dist`）在 Railway 上撐靜態檔案，會讀 Railway 注入的 `PORT`。
+Service 設定：Root Directory 用預設根目錄、Build Command 設 `npm run build`、Start Command 設 `npm run start`（內部是 `serve -s dist`，會讀 Railway 注入的 `PORT`）。部署後到該 Service 的 Networking 設定產生公開網域即可瀏覽。詳細版本另見根目錄 `README.md`。

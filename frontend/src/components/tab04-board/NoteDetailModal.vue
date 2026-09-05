@@ -9,7 +9,7 @@ const colorClass = computed(
   () =>
     ({
       urgent: 'bg-red-100',
-      normal: 'bg-accent/30',
+      normal: 'bg-accent',
       minor: 'bg-sky-100',
     })[props.note?.level ?? 'normal'],
 )

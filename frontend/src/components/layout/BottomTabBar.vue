@@ -22,7 +22,9 @@ function isActive(to: string) {
 </script>
 
 <template>
-  <div class="relative z-30 shrink-0 bg-white px-5 pt-4 pb-2">
+  <div
+    class="relative z-30 shrink-0 bg-white px-5 pt-4 pb-[calc(28px+env(safe-area-inset-bottom,0px))]"
+  >
     <nav class="flex h-[52px] items-stretch rounded-full bg-pink-300">
       <RouterLink
         v-for="tab in tabs"
@@ -33,7 +35,7 @@ function isActive(to: string) {
         <!-- The middle item always owns the raised Figma silhouette. -->
         <span
           v-if="tab.raised"
-          class="absolute inset-x-0 -top-2 -bottom-2 rounded-[28px]"
+          class="absolute top-1/2 left-1/2 h-[72px] w-[72px] -translate-x-1/2 -translate-y-1/2 rounded-full"
           :class="isActive(tab.to) ? 'bg-pink-400' : 'bg-pink-300'"
         ></span>
         <span
@@ -43,11 +45,7 @@ function isActive(to: string) {
 
         <span
           class="relative z-10 flex shrink-0 items-center justify-center rounded-full bg-white"
-          :class="
-            tab.raised
-              ? `-mt-2 h-11 w-11 border-[5px] ${isActive(tab.to) ? 'border-pink-400' : 'border-pink-300'}`
-              : 'mt-1.5 h-6 w-6'
-          "
+          :class="tab.raised ? '-mt-1 h-9 w-9' : 'mt-1.5 h-6 w-6'"
         >
           <component :is="tab.icon" class="h-3.5 w-3.5 text-ink-500" />
         </span>

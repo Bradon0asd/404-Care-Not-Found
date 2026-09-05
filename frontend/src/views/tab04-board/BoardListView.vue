@@ -7,6 +7,7 @@ import BottomTabBar from '@/components/layout/BottomTabBar.vue'
 import FilterSelect from '@/components/common/FilterSelect.vue'
 import NoteCard from '@/components/tab04-board/NoteCard.vue'
 import NoteDetailModal from '@/components/tab04-board/NoteDetailModal.vue'
+import AddNoteButton from '@/components/tab04-board/AddNoteButton.vue'
 import { useBoardStore, type StickyNote } from '@/stores/board'
 
 const router = useRouter()
@@ -29,7 +30,9 @@ const levelOptions = [
 
 const filteredNotes = computed(() =>
   store.notes.filter(
-    (n) => (!statusFilter.value || n.employerStatus === statusFilter.value) && (!levelFilter.value || n.level === levelFilter.value),
+    (n) =>
+      (!statusFilter.value || n.employerStatus === statusFilter.value) &&
+      (!levelFilter.value || n.level === levelFilter.value),
   ),
 )
 </script>
@@ -44,19 +47,17 @@ const filteredNotes = computed(() =>
       </div>
     </template>
 
-    <div class="grid flex-1 grid-cols-2 gap-3 px-4 py-4">
-      <NoteCard v-for="note in filteredNotes" :key="note.id" :note="note" @click="activeNote = note" />
-      <button
-        type="button"
-        class="flex items-center justify-center rounded-xl bg-ink-100"
-        aria-label="新增便利貼"
-        @click="router.push('/board/new')"
-      >
-        <span class="flex h-10 w-10 items-center justify-center rounded-full bg-pink-500 text-xl text-white">+</span>
-      </button>
+    <div class="grid flex-1 grid-cols-2 gap-3 px-4 pt-4 pb-24">
+      <NoteCard
+        v-for="note in filteredNotes"
+        :key="note.id"
+        :note="note"
+        @click="activeNote = note"
+      />
     </div>
 
     <NoteDetailModal :note="activeNote" @close="activeNote = null" />
+    <template #fab><AddNoteButton @click="router.push('/board/new')" /></template>
     <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>

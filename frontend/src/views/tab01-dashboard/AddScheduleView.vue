@@ -8,6 +8,7 @@ import BaseButton from '@/components/common/BaseButton.vue'
 import SegmentedToggle from '@/components/common/SegmentedToggle.vue'
 import { useScheduleStore } from '@/stores/schedule'
 import type { ScheduleEntry } from '@/components/tab01-dashboard/ScheduleTable.vue'
+import { scheduleHours as hourOptions } from '@/utils/schedule'
 
 const router = useRouter()
 const scheduleStore = useScheduleStore()
@@ -28,7 +29,6 @@ const weekendOptions = [
   { value: 'sat', label: '星期六' },
   { value: 'sun', label: '星期日' },
 ]
-const hourOptions = Array.from({ length: 14 }, (_, i) => 7 + i)
 
 function submit() {
   if (!note.value.trim()) return

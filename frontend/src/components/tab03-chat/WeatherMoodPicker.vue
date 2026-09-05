@@ -38,7 +38,7 @@ function submit() {
         :class="selected === opt.value ? 'text-pink-600' : 'text-pink-300'"
         @click="selected = opt.value"
       >
-        <component :is="opt.icon" class="h-full w-full" />
+        <component :is="opt.icon" class="h-full w-full" :filled="selected === opt.value" />
       </button>
     </div>
     <div class="mx-auto max-w-[160px]">
