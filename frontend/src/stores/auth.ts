@@ -13,6 +13,7 @@ import { useOnboardingStore } from '@/stores/onboarding'
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<SessionUser | null>(null)
   const loading = ref(false)
+  const sessionLoaded = ref(false)
 
   const isLoggedIn = computed(() => user.value !== null)
   // Whose call this is belongs to the backend: a LINE signup already carries a
@@ -26,6 +27,9 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = await fetchSession()
       // Keep the role the rest of the app already reads in sync with the real session.
       useOnboardingStore().selectRole(ROLE_FROM_BACKEND[user.value.role])
+      if (user.value.language === 'id' || user.value.language === 'zh') {
+        useOnboardingStore().language = user.value.language
+      }
       return user.value
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
@@ -34,19 +38,33 @@ export const useAuthStore = defineStore('auth', () => {
       }
       throw error
     } finally {
+      sessionLoaded.value = true
       loading.value = false
     }
   }
 
   async function completeOnboarding(payload: { name?: string; language?: string }) {
     user.value = await completeOnboardingRequest(payload)
+    if (user.value.language === 'id' || user.value.language === 'zh') {
+      useOnboardingStore().language = user.value.language
+    }
     return user.value
   }
 
   async function logout() {
     await logoutRequest()
     user.value = null
+    sessionLoaded.value = true
   }
 
-  return { user, loading, isLoggedIn, needsOnboarding, loadSession, completeOnboarding, logout }
+  return {
+    user,
+    loading,
+    sessionLoaded,
+    isLoggedIn,
+    needsOnboarding,
+    loadSession,
+    completeOnboarding,
+    logout,
+  }
 })

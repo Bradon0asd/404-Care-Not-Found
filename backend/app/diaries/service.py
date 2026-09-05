@@ -1,6 +1,7 @@
 import logging
 
 from sqlalchemy import or_
+from datetime import date
 
 from app.shared.errors import DiaryNotFoundError, PermissionDeniedError
 from app.extensions import db
@@ -11,11 +12,12 @@ from app.stress_signals import service as stress_signals
 logger = logging.getLogger(__name__)
 
 
-def create_diary(*, current_user, title=None, content, image_url=None, is_private):
+def create_diary(*, current_user, title=None, content, entry_date=None, image_url=None, is_private):
     diary = Diary(
         creator_id=current_user.id,
         title=title,
         content=content,
+        entry_date=entry_date or date.today(),
         image_url=image_url,
         is_private=is_private,
     )
@@ -28,7 +30,7 @@ def create_diary(*, current_user, title=None, content, image_url=None, is_privat
 def list_diaries(*, current_user):
     return (
         Diary.query.filter(_visible_filter(current_user))
-        .order_by(Diary.created_at.desc(), Diary.id.desc())
+        .order_by(Diary.entry_date.desc(), Diary.created_at.desc(), Diary.id.desc())
         .all()
     )
 
@@ -42,7 +44,7 @@ def get_diary(*, current_user, diary_id):
 def update_diary(*, current_user, diary_id, **changes):
     diary = _load_diary(diary_id)
     _require_creator(diary, current_user)
-    for field in ("title", "content", "image_url", "is_private"):
+    for field in ("title", "content", "entry_date", "image_url", "is_private"):
         if field in changes:
             setattr(diary, field, changes[field])
     db.session.commit()

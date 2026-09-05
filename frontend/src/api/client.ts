@@ -6,19 +6,23 @@ const BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
 export class ApiError extends Error {
   code: string
   status: number
+  details: unknown
 
-  constructor(code: string, message: string, status: number) {
+  constructor(code: string, message: string, status: number, details?: unknown) {
     super(message)
     this.name = 'ApiError'
     this.code = code
     this.status = status
+    this.details = details
   }
 }
 
 type ApiEnvelope<T> =
-  { success: true; data: T } | { success: false; error: { code: string; message: string } }
+  | { success: true; data: T }
+  | { success: false; error: { code: string; message: string; details?: unknown } }
 
 export async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const isFormData = init.body instanceof FormData
   let response: Response
   try {
     response = await fetch(`${BASE_URL}${path}`, {
@@ -26,7 +30,7 @@ export async function request<T>(path: string, init: RequestInit = {}): Promise<
       // The session lives in a cookie the backend sets, so it has to travel cross-origin.
       credentials: 'include',
       headers: {
-        'Content-Type': 'application/json',
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         // Free ngrok tunnels answer browser requests with a warning page without this.
         'ngrok-skip-browser-warning': 'true',
         ...init.headers,
@@ -49,6 +53,7 @@ export async function request<T>(path: string, init: RequestInit = {}): Promise<
       error?.code ?? 'UNEXPECTED_ERROR',
       error?.message ?? response.statusText,
       response.status,
+      error?.details,
     )
   }
 
@@ -62,6 +67,26 @@ export function post<T>(path: string, payload?: unknown) {
   })
 }
 
+export function postForm<T>(path: string, formData: FormData) {
+  return request<T>(path, {
+    method: 'POST',
+    body: formData,
+  })
+}
+
 export function get<T>(path: string) {
   return request<T>(path)
+}
+
+export function patch<T>(path: string, payload: unknown) {
+  return request<T>(path, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function del<T>(path: string) {
+  return request<T>(path, {
+    method: 'DELETE',
+  })
 }

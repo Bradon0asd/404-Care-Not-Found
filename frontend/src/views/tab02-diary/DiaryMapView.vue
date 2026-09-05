@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import PageContainer from '@/components/layout/PageContainer.vue'
@@ -18,7 +18,6 @@ function pathTop(progress: number) {
   return `calc(${progress * 100}% + ${36 - progress * 72}px)`
 }
 
-// The path climbs from today at the bottom toward the upcoming days.
 const days = computed(() =>
   Array.from({ length: 7 }, (_, i) => diaryStore.arrivalDay + 6 - i).map((day, i) => ({
     day,
@@ -38,6 +37,10 @@ const footsteps = computed(() =>
 function openDay(day: number) {
   router.push(`/diary/${day}`)
 }
+
+onMounted(() => {
+  diaryStore.loadEntries().catch(() => undefined)
+})
 </script>
 
 <template>
@@ -51,7 +54,16 @@ function openDay(day: number) {
         :care-recipient-count="diaryStore.careRecipientCount"
       />
       <p class="mt-2 shrink-0 px-6 text-center text-[10px] text-ink-600">
-        {{ $t('每天撰寫日記，累積一定天數將獲得特定獎勵') }}
+        {{ $t('沿著照護旅程記下每天的狀況，日記會自動同步到後端。') }}
+      </p>
+      <p v-if="diaryStore.loading" class="mt-2 shrink-0 px-6 text-center text-[10px] text-ink-600">
+        {{ $t('讀取日記中...') }}
+      </p>
+      <p
+        v-else-if="diaryStore.error"
+        class="mt-2 shrink-0 px-6 text-center text-[10px] text-red-600"
+      >
+        {{ diaryStore.error }}
       </p>
 
       <div class="relative mx-4 my-2 min-h-[280px] flex-1">

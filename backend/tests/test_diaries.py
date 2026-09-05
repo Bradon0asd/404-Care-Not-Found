@@ -8,6 +8,7 @@ def test_diary_crud_is_limited_to_creator(client):
         json={
             "title": "Shift notes",
             "content": "Ate breakfast.",
+            "entry_date": "2026-09-05",
             "image_url": "https://example.com/breakfast.png",
         },
     )
@@ -16,6 +17,7 @@ def test_diary_crud_is_limited_to_creator(client):
     diary = created.get_json()["data"]
     assert diary["creator_id"] == creator_id
     assert diary["title"] == "Shift notes"
+    assert diary["entry_date"] == "2026-09-05"
     assert diary["image_url"] == "https://example.com/breakfast.png"
     assert diary["is_private"] is True
 
@@ -25,10 +27,11 @@ def test_diary_crud_is_limited_to_creator(client):
     updated = client.patch(
         f"/api/diaries/{diary['id']}",
         headers=_headers(creator_id),
-        json={"content": "Ate breakfast and took medicine."},
+        json={"content": "Ate breakfast and took medicine.", "entry_date": "2026-09-06"},
     )
     assert updated.status_code == 200
     assert updated.get_json()["data"]["content"] == "Ate breakfast and took medicine."
+    assert updated.get_json()["data"]["entry_date"] == "2026-09-06"
 
     deleted = client.delete(f"/api/diaries/{diary['id']}", headers=_headers(creator_id))
     assert deleted.status_code == 200

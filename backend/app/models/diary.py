@@ -24,6 +24,7 @@ class Diary(db.Model):
     )
     title = db.Column(db.String(100), nullable=True)
     content = db.Column(db.Text, nullable=False)
+    entry_date = db.Column(db.Date, nullable=True, index=True)
     # One image per diary entry, stored as a URL; the file itself never enters the DB.
     ai_analysis = db.Column(db.String(64), nullable=True, default=DiaryAiAnalysis.NORMAL.value)
     image_url = db.Column(db.String(500), nullable=True)
