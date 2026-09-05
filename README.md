@@ -61,7 +61,7 @@ AI 模型主要用於 Care Agent 回覆、照護資訊抽取與高壓訊號判�
 | 後端 | Python, Flask, flask-smorest, Flask-SQLAlchemy, Flask-Migrate, Marshmallow, PyMySQL, pytest | REST API、資料模型、migration、驗證、測試 |
 | 資料庫 | MySQL | 儲存使用者、照護對象、日記、聊天室、便利貼、壓力事件 |
 | 外部服務 | LINE Login, LINE Messaging API | 使用者登入、雇主端 LINE webhook 與推播 |
-| Sponsor 技術 | Google AI / Gemini | AI 生成與判定能力 |
+| Sponsor 技術 | - | - |
 
 ## 安裝與執行
 
@@ -179,14 +179,14 @@ npm run build
 本 repo 不應提交 `.env`、資料庫密碼、LINE token、Google API key、真實使用者資料或可識別個資。
 
 ## 團隊成員
-
+按字母順序排序
 | 姓名 | 分工 |
 | --- | --- |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-| [冠冠]() | Demo架構、錄音 |
+| [Bradon](https://github.com/bradon0asd) |  |
+| [Daniel](https://github.com/daniellife624) |  |
+| [William](https://github.com/smileakklpl) | LLM Service 功能落地 & Agent 功能串接 |
+| [Willy](https://github.com/weiLiao225) |  |
+| 冠冠 | Demo架構、錄音 |
 
 ## 補充文件
 
