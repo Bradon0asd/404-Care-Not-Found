@@ -20,6 +20,8 @@ const account = useAccountStore()
 const systemPrompt = ref('')
 const temperature = ref(0)
 const guardrail = ref('')
+const setupError = ref('')
+const submitting = ref(false)
 
 // TODO: wire up once the Indonesian ASR service is available.
 function startVoiceInput() {
@@ -27,17 +29,34 @@ function startVoiceInput() {
 }
 
 async function next() {
-  if (!account.currentCareRecipientId) {
-    await account.loadAccount()
+  setupError.value = ''
+  const prompt = systemPrompt.value.trim()
+  if (!prompt) {
+    setupError.value = '請先輸入照護情境，讓 Care Agent 知道要協助照顧誰。'
+    return
   }
-  if (!account.currentCareRecipientId) return
-  await store.createAgent({
-    careRecipientId: account.currentCareRecipientId,
-    systemPrompt: systemPrompt.value,
-    temperature: temperature.value,
-    guardrail: guardrail.value,
-  })
-  router.push('/chat/baseline')
+
+  submitting.value = true
+  try {
+    if (!account.currentCareRecipientId) {
+      await account.loadAccount()
+    }
+    if (!account.currentCareRecipientId) {
+      setupError.value = '目前找不到照護對象，請先完成邀請或照護對象設定。'
+      return
+    }
+    await store.createAgent({
+      careRecipientId: account.currentCareRecipientId,
+      systemPrompt: prompt,
+      temperature: temperature.value,
+      guardrail: guardrail.value.trim(),
+    })
+    router.push('/chat/baseline')
+  } catch (error) {
+    setupError.value = error instanceof Error ? error.message : '建立 Care Agent 失敗，請稍後再試。'
+  } finally {
+    submitting.value = false
+  }
 }
 </script>
 
@@ -75,9 +94,13 @@ async function next() {
       <TemperatureSlider v-model="temperature" />
       <GuardrailField v-model="guardrail" />
 
-      <BaseButton variant="primary" @click="next">{{
-        $t('下一步：協助 Agent 建立心理基準線')
-      }}</BaseButton>
+      <p v-if="setupError" class="rounded-xl bg-red-50 px-3 py-2 text-sm font-bold text-red-600">
+        {{ $t(setupError) }}
+      </p>
+
+      <BaseButton variant="primary" :disabled="submitting" @click="next">
+        {{ submitting ? $t('建立中...') : $t('下一步：協助 Agent 建立心理基準線') }}
+      </BaseButton>
     </div>
 
     <template #footer><BottomTabBar /></template>
