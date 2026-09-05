@@ -3,6 +3,7 @@ import secrets
 from flask import current_app
 
 from app.auth.service import start_session
+from app.users.service import complete_onboarding
 from app.extensions import db
 from app.models import Invite, User, UserRole
 from app.models.invite import generate_code
@@ -60,10 +61,9 @@ def enter_invite(*, code):
 def complete_profile(*, code, name, language=None):
     invite = get_invite(code=code)
     nurse = invite.nurse or _bind_nurse(invite)
-    nurse.name = name
-    if language is not None:
-        nurse.language = language
-    db.session.commit()
+    # This form is the invited caregiver's onboarding, so it stamps the same field
+    # the LINE signup path does; otherwise they would be asked to set up twice.
+    complete_onboarding(user=nurse, name=name, language=language)
     start_session(nurse)
     return nurse
 

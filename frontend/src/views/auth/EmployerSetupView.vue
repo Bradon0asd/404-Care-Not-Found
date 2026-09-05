@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useOnboardingStore } from '@/stores/onboarding'
+import { useAuthStore } from '@/stores/auth'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import PageContainer from '@/components/layout/PageContainer.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
@@ -11,13 +12,28 @@ import InviteCodeModal from '@/components/auth/InviteCodeModal.vue'
 
 const router = useRouter()
 const store = useOnboardingStore()
+const auth = useAuthStore()
 
 const modalOpen = ref(false)
+const saving = ref(false)
+const failed = ref(false)
 
-function generateInviteCode() {
-  const code = crypto.randomUUID().slice(0, 8)
-  store.setInviteCode(code)
-  modalOpen.value = true
+async function generateInviteCode() {
+  if (saving.value) return
+  saving.value = true
+  failed.value = false
+  try {
+    // Handing out the invite is all an employer sets up here, so it is the moment
+    // the account counts as registered and later logins skip this page.
+    await auth.completeOnboarding({})
+    const code = crypto.randomUUID().slice(0, 8)
+    store.setInviteCode(code)
+    modalOpen.value = true
+  } catch {
+    failed.value = true
+  } finally {
+    saving.value = false
+  }
 }
 
 const inviteLink = () => `${window.location.origin}/auth/role?invite=${store.inviteCode}`
@@ -36,7 +52,10 @@ const inviteLink = () => `${window.location.origin}/auth/role?invite=${store.inv
       </div>
 
       <div class="mt-auto flex w-full flex-col gap-3">
-        <BaseButton variant="primary" @click="generateInviteCode">{{
+        <p v-if="failed" class="text-center text-sm text-pink-600">
+          {{ $t('沒有存起來，請再試一次') }}
+        </p>
+        <BaseButton variant="primary" :disabled="saving" @click="generateInviteCode">{{
           $t('生成動態邀請碼')
         }}</BaseButton>
         <BaseButton variant="outline" @click="router.back()">{{ $t('返回上一步驟') }}</BaseButton>

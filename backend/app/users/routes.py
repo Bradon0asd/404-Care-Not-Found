@@ -1,7 +1,12 @@
 from app.users import user_bp
 from app.shared.response import api_success
 from app.users import service as user_service
-from app.users.schemas import UserCreateSchema, UserPairSchema, UserSchema
+from app.users.schemas import (
+    OnboardingSchema,
+    UserCreateSchema,
+    UserPairSchema,
+    UserSchema,
+)
 
 
 @user_bp.post("/users")
@@ -13,12 +18,22 @@ def create_user(args):
 
 
 @user_bp.get("/users/me")
-@user_bp.doc(summary="Get the logged-in user")
+@user_bp.doc(summary="Get the logged-in user", security=[{"UserIdHeader": []}])
 def read_current_user():
     # Imported here because app.auth.service imports app.users.service at module level.
     from app.auth.service import require_session_user
 
     return api_success(UserSchema().dump(require_session_user()))
+
+
+@user_bp.post("/users/me/onboarding")
+@user_bp.arguments(OnboardingSchema, location="json")
+@user_bp.doc(summary="Finish the one-off setup form", security=[{"UserIdHeader": []}])
+def complete_onboarding(args):
+    from app.auth.service import require_session_user
+
+    user = user_service.complete_onboarding(user=require_session_user(), **args)
+    return api_success(UserSchema().dump(user))
 
 
 @user_bp.get("/users/<int:user_id>")

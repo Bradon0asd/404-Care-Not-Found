@@ -106,7 +106,9 @@ class Config:
             "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000",
         )
     )
-    CORS_ALLOW_HEADERS = ["Content-Type", "X-User-Id"]
+    # ngrok's free tier serves a warning page unless the request opts out by header,
+    # and a header the browser sends must be allowed here or the preflight fails.
+    CORS_ALLOW_HEADERS = ["Content-Type", "X-User-Id", "ngrok-skip-browser-warning"]
     CORS_METHODS = ["GET", "POST", "PATCH", "DELETE", "OPTIONS"]
     CORS_MAX_AGE = 600
 

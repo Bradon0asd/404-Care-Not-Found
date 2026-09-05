@@ -15,6 +15,15 @@ class UserCreateSchema(Schema):
     )
 
 
+class OnboardingSchema(Schema):
+    name = fields.Str(load_default=None, allow_none=True, validate=validate.Length(max=100))
+    language = fields.Str(
+        load_default=None,
+        allow_none=True,
+        validate=validate.Length(max=10),
+    )
+
+
 class UserPairSchema(Schema):
     pair_user_id = fields.Int(required=True)
 
@@ -26,4 +35,5 @@ class UserSchema(Schema):
     language = fields.Str(allow_none=True)
     role = fields.Str(required=True)
     pair_user_id = fields.Int(allow_none=True)
+    needs_onboarding = fields.Bool(required=True)
     created_at = fields.DateTime(required=True)

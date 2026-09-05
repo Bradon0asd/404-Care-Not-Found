@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useOnboardingStore } from '@/stores/onboarding'
+import { startLineLogin } from '@/api/auth'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import PageContainer from '@/components/layout/PageContainer.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
@@ -17,19 +18,43 @@ const route = useRoute()
 const store = useOnboardingStore()
 const { role } = storeToRefs(store)
 
+const submitting = ref(false)
+const errorCode = ref('')
+
+// The LINE callback bounces failures back here as ?error=CODE.
+const ERROR_TEXT: Record<string, string> = {
+  LINE_LOGIN_DECLINED: '你在 LINE 取消了授權',
+  LINE_LOGIN_FAILED: 'LINE 登入沒有完成，請再試一次',
+  LINE_LOGIN_NOT_CONFIGURED: 'LINE 登入還沒設定完成',
+  ROLE_MISMATCH: '這個 LINE 帳號已經用另一個身分註冊過了',
+  SESSION_NOT_FOUND: '登入沒有完成，請再試一次',
+  NETWORK_ERROR: '連不到伺服器，請確認後端有啟動',
+}
+
+function errorText(code: string) {
+  return ERROR_TEXT[code] ?? '登入失敗，請再試一次'
+}
+
 // Arriving via an employer's invite link means the visitor is the caregiver being invited.
 onMounted(() => {
   if (route.query.invite) {
     store.selectRole('caregiver')
   }
+  if (route.query.error) {
+    errorCode.value = String(route.query.error)
+  }
 })
 
-function handleLineRegister() {
-  if (!role.value) return
-  if (role.value === 'caregiver') {
-    router.push('/auth/caregiver/onboarding')
-  } else {
-    router.push('/auth/employer/setup')
+async function handleLineRegister() {
+  if (!role.value || submitting.value) return
+  submitting.value = true
+  errorCode.value = ''
+  try {
+    // Leaving the SPA entirely: LINE owns the next screen.
+    window.location.href = await startLineLogin(role.value)
+  } catch (error) {
+    errorCode.value = error instanceof Error && 'code' in error ? String(error.code) : ''
+    submitting.value = false
   }
 }
 </script>
@@ -71,8 +96,11 @@ function handleLineRegister() {
       </div>
 
       <div class="mt-auto flex w-full flex-col gap-3">
-        <BaseButton variant="line" :disabled="!role" @click="handleLineRegister">
-          <IconLine />{{ $t('使用 LINE 註冊') }}</BaseButton
+        <p v-if="errorCode" class="text-center text-sm text-pink-600">
+          {{ $t(errorText(errorCode)) }}
+        </p>
+        <BaseButton variant="line" :disabled="!role || submitting" @click="handleLineRegister">
+          <IconLine />{{ submitting ? $t('前往 LINE…') : $t('使用 LINE 註冊') }}</BaseButton
         >
         <BaseButton variant="outline" @click="router.back()">{{ $t('返回上一步驟') }}</BaseButton>
       </div>

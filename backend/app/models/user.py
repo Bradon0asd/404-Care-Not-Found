@@ -39,6 +39,9 @@ class User(db.Model):
         nullable=False,
         server_default=db.func.current_timestamp(),
     )
+    # Stamped when the account finishes its one-off setup form. NULL means the app
+    # should still send this user through onboarding.
+    onboarded_at = db.Column(db.DateTime, nullable=True)
 
     paired_user = db.relationship(
         "User",
@@ -86,6 +89,10 @@ class User(db.Model):
         if self.role == UserRole.NURSE.value:
             return self.nurse_recipients
         return self.owner_recipients
+
+    @property
+    def needs_onboarding(self):
+        return self.onboarded_at is None
 
 
 class CareRecipient(db.Model):

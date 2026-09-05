@@ -14,6 +14,11 @@ const router = createRouter({
       component: RoleSelectView,
     },
     {
+      path: '/auth/callback',
+      name: 'auth-line-callback',
+      component: () => import('@/views/auth/LineCallbackView.vue'),
+    },
+    {
       path: '/auth/caregiver/onboarding',
       name: 'auth-caregiver-onboarding',
       component: () => import('@/views/auth/CaregiverOnboardingView.vue'),

@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from sqlalchemy.exc import IntegrityError
 
 from app.shared.errors import UserAlreadyExistsError, UserNotFoundError, UserPairingError
@@ -20,6 +22,19 @@ def get_user(*, user_id):
     user = db.session.get(User, user_id)
     if user is None:
         raise UserNotFoundError("User not found")
+    return user
+
+
+def complete_onboarding(*, user, name=None, language=None):
+    """Finish the one-off setup form. The stamp is what later logins are judged on."""
+    if name is not None:
+        user.name = name
+    if language is not None:
+        user.language = language
+    # Re-running the form must not move the stamp, or "already registered" would drift.
+    if user.onboarded_at is None:
+        user.onboarded_at = datetime.now(timezone.utc).replace(tzinfo=None)
+    db.session.commit()
     return user
 
 

@@ -34,6 +34,7 @@
 | GET | `/api/auth/line/callback` | LINE Login 導回，開 session 後 redirect 回前端 | 公開 |
 | POST | `/api/users` | 建立使用者（body：`line_id`、`name`、`language`、`role`） | 公開 |
 | GET | `/api/users/me` | 讀目前登入使用者 | session |
+| POST | `/api/users/me/onboarding` | 完成一次性設定表單（body：`name`、`language`），蓋上 `onboarded_at` | session |
 | GET | `/api/users/<user_id>` | 讀單一使用者 | 公開 |
 | POST | `/api/users/<user_id>/pair` | 配對雇主與看護（body：`pair_user_id`） | 公開 |
 | DELETE | `/api/users/<user_id>/pair` | 解除配對 | 公開 |
@@ -41,6 +42,8 @@
 角色只有 `owner`（雇主）與 `nurse`（看護）。LINE 官方帳號來的使用者一律建成 `owner`，因為 LINE 是雇主端通道。
 
 LINE Login callback 一律以 redirect 收尾（使用者的瀏覽器在那裡），成功導到 `LINE_LOGIN_SUCCESS_PATH`，失敗把錯誤碼放 query string 導到 `LINE_LOGIN_FAILURE_PATH`。
+
+`/api/auth/session`、`/api/users/me` 與 `/api/users/me/onboarding` 都回一個 `needs_onboarding` 布林，由 `users.onboarded_at` 是否為 `NULL` 算出來。**前端不自行判斷是否註冊過**——LINE 登入建帳號時就會寫入顯示名稱，前端看得到的欄位沒有一個能代表新帳號。被邀請的看護填完 `/api/invites/<code>/profile` 也會蓋同一個章。
 
 ## 邀請連結（雇主邀看護，看護免註冊）
 
@@ -160,4 +163,4 @@ Dashboard 每項指標回 `latest`、`current_average`、`previous_average`、`d
 - **Tab03 跟我聊聊**：`app/chat` 只有 Gemini client（`app/chat/client.py`），blueprint 已註冊但還沒有端點。建檔模式、對話、情緒分析、照護資訊抽取都還沒有 API。
 - 日記的 `ai_analysis` 欄位已在 model 與 migration 中，但 `DiarySchema` 還沒輸出。
 - Tab05 訂閱方案、語音辨識、翻譯尚無端點。
-- `GET /api/users/me`、`/api/users/<id>` 等使用者端點在 Swagger 上沒標 security，但 `/api/users/me` 實際需要 session。
+- onboarding 目前只存得下 `name` 與 `language`；入境日期、第幾位被照顧者還沒有欄位，留在前端 store。

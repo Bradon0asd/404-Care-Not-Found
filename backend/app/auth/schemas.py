@@ -15,6 +15,8 @@ class SessionSchema(Schema):
     name = fields.Str(allow_none=True)
     role = fields.Str(required=True)
     pair_user_id = fields.Int(allow_none=True)
+    # The frontend routes on this instead of guessing from the profile fields.
+    needs_onboarding = fields.Bool(required=True)
 
 
 class LineLoginStartSchema(Schema):
