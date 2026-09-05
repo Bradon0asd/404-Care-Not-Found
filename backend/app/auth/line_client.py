@@ -72,7 +72,19 @@ class LineLoginClient:
         id_token = token_payload.get("id_token")
         if id_token:
             claims = self._verify_id_token(id_token=id_token)
-            return claims["sub"], claims.get("name"), claims.get("picture")
+            line_id = claims["sub"]
+            display_name = claims.get("name")
+            picture_url = claims.get("picture")
+
+            access_token = token_payload.get("access_token")
+            if access_token:
+                profile = self._fetch_profile(access_token=access_token)
+                if profile["userId"] != line_id:
+                    raise LineLoginError("LINE profile did not match the verified identity")
+                display_name = profile.get("displayName") or display_name
+                picture_url = profile.get("pictureUrl") or picture_url
+
+            return line_id, display_name, picture_url
 
         access_token = token_payload.get("access_token")
         if not access_token:

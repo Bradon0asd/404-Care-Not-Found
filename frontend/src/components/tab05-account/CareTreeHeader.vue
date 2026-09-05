@@ -7,6 +7,8 @@ defineProps<{
 
 defineEmits<{ language: []; logout: []; plans: [] }>()
 
+const fallbackPictureUrl = '/favicon.svg'
+
 const leaves = [
   { x: 282, y: 399, rotate: -28 },
   { x: 313, y: 386, rotate: 18 },
@@ -106,9 +108,10 @@ const leaves = [
       class="absolute top-[9.5%] left-1/2 flex w-[72%] -translate-x-1/2 flex-col items-center text-center"
     >
       <img
-        :src="pictureUrl || 'https://i.pravatar.cc/256?img=47'"
+        :src="pictureUrl || fallbackPictureUrl"
         :alt="$t('使用者頭像')"
         class="aspect-square w-[40%] rounded-full border-2 border-white object-cover shadow-sm"
+        @error="(event) => ((event.target as HTMLImageElement).src = fallbackPictureUrl)"
       />
       <p class="mt-1.5 text-xs font-medium text-[#594b48]">
         {{ $t('使用者名稱：') }}{{ userName }}

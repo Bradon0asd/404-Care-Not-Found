@@ -4,6 +4,7 @@ import pytest
 
 from app.auth import service as auth_service
 from app.auth.line_client import LineLoginClient
+from app.shared.errors import LineLoginError
 from app.models import User
 
 
@@ -170,6 +171,59 @@ def test_state_store_holds_the_role(login_app):
         url = auth_service.start_line_login(role="owner")
         state = parse_qs(urlparse(url).query)["state"][0]
         assert auth_service.consume_login_state(state) == "owner"
+
+
+def test_fetch_identity_uses_profile_picture_when_id_token_has_none(login_app, monkeypatch):
+    client = LineLoginClient()
+
+    monkeypatch.setattr(
+        client,
+        "_exchange_code",
+        lambda *, code: {"id_token": "id-token", "access_token": "access-token"},
+    )
+    monkeypatch.setattr(
+        client,
+        "_verify_id_token",
+        lambda *, id_token: {"sub": "U-line-login", "name": "Mia"},
+    )
+    monkeypatch.setattr(
+        client,
+        "_fetch_profile",
+        lambda *, access_token: {
+            "userId": "U-line-login",
+            "displayName": "Mia Profile",
+            "pictureUrl": "https://profile.line-scdn.net/mia.png",
+        },
+    )
+
+    assert client.fetch_identity(code="line-code") == (
+        "U-line-login",
+        "Mia Profile",
+        "https://profile.line-scdn.net/mia.png",
+    )
+
+
+def test_fetch_identity_rejects_mismatched_profile_identity(login_app, monkeypatch):
+    client = LineLoginClient()
+
+    monkeypatch.setattr(
+        client,
+        "_exchange_code",
+        lambda *, code: {"id_token": "id-token", "access_token": "access-token"},
+    )
+    monkeypatch.setattr(
+        client,
+        "_verify_id_token",
+        lambda *, id_token: {"sub": "U-line-login", "name": "Mia"},
+    )
+    monkeypatch.setattr(
+        client,
+        "_fetch_profile",
+        lambda *, access_token: {"userId": "U-other", "displayName": "Other"},
+    )
+
+    with pytest.raises(LineLoginError):
+        client.fetch_identity(code="line-code")
 
 
 def _start(client, role):
