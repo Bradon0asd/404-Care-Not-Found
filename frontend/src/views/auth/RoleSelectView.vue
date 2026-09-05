@@ -40,8 +40,13 @@ function handleLineRegister() {
 
     <div class="flex flex-1 flex-col items-center gap-6 px-6 py-10">
       <div class="text-center">
-        <h1 class="text-2xl font-bold text-ink-950">
-          {{ $t('歡迎使用') }}<span class="text-pink-600">{{ $t('照見') }}</span>
+        <h1
+          class="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1 font-bold text-ink-950"
+        >
+          <span class="text-xl">{{ $t('歡迎使用') }}</span>
+          <span class="text-pink-600" :class="store.language === 'id' ? 'text-3xl' : 'text-4xl'">{{
+            $t('照見')
+          }}</span>
         </h1>
         <p class="mt-2 text-sm text-ink-700">{{ $t('請先選擇你的身分') }}</p>
       </div>

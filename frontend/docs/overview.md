@@ -117,6 +117,13 @@ frontend/
 - `stores/board.ts`／`stores/careAgent.ts` 種子資料標上 `demo: true`（詳見「多語系」段落說明目前這個 flag 還沒有實際的翻譯判斷邏輯在用它）
 - 根目錄 `README.md` 補充一段語言切換說明，連結到 `frontend/src/i18n/README.md`
 
+**Codex 改的（第五輪，小幅視覺/多語系適配）：**
+
+- **`FamilyIllustration`（登入流程共用插圖）**：從單一 emoji 佔位圖換成真的手繪風 SVG 插畫（兩人並肩站立），只用在 `RoleSelectView`／`EmployerSetupView`／`CaregiverOnboardingView` 這三個 auth 頁面；**Tab03 `IntroView` 已移除這張插圖**（原本建檔說明畫面上方會放）
+- **`IconLine`**：LINE icon 重畫，改成白底＋綠色線稿的版本
+- **`RoleSelectView`**：標題「歡迎使用照見」拆成兩個字級不同的 `<span>`，印尼文版本字級縮小，避免譯文較長被截斷
+- **`IntroView`**：「建置你的第一個 Care Agent」按鈕加寬、固定高度/字級，同樣是為了容納較長的印尼文按鈕文字
+
 ### Tab03 細節（★核心頁，邏輯較複雜）
 
 `/chat`（`IntroView`）是**持久首頁**：兩支新聞影片區塊永遠顯示在最上面（可收合/展開，右上角箭頭按鈕，收合後只留一行提示文字），下方內容依是否已建檔切換：
