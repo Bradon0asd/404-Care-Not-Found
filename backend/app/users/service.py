@@ -23,11 +23,11 @@ def get_user(*, user_id):
     return user
 
 
-def get_or_create_user(*, line_id, name=None):
+def get_or_create_user(*, line_id, name=None, role=UserRole.NURSE.value):
     user = User.query.filter_by(line_id=line_id).first()
     if user is not None:
         return user
-    return create_user(line_id=line_id, name=name)
+    return create_user(line_id=line_id, name=name, role=role)
 
 
 def pair_users(user, target_user):

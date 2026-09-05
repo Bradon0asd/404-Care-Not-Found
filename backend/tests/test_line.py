@@ -94,15 +94,16 @@ def test_webhook_guides_unrecognised_text_to_the_menu(line_app, client, sent_rep
     assert sent_replies[0]["text"] == HELP_REPLY
 
 
-def test_webhook_registers_unknown_sender(line_app, client, sent_replies):
+def test_webhook_registers_unknown_sender_as_owner(line_app, client, sent_replies):
+    """LINE is the employer channel, so a new sender is an owner, not a nurse."""
     from app.models import User
 
-    _signed_post(client, _text_message_body(line_id="U-new-nurse"))
+    _signed_post(client, _text_message_body(line_id="U-new-employer"))
 
     with line_app.app_context():
-        user = User.query.filter_by(line_id="U-new-nurse").first()
+        user = User.query.filter_by(line_id="U-new-employer").first()
         assert user is not None
-        assert user.role == "nurse"
+        assert user.role == "owner"
 
 
 def test_webhook_ignores_non_text_events(line_app, client, sent_replies):
