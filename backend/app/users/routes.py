@@ -12,6 +12,15 @@ def create_user(args):
     return api_success(UserSchema().dump(user), status_code=201)
 
 
+@user_bp.get("/users/me")
+@user_bp.doc(summary="Get the logged-in user")
+def read_current_user():
+    # Imported here because app.auth.service imports app.users.service at module level.
+    from app.auth.service import require_session_user
+
+    return api_success(UserSchema().dump(require_session_user()))
+
+
 @user_bp.get("/users/<int:user_id>")
 @user_bp.doc(summary="Get a user")
 def get_user(user_id):

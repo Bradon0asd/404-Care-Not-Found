@@ -2,6 +2,8 @@
 
 from marshmallow import Schema, fields, validate
 
+from app.models import UserRole
+
 
 class LoginSchema(Schema):
     line_id = fields.Str(required=True, validate=validate.Length(min=1, max=128))
@@ -13,3 +15,11 @@ class SessionSchema(Schema):
     name = fields.Str(allow_none=True)
     role = fields.Str(required=True)
     pair_user_id = fields.Int(allow_none=True)
+
+
+class LineLoginStartSchema(Schema):
+    role = fields.Str(required=True, validate=validate.OneOf([role.value for role in UserRole]))
+
+
+class LineLoginStartResponseSchema(Schema):
+    authorization_url = fields.Str(required=True)

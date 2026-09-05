@@ -109,3 +109,16 @@ class Config:
     CORS_ALLOW_HEADERS = ["Content-Type", "X-User-Id"]
     CORS_METHODS = ["GET", "POST", "PATCH", "DELETE", "OPTIONS"]
     CORS_MAX_AGE = 600
+
+    # LINE Login (SSO) is a separate channel from the Messaging API bot above.
+    LINE_LOGIN_CHANNEL_ID = os.getenv("LINE_LOGIN_CHANNEL_ID", "")
+    LINE_LOGIN_CHANNEL_SECRET = os.getenv("LINE_LOGIN_CHANNEL_SECRET", "")
+    LINE_LOGIN_CALLBACK_URL = os.getenv("LINE_LOGIN_CALLBACK_URL", "")
+    LINE_LOGIN_SCOPE = os.getenv("LINE_LOGIN_SCOPE", "openid profile")
+    # "aggressive" or "normal" asks LINE to offer the Official Account during login.
+    LINE_LOGIN_BOT_PROMPT = os.getenv("LINE_LOGIN_BOT_PROMPT", "")
+    LINE_LOGIN_STATE_TTL = int(os.getenv("LINE_LOGIN_STATE_TTL", 600))
+    # Where the callback sends the browser once the session exists (or fails).
+    FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+    LINE_LOGIN_SUCCESS_PATH = os.getenv("LINE_LOGIN_SUCCESS_PATH", "/auth/callback")
+    LINE_LOGIN_FAILURE_PATH = os.getenv("LINE_LOGIN_FAILURE_PATH", "/auth/role")

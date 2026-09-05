@@ -95,3 +95,18 @@ class InviteNotFoundError(AppError):
 class InviteRevokedError(AppError):
     status_code = 410
     code = "INVITE_REVOKED"
+
+
+class LineLoginConfigurationError(AppError):
+    status_code = 503
+    code = "LINE_LOGIN_NOT_CONFIGURED"
+
+
+class LineLoginError(AppError):
+    status_code = 400
+    code = "LINE_LOGIN_FAILED"
+
+
+class RoleMismatchError(AppError):
+    status_code = 409
+    code = "ROLE_MISMATCH"
