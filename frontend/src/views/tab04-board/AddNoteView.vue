@@ -11,9 +11,11 @@ import IconImage from '@/components/tab02-diary/icons/IconImage.vue'
 import NoteLevelPicker from '@/components/tab04-board/NoteLevelPicker.vue'
 import NotePermissionModal from '@/components/tab04-board/NotePermissionModal.vue'
 import { useBoardStore, type NoteLevel, type NoteVisibility } from '@/stores/board'
+import { useNoticeStore } from '@/stores/notice'
 
 const router = useRouter()
 const store = useBoardStore()
+const notice = useNoticeStore()
 
 const level = ref<NoteLevel>('normal')
 const title = ref('')
@@ -45,6 +47,7 @@ function openPermissionModal() {
 }
 
 function publish(visibility: NoteVisibility) {
+  if (!content.value.trim()) return
   store.addNote({
     level: level.value,
     title: title.value,
@@ -54,6 +57,7 @@ function publish(visibility: NoteVisibility) {
     visibility,
   })
   permissionModalOpen.value = false
+  notice.show('便利貼已發布！')
   router.push('/board')
 }
 </script>

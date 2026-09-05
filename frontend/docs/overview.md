@@ -27,7 +27,8 @@ frontend/
     │   ├── diary.ts           Tab02 日記資料
     │   ├── careAgent.ts       Tab03 Care Agent + 聊天室資料
     │   ├── board.ts           Tab04 便利貼資料
-    │   └── account.ts         使用者/照顧對象/Care Agent 名稱/訂閱方案資料——現在是跨 Tab 共用的資料來源（見下方）
+    │   ├── account.ts         使用者/照顧對象/Care Agent 名稱/訂閱方案資料——現在是跨 Tab 共用的資料來源（見下方）
+    │   └── notice.ts          全域一次性提示訊息（`show(text)` / `dismiss()`），3 秒後自動消失
     ├── utils/
     │   ├── date.ts            民國曆日期格式化（toMinguoDate）
     │   └── schedule.ts        Tab01 時間表小時清單（scheduleHours，07:00–23:00）
@@ -41,7 +42,7 @@ frontend/
     │   ├── tab04-board/
     │   └── tab05-account/
     └── components/
-        ├── common/            跨頁共用元件（BaseButton、SegmentedToggle、免責聲明橫幅、BackgroundBlobs 裝飾背景...）
+        ├── common/            跨頁共用元件（BaseButton、SegmentedToggle、免責聲明橫幅、BackgroundBlobs 裝飾背景、AppNotice 全域提示卡...）
         ├── layout/             App 殼層（AppHeader、BottomTabBar、PageContainer（含 #header/#fab/#footer slot）、SubPageHeader）
         ├── auth/               登入流程專用元件
         ├── tab01-dashboard/
@@ -147,6 +148,12 @@ frontend/
 - **日記只能寫「今天」**：`stores/diary.ts` 新增 `canWriteDay(day)`（只有等於 `arrivalDay` 才算可寫），`entryForDay` 對非今天的日期會 `throw`；`router/index.ts` 加了 `beforeEach` 守衛，直接打 `/diary/:day` 網址如果不是今天會被導回 `/diary`；`DiaryMapView`/`DiaryDayBubble` 對應加上 `disabled` 樣式（灰底、`cursor-not-allowed`），過去/未來的 Day 泡泡點了沒反應；`DiaryEntryView` 的日期選擇器也鎖 `min`/`max` 都是今天，`save()` 額外檢查日期沒被改到非今天才會真的存
 - **`todayDate()` 改用正確時區**：原本 `new Date().toISOString().slice(0, 10)` 是用 UTC 時間切日期，在台灣時區半夜可能會抓到前一天；改用 `Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Taipei' })` 正確抓台灣當地日期
 - **`CareTreeHeader`（Tab05）頭像**：從隨機的 `pravatar.cc` 佔位照片換成真的產生的人物頭像（`frontend/public/mia-avatar.png`，AI 生成的印尼籍看護角色照片，對應 `account.ts` 的 `userName: 'Mia'`），下方「已知缺口」那條 pravatar 佔位照片的紀錄已更新
+
+**Codex 改的（第十輪，全域提示訊息重構）：**
+
+- 新增 `stores/notice.ts`（`show(text)` 顯示、3 秒後自動 `dismiss()`）+ `components/common/AppNotice.vue`（掛在 `App.vue` 最外層，全站共用一個 `Teleport` 提示卡），把上一輪寫死在 `DailyChatHome` 裡的心情提示卡邏輯抽出來變成共用元件
+- 套用到三個存檔流程：日記存檔（`DiaryEntryView`：「祕密日記已新增...」/「日記已儲存！」）、基準線問卷完成（`BaselineQuestionsView`：「你的專屬 Care Agent 已建立！」）、便利貼發布（`AddNoteView`：「便利貼已發布！」）
+- 順便補了兩個防呆：`BaselineQuestionsView.submit()` 現在會檢查 5 題都有答、`agent` 存在才送出；`AddNoteView.publish()` 多一層內容非空檢查（按鈕本來就會 disabled，這算保險）
 
 ### Tab03 細節（★核心頁，邏輯較複雜）
 

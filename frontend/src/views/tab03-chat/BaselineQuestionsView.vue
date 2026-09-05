@@ -8,9 +8,11 @@ import BaseButton from '@/components/common/BaseButton.vue'
 import StepProgressIndicator from '@/components/tab03-chat/StepProgressIndicator.vue'
 import BaselineQuestionCard from '@/components/tab03-chat/BaselineQuestionCard.vue'
 import { useCareAgentStore } from '@/stores/careAgent'
+import { useNoticeStore } from '@/stores/notice'
 
 const router = useRouter()
 const store = useCareAgentStore()
+const notice = useNoticeStore()
 
 const frequencyOptions = ['完全沒有', '很少', '有時候', '常常', '幾乎每天']
 const supportOptions = ['一定找得到', '大部分可以', '不一定', '很少', '完全沒有']
@@ -55,7 +57,9 @@ function goBack() {
 }
 
 function submit() {
+  if (answers.value.some((answer) => answer === null) || !store.agent) return
   store.completeBaseline(answers.value as number[])
+  notice.show('你的專屬 Care Agent 已建立！')
   router.push('/chat')
 }
 </script>

@@ -11,12 +11,14 @@ import IconImage from '@/components/tab02-diary/icons/IconImage.vue'
 import AiVoiceButton from '@/components/common/AiVoiceButton.vue'
 import IconLine from '@/components/auth/icons/IconLine.vue'
 import { useDiaryStore } from '@/stores/diary'
+import { useNoticeStore } from '@/stores/notice'
 import { toMinguoDate } from '@/utils/date'
 import { useOnboardingStore } from '@/stores/onboarding'
 
 const route = useRoute()
 const router = useRouter()
 const diaryStore = useDiaryStore()
+const notice = useNoticeStore()
 const settings = useOnboardingStore()
 
 const day = Number(route.params.day)
@@ -70,6 +72,9 @@ function startVoiceInput() {
 function save(visibility: 'private' | 'shared') {
   if (!diaryStore.canWriteDay(day) || entry.date !== diaryStore.todayDate()) return
   entry.visibility = visibility
+  notice.show(
+    visibility === 'private' ? '祕密日記已新增，留給自己的一份心情紀錄。' : '日記已儲存！',
+  )
   router.push('/diary')
 }
 </script>

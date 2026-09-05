@@ -1,5 +1,10 @@
 // Indonesian interface copy. User-authored content is not translated.
 export const id: Record<string, string> = {
+  '你的專屬 Care Agent 已建立！': 'Care Agent pribadimu berhasil dibuat!',
+  '便利貼已發布！': 'Catatan berhasil diterbitkan!',
+  '祕密日記已新增，留給自己的一份心情紀錄。':
+    'Diari pribadi berhasil ditambahkan. Catatan perasaan hanya untukmu.',
+  '日記已儲存！': 'Diari berhasil disimpan!',
   '心情已送出，謝謝你分享今天的感受！':
     'Suasana hati terkirim. Terima kasih sudah berbagi perasaanmu hari ini!',
   Day: 'Hari',
