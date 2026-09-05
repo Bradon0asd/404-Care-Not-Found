@@ -3,9 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useOnboardingStore } from '@/stores/onboarding'
-import { useAuthStore } from '@/stores/auth'
 import { startLineLogin } from '@/api/auth'
-import { enterInvite } from '@/api/invites'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import PageContainer from '@/components/layout/PageContainer.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
@@ -18,7 +16,6 @@ import IconLine from '@/components/auth/icons/IconLine.vue'
 const router = useRouter()
 const route = useRoute()
 const store = useOnboardingStore()
-const auth = useAuthStore()
 const { role } = storeToRefs(store)
 
 const submitting = ref(false)
@@ -42,14 +39,8 @@ function errorText(code: string) {
 onMounted(async () => {
   if (route.query.invite) {
     store.selectRole('caregiver')
-    try {
-      await enterInvite(String(route.query.invite))
-      await auth.loadSession()
-      router.push('/auth/caregiver/onboarding')
-      return
-    } catch (error) {
-      errorCode.value = error instanceof Error && 'code' in error ? String(error.code) : ''
-    }
+    router.replace(`/auth/invite/${encodeURIComponent(String(route.query.invite))}`)
+    return
   }
   if (route.query.error) {
     errorCode.value = String(route.query.error)

@@ -40,7 +40,7 @@ async function generateInviteCode() {
 }
 
 function fallbackInviteLink() {
-  return `${window.location.origin}/auth/role?invite=${store.inviteCode}`
+  return `${window.location.origin}/auth/invite/${store.inviteCode}`
 }
 </script>
 

@@ -19,7 +19,7 @@ def test_owner_creates_an_invite_link(client, owner_id):
     assert response.status_code == 201
     data = response.get_json()["data"]
     assert data["code"]
-    assert data["invite_url"].endswith(f"/auth/role?invite={data['code']}")
+    assert data["invite_url"].endswith(f"/auth/invite/{data['code']}")
     assert data["nurse_id"] is None
 
 

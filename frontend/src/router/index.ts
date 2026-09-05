@@ -25,6 +25,11 @@ const router = createRouter({
       component: () => import('@/views/auth/LineCallbackView.vue'),
     },
     {
+      path: '/auth/invite/:code',
+      name: 'auth-accept-invite',
+      component: () => import('@/views/auth/AcceptInviteView.vue'),
+    },
+    {
       path: '/auth/caregiver/onboarding',
       name: 'auth-caregiver-onboarding',
       component: () => import('@/views/auth/CaregiverOnboardingView.vue'),

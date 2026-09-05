@@ -165,7 +165,8 @@ frontend/
 | 路徑 | 頁面 | 說明 |
 |---|---|---|
 | `/` | — | redirect 到 `/auth/role`（正式入口，走登入流程） |
-| `/auth/role` | RoleSelectView | 選身分，帶 `?invite=` 參數會自動選看護 |
+| `/auth/role` | RoleSelectView | 選身分；舊的 `?invite=` 參數會轉到接受邀請頁 |
+| `/auth/invite/:code` | AcceptInviteView | 看護接受邀請，不顯示選身分頁 |
 | `/auth/caregiver/onboarding` | CaregiverOnboardingView | 看護：語言/入境日期/第幾位照護者 |
 | `/auth/employer/setup` | EmployerSetupView | 雇主：設定看護資訊 + 生成邀請碼 |
 | `/dashboard` | DashboardView | Tab01，儀錶板/排程表切換視圖 |

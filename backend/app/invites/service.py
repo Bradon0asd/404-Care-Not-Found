@@ -14,7 +14,7 @@ from app.shared.errors import (
 )
 
 
-INVITE_PATH = "/auth/role?invite={code}"
+INVITE_PATH = "/auth/invite/{code}"
 WEB_LINE_ID_PREFIX = "web-"
 
 
