@@ -31,6 +31,7 @@ def test_owner_pairs_with_nurse(client):
     response = client.post(
         f"/api/users/{owner_id}/pair",
         json={"pair_user_id": nurse_id},
+        headers=_headers(owner_id),
     )
 
     assert response.status_code == 200
@@ -50,6 +51,7 @@ def test_nurse_pairs_with_owner(client):
     response = client.post(
         f"/api/users/{nurse_id}/pair",
         json={"pair_user_id": owner_id},
+        headers=_headers(nurse_id),
     )
 
     assert response.status_code == 200
@@ -67,6 +69,7 @@ def test_pair_user_rejects_self_pairing(client):
     response = client.post(
         f"/api/users/{owner_id}/pair",
         json={"pair_user_id": owner_id},
+        headers=_headers(owner_id),
     )
 
     assert response.status_code == 400
@@ -82,6 +85,7 @@ def test_pair_user_rejects_same_role_pairing(client):
     response = client.post(
         f"/api/users/{first_owner_id}/pair",
         json={"pair_user_id": second_owner_id},
+        headers=_headers(first_owner_id),
     )
 
     assert response.status_code == 400
@@ -94,11 +98,16 @@ def test_pair_user_rejects_already_paired_users(client):
     owner_id = _create_user(client, "owner-paired", role="owner")
     first_nurse_id = _create_user(client, "nurse-paired-1", role="nurse")
     second_nurse_id = _create_user(client, "nurse-paired-2", role="nurse")
-    client.post(f"/api/users/{owner_id}/pair", json={"pair_user_id": first_nurse_id})
+    client.post(
+        f"/api/users/{owner_id}/pair",
+        json={"pair_user_id": first_nurse_id},
+        headers=_headers(owner_id),
+    )
 
     response = client.post(
         f"/api/users/{owner_id}/pair",
         json={"pair_user_id": second_nurse_id},
+        headers=_headers(owner_id),
     )
 
     assert response.status_code == 400
@@ -107,12 +116,44 @@ def test_pair_user_rejects_already_paired_users(client):
     assert body["error"]["code"] == "USER_PAIRING_ERROR"
 
 
+def test_pair_user_requires_login(client):
+    owner_id = _create_user(client, "owner-pair-login", role="owner")
+    nurse_id = _create_user(client, "nurse-pair-login", role="nurse")
+
+    response = client.post(
+        f"/api/users/{owner_id}/pair",
+        json={"pair_user_id": nurse_id},
+    )
+
+    assert response.status_code == 401
+    assert response.get_json()["error"]["code"] == "AUTHENTICATION_REQUIRED"
+
+
+def test_pair_user_rejects_operating_on_another_user(client):
+    owner_id = _create_user(client, "owner-pair-forbidden", role="owner")
+    nurse_id = _create_user(client, "nurse-pair-forbidden", role="nurse")
+    stranger_id = _create_user(client, "stranger-pair-forbidden", role="owner")
+
+    response = client.post(
+        f"/api/users/{owner_id}/pair",
+        json={"pair_user_id": nurse_id},
+        headers=_headers(stranger_id),
+    )
+
+    assert response.status_code == 403
+    assert response.get_json()["error"]["code"] == "PERMISSION_DENIED"
+
+
 def test_unpair_user_clears_both_sides(client):
     owner_id = _create_user(client, "owner-unpair", role="owner")
     nurse_id = _create_user(client, "nurse-unpair", role="nurse")
-    client.post(f"/api/users/{owner_id}/pair", json={"pair_user_id": nurse_id})
+    client.post(
+        f"/api/users/{owner_id}/pair",
+        json={"pair_user_id": nurse_id},
+        headers=_headers(owner_id),
+    )
 
-    response = client.delete(f"/api/users/{owner_id}/pair")
+    response = client.delete(f"/api/users/{owner_id}/pair", headers=_headers(owner_id))
 
     assert response.status_code == 200
     body = response.get_json()
@@ -122,6 +163,15 @@ def test_unpair_user_clears_both_sides(client):
     assert nurse["data"]["pair_user_id"] is None
 
 
+def test_unpair_user_requires_login(client):
+    owner_id = _create_user(client, "owner-unpair-login", role="owner")
+
+    response = client.delete(f"/api/users/{owner_id}/pair")
+
+    assert response.status_code == 401
+    assert response.get_json()["error"]["code"] == "AUTHENTICATION_REQUIRED"
+
+
 def _create_user(client, line_id, *, role):
     response = client.post(
         "/api/users",
@@ -129,3 +179,7 @@ def _create_user(client, line_id, *, role):
     )
     assert response.status_code == 201
     return response.get_json()["data"]["id"]
+
+
+def _headers(user_id):
+    return {"X-User-Id": str(user_id)}

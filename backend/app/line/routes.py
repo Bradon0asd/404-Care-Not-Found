@@ -1,11 +1,11 @@
 import logging
 
-from flask import current_app, request
+from flask import current_app, g, request
 from linebot.v3.exceptions import InvalidSignatureError
 from linebot.v3.webhook import WebhookParser
 from linebot.v3.webhooks import MessageEvent, TextMessageContent
 
-from app.auth.current_user import get_current_user
+from app.auth.decorators import login_required
 from app.shared.errors import InvalidLineSignatureError, LineConfigurationError
 from app.shared.response import api_success
 from app.line import line_bp
@@ -53,6 +53,7 @@ def webhook():
 
 
 @line_bp.post("/stress-signals")
+@login_required
 @line_bp.arguments(StressSignalCreateSchema, location="json")
 @line_bp.doc(
     summary="Notify the paired owner that records need attention",
@@ -61,7 +62,7 @@ def webhook():
 def create_stress_signal(args):
     occurred_at = args["occurred_at"] or utc_now()
     owner = notify_stress_signal(
-        nurse=get_current_user(),
+        nurse=g.current_user,
         abnormal_count=args["abnormal_count"],
         occurred_at=occurred_at,
     )

@@ -1,6 +1,6 @@
 from flask import current_app, request, send_from_directory
 
-from app.auth.current_user import get_current_user
+from app.auth.decorators import login_required
 from app.shared.response import api_success
 from app.uploads import media_bp, upload_bp
 from app.uploads.schemas import ImageUploadSchema
@@ -25,8 +25,8 @@ MULTIPART_IMAGE_BODY = {
     security=[{"UserIdHeader": []}],
     requestBody=MULTIPART_IMAGE_BODY,
 )
+@login_required
 def upload_image():
-    get_current_user()
     image_url = save_image(request.files.get("file"))
     return api_success(ImageUploadSchema().dump({"image_url": image_url}), status_code=201)
 

@@ -35,6 +35,15 @@ def test_session_read_requires_login(client):
     assert response.get_json()["error"]["code"] == "AUTHENTICATION_REQUIRED"
 
 
+def test_login_required_routes_accept_user_id_header(client):
+    user_id = _create_user(client, "auth-header")
+
+    response = client.get("/api/users/me", headers=_headers(user_id))
+
+    assert response.status_code == 200
+    assert response.get_json()["data"]["line_id"] == "auth-header"
+
+
 def test_login_rejects_an_unknown_line_id(client):
     response = client.post("/api/auth/login", json={"line_id": "auth-nobody"})
 

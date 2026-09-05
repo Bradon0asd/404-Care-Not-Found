@@ -1,4 +1,6 @@
-from app.auth.current_user import get_current_user
+from flask import g
+
+from app.auth.decorators import login_required
 from app.invites import invite_bp
 from app.invites.schemas import (
     InviteEntrySchema,
@@ -17,8 +19,9 @@ from app.shared.response import api_success
 
 @invite_bp.post("/invites")
 @invite_bp.doc(summary="Create or return the owner's invite link", security=[{"UserIdHeader": []}])
+@login_required
 def create_invite_api():
-    invite = create_invite(owner=get_current_user())
+    invite = create_invite(owner=g.current_user)
     return api_success(_dump_invite(invite), status_code=201)
 
 

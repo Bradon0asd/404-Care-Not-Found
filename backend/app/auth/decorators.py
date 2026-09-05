@@ -1,23 +1,22 @@
-"""Session guards for API views.
-
-Not applied to any route yet; wire them in once the frontend sends the session
-cookie instead of the X-User-Id header.
-"""
+"""Authentication guards for API views."""
 
 from functools import wraps
 
 from flask import g
 
-from app.auth.service import require_session_user
 from app.shared.errors import PermissionDeniedError
 
 
 def login_required(view):
-    """Reject the request unless a session user exists, and expose it as g.current_user."""
+    """Reject unless the request has a session user or X-User-Id fallback."""
 
     @wraps(view)
     def wrapper(*args, **kwargs):
-        g.current_user = require_session_user()
+        # Imported lazily to avoid a module cycle: current_user imports auth.service,
+        # and auth.service imports users.service.
+        from app.auth.current_user import get_current_user
+
+        g.current_user = get_current_user()
         return view(*args, **kwargs)
 
     return wrapper

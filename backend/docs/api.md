@@ -36,8 +36,8 @@
 | GET | `/api/users/me` | 讀目前登入使用者 | session |
 | POST | `/api/users/me/onboarding` | 完成一次性設定表單（body：`name`、`language`），蓋上 `onboarded_at` | session |
 | GET | `/api/users/<user_id>` | 讀單一使用者 | 公開 |
-| POST | `/api/users/<user_id>/pair` | 配對雇主與看護（body：`pair_user_id`） | 公開 |
-| DELETE | `/api/users/<user_id>/pair` | 解除配對 | 公開 |
+| POST | `/api/users/<user_id>/pair` | 配對雇主與看護（body：`pair_user_id`，只能操作目前登入者） | session |
+| DELETE | `/api/users/<user_id>/pair` | 解除配對（只能操作目前登入者） | session |
 
 角色只有 `owner`（雇主）與 `nurse`（看護）。LINE 官方帳號來的使用者一律建成 `owner`，因為 LINE 是雇主端通道。
 

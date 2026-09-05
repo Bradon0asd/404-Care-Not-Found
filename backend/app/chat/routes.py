@@ -1,4 +1,6 @@
-from app.auth.current_user import get_current_user
+from flask import g
+
+from app.auth.decorators import login_required
 from app.chat import chat_bp
 from app.chat.schemas import (
     BaselineSubmitSchema,
@@ -26,16 +28,18 @@ from app.shared.response import api_success
 
 @chat_bp.get("/chat/agent")
 @chat_bp.doc(summary="Read the care agent", security=[{"UserIdHeader": []}])
+@login_required
 def get_agent_api():
-    agent = get_agent(current_user=get_current_user())
+    agent = get_agent(current_user=g.current_user)
     return api_success(CareAgentSchema().dump(agent))
 
 
 @chat_bp.post("/chat/agent")
+@login_required
 @chat_bp.arguments(CareAgentCreateSchema, location="json")
 @chat_bp.doc(summary="Create or update the care agent", security=[{"UserIdHeader": []}])
 def setup_agent_api(args):
-    agent = setup_agent(current_user=get_current_user(), **args)
+    agent = setup_agent(current_user=g.current_user, **args)
     return api_success(CareAgentSchema().dump(agent), status_code=201)
 
 
@@ -44,38 +48,43 @@ def setup_agent_api(args):
     summary="Get the one-off opening questions",
     security=[{"UserIdHeader": []}],
 )
+@login_required
 def baseline_questions_api():
-    questions = baseline_questions(current_user=get_current_user())
+    questions = baseline_questions(current_user=g.current_user)
     return api_success({"questions": questions})
 
 
 @chat_bp.post("/chat/agent/baseline")
+@login_required
 @chat_bp.arguments(BaselineSubmitSchema, location="json")
 @chat_bp.doc(summary="Save the one-off answers", security=[{"UserIdHeader": []}])
 def save_baseline_api(args):
-    agent = save_baseline(current_user=get_current_user(), answers=args["answers"])
+    agent = save_baseline(current_user=g.current_user, answers=args["answers"])
     return api_success(CareAgentSchema().dump(agent))
 
 
 @chat_bp.get("/chat/rooms")
 @chat_bp.doc(summary="List chat rooms", security=[{"UserIdHeader": []}])
+@login_required
 def list_rooms_api():
-    rooms = list_rooms(current_user=get_current_user())
+    rooms = list_rooms(current_user=g.current_user)
     return api_success(ChatRoomSchema(many=True).dump(rooms))
 
 
 @chat_bp.post("/chat/rooms")
+@login_required
 @chat_bp.arguments(ChatRoomCreateSchema, location="json")
 @chat_bp.doc(summary="Open a chat room", security=[{"UserIdHeader": []}])
 def create_room_api(args):
-    room = create_room(current_user=get_current_user(), **args)
+    room = create_room(current_user=g.current_user, **args)
     return api_success(ChatRoomSchema().dump(room), status_code=201)
 
 
 @chat_bp.get("/chat/rooms/<int:room_id>")
 @chat_bp.doc(summary="Read a chat room with its messages", security=[{"UserIdHeader": []}])
+@login_required
 def get_room_api(room_id):
-    current_user = get_current_user()
+    current_user = g.current_user
     room = get_room(current_user=current_user, room_id=room_id)
     payload = ChatRoomSchema().dump(room)
     payload["messages"] = ChatMessageSchema(many=True).dump(
@@ -85,11 +94,12 @@ def get_room_api(room_id):
 
 
 @chat_bp.post("/chat/rooms/<int:room_id>/messages")
+@login_required
 @chat_bp.arguments(ChatMessageCreateSchema, location="json")
 @chat_bp.doc(summary="Send a message and get the reply", security=[{"UserIdHeader": []}])
 def send_message_api(args, room_id):
     user_message, ai_message = process_user_message(
-        current_user=get_current_user(),
+        current_user=g.current_user,
         room_id=room_id,
         text=args["text"],
     )
