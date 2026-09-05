@@ -21,7 +21,23 @@ const day = Number(route.params.day)
 const entry = diaryStore.entryForDay(day)
 
 const editingTitle = ref(false)
-const dateLabel = computed(() => toMinguoDate(new Date(entry.date)))
+const dateLabel = computed(() => toMinguoDate(new Date(`${entry.date}T00:00:00`)))
+
+function openDatePicker(event: MouseEvent) {
+  const input = event.currentTarget as HTMLInputElement
+  try {
+    input.showPicker?.()
+  } catch {
+    // Keep the native date input usable when the browser blocks showPicker.
+    input.focus()
+  }
+}
+
+function updateDate(event: Event) {
+  const input = event.currentTarget as HTMLInputElement
+  if (input.value && input.validity.valid) entry.date = input.value
+  else input.value = entry.date
+}
 
 const fileInput = ref<HTMLInputElement | null>(null)
 
@@ -57,7 +73,9 @@ function save(visibility: 'private' | 'shared') {
 
     <div class="flex-1 space-y-4 px-4 py-4">
       <div class="flex justify-center">
-        <div class="flex h-16 w-16 flex-col items-center justify-center rounded-full border-2 border-accent bg-accent text-sm font-bold text-ink-950">
+        <div
+          class="flex h-16 w-16 flex-col items-center justify-center rounded-full border-2 border-accent bg-accent text-sm font-bold text-ink-950"
+        >
           <span class="text-[10px] font-normal">Day</span>
           {{ day }}
         </div>
@@ -79,11 +97,21 @@ function save(visibility: 'private' | 'shared') {
         </button>
       </div>
 
-      <div class="flex items-center gap-2 rounded-xl bg-ink-200 px-4 py-3">
-        <span class="text-sm text-ink-700">日記日期</span>
-        <IconCalendar class="h-4 w-4 text-ink-600" />
+      <label
+        class="relative flex min-h-11 cursor-pointer items-center gap-2 rounded-xl bg-ink-200 px-4 py-3 focus-within:ring-2 focus-within:ring-pink-500"
+      >
+        <span class="shrink-0 text-sm text-ink-700">日記日期</span>
+        <IconCalendar aria-hidden="true" class="h-4 w-4 shrink-0 text-ink-600" />
         <span class="flex-1 text-sm text-ink-950">{{ dateLabel }}</span>
-      </div>
+        <input
+          type="date"
+          aria-label="日記日期"
+          :value="entry.date"
+          class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+          @click="openDatePicker"
+          @change="updateDate"
+        />
+      </label>
 
       <div class="rounded-xl bg-ink-200 p-4">
         <div class="mb-2 flex items-center justify-between">
@@ -99,7 +127,13 @@ function save(visibility: 'private' | 'shared') {
       </div>
 
       <div>
-        <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="onImageSelected" />
+        <input
+          ref="fileInput"
+          type="file"
+          accept="image/*"
+          class="hidden"
+          @change="onImageSelected"
+        />
         <div v-if="entry.imageUrl" class="relative w-fit">
           <img :src="entry.imageUrl" alt="日記附圖" class="h-24 w-24 rounded-lg object-cover" />
           <button
@@ -128,22 +162,23 @@ function save(visibility: 'private' | 'shared') {
           >
             <IconImage class="h-5 w-5" />
           </button>
-          <span class="rounded-full bg-red-600 px-3 py-1 text-xs text-white">最多支援一張圖片</span>
         </div>
       </div>
 
-      <div class="flex gap-3 pt-2">
-        <div class="flex-1"><BaseButton variant="primary" @click="save('private')">新增日記（僅自己）</BaseButton></div>
-        <div class="flex-1">
-          <BaseButton variant="line" @click="save('shared')">
-            <IconLine />
-            分享給 Line 朋友
-          </BaseButton>
-        </div>
+      <div
+        class="grid grid-cols-2 gap-3 pt-2 [&_button]:h-11 [&_button]:gap-1.5 [&_button]:px-2 [&_button]:py-0 [&_button]:text-xs [&_button]:whitespace-nowrap"
+      >
+        <BaseButton variant="primary" @click="save('private')">新增日記（僅自己）</BaseButton>
+        <BaseButton variant="line" @click="save('shared')">
+          <IconLine class="h-4 w-4 shrink-0" />
+          <span class="text-[11px]">分享給 LINE 朋友</span>
+        </BaseButton>
       </div>
       <BaseButton variant="outline" @click="router.back()">取消</BaseButton>
 
-      <p class="text-center text-xs text-ink-600">提醒：平台絕不會擅自分享你的日記內容，請放心抒發</p>
+      <p class="text-center text-xs text-ink-600">
+        提醒：平台絕不會擅自分享你的日記內容，請放心抒發
+      </p>
     </div>
 
     <template #footer><BottomTabBar /></template>

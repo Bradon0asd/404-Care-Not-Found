@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { useAccountStore } from './account'
 
 export interface CareAgent {
   systemPrompt: string
@@ -27,9 +28,10 @@ export interface MoodLog {
 }
 
 function welcomeMessage(): ChatMessage {
+  const account = useAccountStore()
   return {
     sender: 'ai',
-    text: '歡迎使用【404: Care Can Be Found】\n我是你的 {{看護名稱}}\n照顧者：{{照顧者暱稱/姓名}}\n照顧者大致生理狀況：{{生理狀況描述}}',
+    text: `${account.userName}，歡迎使用【404: Care Can Be Found】\n我是你的 Care Agent ${account.agentName}\n照護對象：${account.careRecipient.name}（${account.careRecipient.nickname}）\n身體狀況：${account.careRecipient.condition}`,
   }
 }
 
@@ -50,8 +52,14 @@ export const useCareAgentStore = defineStore('careAgent', () => {
       title: '阿嬤早上跌倒我很擔心',
       messages: [
         welcomeMessage(),
-        { sender: 'user', text: '阿嬤今天早上9:00跌倒了\n雖然有馬上送醫院、醫生也確認過沒問題\n但我還是有點自責\n總覺得是我沒有盡好盡的義務' },
-        { sender: 'ai', text: '他怎麼會跌倒呢？\n你也辛苦了\n阿嬤現在沒事真是太好了\n你吃飯了嗎？' },
+        {
+          sender: 'user',
+          text: '阿嬤今天早上9:00跌倒了\n雖然有馬上送醫院、醫生也確認過沒問題\n但我還是有點自責\n總覺得是我沒有盡好盡的義務',
+        },
+        {
+          sender: 'ai',
+          text: '他怎麼會跌倒呢？\n你也辛苦了\n阿嬤現在沒事真是太好了\n你吃飯了嗎？',
+        },
         {
           sender: 'user',
           text: '阿嬤趁我去上廁所的時候自己偷偷跑下床\n結果意外就發生了……我真的好自責\n現在心情不好\n另外就是我現在有點吃不下\n不過還是謝謝你',

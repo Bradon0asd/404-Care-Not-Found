@@ -18,7 +18,7 @@ const videos: NewsVideo[] = [
 
 <template>
   <div class="bg-ink-200 px-3 py-3 text-center">
-    <p class="text-xs font-bold text-ink-950">看看這些新聞...不要把所有責任往自己身上打</p>
+    <p class="text-xs font-bold text-ink-950">看看這些新聞...不要把所有責任往自己身上扛</p>
     <p class="text-xs font-bold text-ink-950">Your mental health, we care.</p>
 
     <Carousel class="mt-3" :items-to-show="1.4" :wrap-around="true" :gap="8">

@@ -23,7 +23,7 @@ frontend/
     │   ├── diary.ts           Tab02 日記資料
     │   ├── careAgent.ts       Tab03 Care Agent + 聊天室資料
     │   ├── board.ts           Tab04 便利貼資料
-    │   └── account.ts         Tab05 使用者/訂閱方案資料
+    │   └── account.ts         使用者/照顧對象/Care Agent 名稱/訂閱方案資料——現在是跨 Tab 共用的資料來源（見下方）
     ├── utils/
     │   ├── date.ts            民國曆日期格式化（toMinguoDate）
     │   └── schedule.ts        Tab01 時間表小時清單（scheduleHours，07:00–23:00）
@@ -68,27 +68,41 @@ frontend/
 
 **Claude 改的：**
 
-- **AppHeader**：底色改 `bg-pink-500`（`#FFB2C7`，設計稿命名 "Primary 05"），副標題文字改白色（不是灰色 — 灰色是之前對比度 bug 的錯誤修法），愛心圖示換成乾淨版本
+- **AppHeader**：底色改 `bg-pink-500`（`#FFB2C7`，設計稿命名 "Primary 05"），副標題文字改白色（不是灰色 — 灰色是之前對比度 bug 的錯誤修法），icon 換成乾淨版本（Codex 後續又重畫成現在的火把/手電筒造型，見下方 Codex 段落，這裡的「乾淨版本」只是指當時那一輪改動，不是描述現在的圖案）
 - **MedicalDisclaimerBanner**：整個重做，從刺眼的深紅色長條改成淺灰卡片（`bg-ink-200`）+ 紅色圓形 i icon + 只有「不」字紅色加粗 + 灰色方形關閉鈕；props 從單一 `message` 改成 `before`/`highlight`/`after` 三段式，方便只標紅中間那個字
 - **VitalSignCard（Tab01）**：改成雙層卡片效果（`border-pink-400` 框住白底），標題置中加底線。原本刻意保留中性顏色（不加紅/綠），但後續 Codex 加回 `trendTone` 紅綠標示，見下方「CLAUDE.md 規則變動」
 - **FloatingAddButton（Tab01 新增鈕）**：改用 `PageContainer` 新的 `#fab` slot，固定在整個手機畫面右下角，不會再跟著內容捲動跑掉
 - **NewsAwarenessBanner（Tab03）**：從灰色 placeholder 換成 `vue3-carousel` 滑動容器 + 真的 YouTube 縮圖（`img.youtube.com/vi/{id}/hqdefault.jpg`），點縮圖開新分頁到 YouTube；底色改 `bg-ink-200`、縮圖拿掉圓角，跟 Figma 對齊
-- **IntroView（Tab03）**：「你的 Care Agent 已經準備好了」從常駐文字改成可關閉的粉色提示卡（X 按鈕），開發用的「模擬首次使用畫面」連結獨立一行、不受提示卡開關影響
+- **IntroView（Tab03）**：「你的 Care Agent 已經準備好了」從常駐文字改成可關閉的提示卡（`bg-ink-200` 灰底，非粉色，+ X 按鈕），開發用的「模擬首次使用畫面」連結獨立一行、不受提示卡開關影響
 - **WeatherMoodPicker + 5 個天氣 icon（Tab03）**：選中的天氣圖示現在會從外框變實心（`filled` prop 切換 `fill: none → currentColor`），不再只是變色，跟未選取的區別更明顯
 - **NoteDetailModal（Tab04）**：「普通」（黃色）層級原本用 `bg-accent/30`（30% 透明度），疊在深色遮罩上完全看不清楚文字；改成跟緊急/不重要一樣不透明的 `bg-accent`
 
 **Codex 改的：**
 
-- **BottomTabBar**：重做成膠囊型浮動列，中間「跟我聊聊」用絕對定位的圓角矩形做出突出剪影，選中分頁用膠囊蓋住圖示+文字
+- **BottomTabBar**：重做成膠囊型浮動列，中間「跟我聊聊」用絕對定位的正圓（非圓角矩形）做出突出剪影，選中分頁用膠囊蓋住圖示+文字
 - **PageContainer**：寬度上限微調（`max-w-sm` → `max-w-[402px]`，對齊 Figma 手機尺寸）
 - **BackgroundBlobs**：4 個裝飾 blob 顏色/形狀調整
 - **Tab01**：`ScheduleTable`／`SegmentedToggle` 改用 accent 黃色系配色重新設計；`AddScheduleView` 表單版面重排；新增 `utils/schedule.ts` 統一時間表小時範圍（07:00–23:00）
-- **Tab02 破關地圖**：`DiaryDayBubble`／`FootprintDots`／`IconFootprint` 重畫（雙層描邊圓圈、真的腳印形狀、依前後泡泡位置動態算角度的連接線）。**已知問題（尚未修復，Codex 負責中）**：目前版面在可視高度 ≲740px 的裝置上會溢出到底部導覽列下方看不見（Day101/Day100 這類後面的項目），根因是 flex 容器缺少 `min-h-0` 導致撐高不會自動收縮，且泡泡本身尺寸偏大、7 顆+6 個腳印的最小總高度超過矮螢幕能給的空間。Claude 這邊只記錄，沒有動這幾個檔案
+- **Tab02 破關地圖**：`DiaryDayBubble`／`FootprintDots`／`IconFootprint` 重畫（雙層描邊圓圈、真的腳印形狀、依前後泡泡位置動態算角度的連接線）。這一輪的 flex 版面在可視高度 ≲740px 的裝置上會溢出到底部導覽列下方看不見（Day101/Day100 這類後面的項目），根因是 flex 容器缺少 `min-h-0` 導致撐高不會自動收縮，且泡泡本身尺寸偏大、7 顆+6 個腳印的最小總高度超過矮螢幕能給的空間。**此問題已在下方「第三輪」的絕對定位版面修復**，見該段落
 - **Tab04**：`NoteCard` 改用新的 `NoteMetaIcon`（標題/權限/層級小圖示）取代文字前綴 emoji；新增 `AddNoteButton.vue`（獨立的新增鈕樣式，不是共用 `FloatingAddButton`）
 - **Tab05**：`CareTreeHeader` 大幅重畫（更細緻的樹冠/樹枝/葉子 SVG 路徑）；`AccountView` 版面調整；`PlanCard`／`PlansView` 訂閱方案卡片配色與陰影調整
 - **根目錄 `README.md`**：整份重寫，含專案定位、功能對照表、本機啟動、建置指令、Railway 部署步驟、目錄結構——內容比這份 `overview.md` 更適合給第一次接觸專案的人看，建議先看那份再看這份的細節
 
 **CLAUDE.md 規則變動：**「不用紅色標示異常」改成「數值上升/下降可以用顏色簡單區分方向，但不能暗示醫療異常/危險」——因為 `VitalSignCard` 現在有 `trendTone`（positive/negative）紅綠標示變化方向，使用者確認這不算醫療判讀，鐵則已同步更新。
+
+**Codex 改的（第三輪，內容重複比對後合併紀錄）：**
+
+- **`stores/account.ts` 變成跨 Tab 共用的資料中心**：新增 `careRecipient`（`name`/`nickname`/`condition`）跟 `agentName` 兩個欄位。原本 Tab01/Tab03 到處寫死的 `{{照顧者}}`、`{{看護名稱}}` 這類佔位字串，現在都改成從這個 store 讀真的值：
+  - `stores/careAgent.ts` 的 `welcomeMessage()` 用 `agentName`／`careRecipient` 組出真的歡迎詞
+  - `AddScheduleView.vue`、`DashboardView.vue`（傳給 `ScheduleTable`）的照顧者名稱都改讀 `account.careRecipient.name`
+  - 之後接後端時，這個 store 大概就是「使用者/照顧者基本資料」API 要對應的形狀
+- **`DiaryEntryView.vue`**：日記日期從純顯示改成真的可以點開瀏覽器原生日期選擇器修改（`showPicker()`），「分享給 LINE 朋友」按鈕文案跟版面微調
+- **Tab02 破關地圖再改版**：`DiaryMapView.vue` 從 flex 版面整個換成絕對定位＋百分比座標的路徑版面（`dayPositions` + `pathTop()` 算出每個泡泡在容器內的相對位置），腳印角度一樣動態算。**這是全新的版面邏輯，跟上一輪 flex 版面是不同做法**——Claude 已用 Playwright 在 402×568～402×812 共 6 種視窗高度重新測試（`/diary` 頁面，比較每個 Day 泡泡的 `getBoundingClientRect().bottom` 跟底部導覽列 `top`），**矮螢幕溢出問題已確認修復，全部高度都沒有溢出**。下方「已知缺口」的那條舊紀錄已移除
+- `AppHeader`、`CareTreeHeader`、`DiaryStatsBar`、`FloatingAddButton`（新增鈕放大 12→14）、`UpgradeLimitBanner`（改成跟 `MedicalDisclaimerBanner` 同款的 `bg-ink-200` 灰底卡片＋方形關閉鈕）、`PageContainer` 陸續有小幅樣式微調（icon、間距、陰影、slot 判斷條件等），細節請直接看檔案
+
+**Claude 改的（文件修正）：**
+
+- **`frontend/README.md`**：原本還是 `create-vue` 產生的預設模板內容，跟專案完全無關；改成簡短說明 + 指到根目錄 `README.md` 和這份 `overview.md`
 
 ### Tab03 細節（★核心頁，邏輯較複雜）
 
@@ -144,7 +158,7 @@ Tailwind v4，色票定義在 `src/assets/main.css` 的 `@theme` block，對應 
 見根目錄 `CLAUDE.md` 的既有 API：
 
 - `POST /api/users`：`EmployerSetupView` 生成邀請碼、`CaregiverOnboardingView` 完成 onboarding 時，應該要建立/更新使用者
-- `POST /api/line/webhook`：目前「使用 LINE 註冊」按鈕只是前端導頁，之後要接真的 LINE Login/OAuth
+- 「使用 LINE 註冊」按鈕目前只是前端導頁，還沒接真的 LINE Login/OAuth——**這需要新的登入用端點，跟現有 `POST /api/line/webhook` 是兩件事**：`/api/line/webhook` 是 LINE Messaging API 的 webhook，用來接收 LINE OA 收到的事件（雇主端交流板回覆、之類），不是給使用者登入用的 OAuth callback
 - Tab01 生命徵象卡、排程表（`stores/schedule.ts`）是寫死的假資料，之後要換成打 API 讀寫
 - Tab02 日記（`stores/diary.ts`）需要存/讀日記的 API，以及印尼語 ASR 服務（`DiaryEntryView.vue` 的「AI 語音辨識」是空的 stub，見檔案內 TODO）
 - Tab03（`stores/careAgent.ts`）缺口最大：
@@ -152,8 +166,10 @@ Tailwind v4，色票定義在 `src/assets/main.css` 的 `@theme` block，對應 
   - 5 題基準線問卷答案要送出去建立心理基準線
   - 聊天室送出訊息（`ChatInputBar.vue` → `store.sendMessage`）要呼叫真正的 Care Agent API 拿 AI 回覆；同一次呼叫也要做 CLAUDE.md 說的「情緒分析→高壓觸發雇主 LINE 告知（不傳內容）」＋「抽取照護資訊寫進 Tab01」，這兩件事前端完全看不到、也不應該看到
   - 聊天室與 System Prompt 的語音輸入都是 stub，等印尼語 ASR
-- Tab04 便利貼（`stores/board.ts`）的「已讀取/尚未讀取」是寫死假資料，實際要對應雇主端 LINE 已讀狀態，需要後端/LINE webhook
+- Tab04 便利貼（`stores/board.ts`）的「已讀取/尚未讀取」是寫死假資料，實際要對應雇主端 LINE 已讀狀態——**待確認可行性**：LINE Messaging API 目前沒有提供「使用者是否已讀某則推播訊息」的事件或查詢，一般作法是退而求其次用「雇主是否點擊過訊息裡的連結」之類的替代訊號來模擬已讀，需要後端這邊評估怎麼做，不是單純接 webhook 就能拿到
 - Tab05 訂閱方案（`stores/account.ts`）的「變更方案」是 stub，沒有實際付款流程
+- `stores/account.ts` 現在也存了 `careRecipient`／`agentName`，跨 Tab01/Tab03 共用，之後應該對應到「使用者基本資料 + 照顧對象資料」的 API
+- **前後端角色命名不一致**：前端（`stores/onboarding.ts`、`RoleSelectView` 等）用 `caregiver`／`employer`；後端（`backend/app/models/user.py` 的 `UserRole`）用 `nurse`／`owner`。接 API 時要在某一層做映射（`caregiver` ↔ `nurse`、`employer` ↔ `owner`），目前兩邊都還沒有人統一或轉換
 
 ## 已知缺口
 
@@ -162,7 +178,6 @@ Tailwind v4，色票定義在 `src/assets/main.css` 的 `@theme` block，對應 
 - Tab04 便利貼權限簡化成「只有自己／雇主」二選一（單一雇主帳號），規格文件原本想支援指定多個家人聯絡人，等有多聯絡人資料模型再擴充
 - Tab05 樹狀插圖（`CareTreeHeader.vue`）用簡化幾何圖形逼近，頭像是 pravatar.cc 佔位照片，Figma 原稿是手繪風插畫，還沒有可匯出的素材檔
 - 產品名稱曾在不同 Figma 稿打成三種寫法，目前統一用「404: Care Can Be Found」（文法正確版本），之後 Figma 若又有新版本要再對齊
-- **Tab02 破關地圖在可視高度 ≲740px 會溢出、看不到後面幾個 Day 泡泡**（見上方「Codex 改的」段落），目前未修復
 
 ## 開發與部署
 

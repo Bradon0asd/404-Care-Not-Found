@@ -38,7 +38,9 @@ function simulateFirstLogin() {
       <IntroStepCard :number="1">
         <p>從 0 開始生成你的專屬 Care Agent 陪你一起認識、認知自己的情緒與壓力</p>
         <div class="max-w-[220px]">
-          <BaseButton variant="primary" @click="router.push('/chat/setup')">建置你的第一個 Care Agent</BaseButton>
+          <BaseButton variant="primary" @click="router.push('/chat/setup')"
+            >建置你的第一個 Care Agent</BaseButton
+          >
         </div>
       </IntroStepCard>
 
@@ -58,22 +60,35 @@ function simulateFirstLogin() {
     </div>
 
     <template v-else>
-      <div v-if="showReadyNotice" class="mx-3 mt-3 flex items-center gap-2 rounded-xl bg-pink-100 px-3 py-2 text-xs">
+      <div
+        v-if="showReadyNotice"
+        class="mx-3 mt-3 flex items-center gap-2 rounded-xl bg-ink-200 px-3 py-2.5 text-xs"
+      >
         <p class="flex-1 text-ink-700">你的 Care Agent 已經準備好了，陪你一起聊聊今天的心情</p>
         <button
           type="button"
-          class="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-ink-400 text-ink-700"
+          class="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-ink-400 text-ink-700"
           aria-label="關閉提示"
           @click="showReadyNotice = false"
         >
-          <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <svg
+            class="h-3 w-3"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
             <path d="M6 6l12 12M18 6 6 18" stroke-linecap="round" />
           </svg>
         </button>
       </div>
 
       <div class="px-5 pt-2 text-right">
-        <button type="button" class="text-[11px] text-ink-500 underline" @click="simulateFirstLogin">
+        <button
+          type="button"
+          class="text-[11px] text-ink-500 underline"
+          @click="simulateFirstLogin"
+        >
           模擬首次使用畫面
         </button>
       </div>

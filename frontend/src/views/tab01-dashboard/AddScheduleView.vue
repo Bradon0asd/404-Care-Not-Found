@@ -7,11 +7,13 @@ import BottomTabBar from '@/components/layout/BottomTabBar.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import SegmentedToggle from '@/components/common/SegmentedToggle.vue'
 import { useScheduleStore } from '@/stores/schedule'
+import { useAccountStore } from '@/stores/account'
 import type { ScheduleEntry } from '@/components/tab01-dashboard/ScheduleTable.vue'
 import { scheduleHours as hourOptions } from '@/utils/schedule'
 
 const router = useRouter()
 const scheduleStore = useScheduleStore()
+const account = useAccountStore()
 
 const dayType = ref<'weekday' | 'weekend'>('weekday')
 const day = ref<ScheduleEntry['day']>('mon')
@@ -98,7 +100,7 @@ function submit() {
         <textarea
           v-model="note"
           rows="5"
-          placeholder="簡單概述 {{照顧者}} 日常紀錄"
+          :placeholder="`簡單概述 ${account.careRecipient.name} 的日常紀錄`"
           class="w-full resize-none bg-transparent px-5 text-sm text-ink-950 outline-none placeholder:text-ink-500"
         ></textarea>
       </label>

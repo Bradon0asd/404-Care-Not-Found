@@ -10,10 +10,12 @@ import FloatingAddButton from '@/components/common/FloatingAddButton.vue'
 import VitalSignCard from '@/components/tab01-dashboard/VitalSignCard.vue'
 import ScheduleTable from '@/components/tab01-dashboard/ScheduleTable.vue'
 import { useScheduleStore } from '@/stores/schedule'
+import { useAccountStore } from '@/stores/account'
 
 const router = useRouter()
 const view = ref<'vitals' | 'schedule'>('vitals')
 const scheduleStore = useScheduleStore()
+const account = useAccountStore()
 
 const vitals = [
   {
@@ -96,7 +98,11 @@ const vitals = [
         <VitalSignCard v-for="vital in vitals" :key="vital.label" v-bind="vital" />
       </div>
 
-      <ScheduleTable v-else care-recipient-name="{{照顧者姓名}}" :entries="scheduleStore.entries" />
+      <ScheduleTable
+        v-else
+        :care-recipient-name="account.careRecipient.name"
+        :entries="scheduleStore.entries"
+      />
     </div>
 
     <template #fab><FloatingAddButton @click="router.push('/dashboard/add-schedule')" /></template>

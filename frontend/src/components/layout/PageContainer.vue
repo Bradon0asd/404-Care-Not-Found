@@ -1,6 +1,8 @@
 <template>
   <div class="relative mx-auto flex h-dvh w-full max-w-[402px] flex-col overflow-hidden bg-white">
-    <slot name="header" />
+    <div v-if="$slots.header" class="relative z-30 shrink-0">
+      <slot name="header" />
+    </div>
     <div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
       <slot />
     </div>

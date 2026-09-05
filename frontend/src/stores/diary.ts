@@ -39,7 +39,7 @@ export const useDiaryStore = defineStore('diary', () => {
       visibility: 'private',
     }
     entries.value.push(created)
-    return created
+    return entries.value[entries.value.length - 1]!
   }
 
   return { arrivalDay, careRecipientCount, entries, entryForDay }

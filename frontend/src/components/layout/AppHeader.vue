@@ -10,13 +10,19 @@ withDefaults(
 </script>
 
 <template>
-  <header class="flex items-center gap-2 bg-pink-500 px-4 py-3">
-    <svg class="h-5 w-5 shrink-0 text-ink-950" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path
-        d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"
-      />
+  <header class="flex shrink-0 items-center gap-2 bg-pink-500 px-4 py-3">
+    <svg class="h-6 w-6 shrink-0" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+      <path d="m16 9 8-6 1 11Z" fill="#fff3c4" />
+      <g transform="rotate(40 14 14)" stroke="#594b48" stroke-width="1.5" stroke-linejoin="round">
+        <path d="M9 6h10v5l-2 3v10h-6V14l-2-3Z" fill="#fffaf2" />
+        <path d="M9 9h10M13 16h2v3h-2Z" />
+      </g>
     </svg>
-    <span class="text-sm font-bold text-ink-950">404: Care Can Be Found</span>
-    <span class="text-xs text-white">{{ subtitle }}</span>
+    <span class="shrink-0 text-xs font-bold whitespace-nowrap text-ink-950 min-[380px]:text-sm"
+      >404: Care Can Be Found</span
+    >
+    <span class="min-w-0 text-[10px] leading-tight text-white min-[380px]:text-xs">{{
+      subtitle
+    }}</span>
   </header>
 </template>

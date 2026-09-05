@@ -47,7 +47,14 @@ function openPermissionModal() {
 }
 
 function publish(visibility: NoteVisibility) {
-  store.addNote({ level: level.value, title: title.value, tag: tag.value, content: content.value, imageUrl: imageUrl.value, visibility })
+  store.addNote({
+    level: level.value,
+    title: title.value,
+    tag: tag.value,
+    content: content.value,
+    imageUrl: imageUrl.value,
+    visibility,
+  })
   permissionModalOpen.value = false
   router.push('/board')
 }
@@ -106,7 +113,13 @@ function publish(visibility: NoteVisibility) {
       </div>
 
       <div>
-        <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="onImageSelected" />
+        <input
+          ref="fileInput"
+          type="file"
+          accept="image/*"
+          class="hidden"
+          @change="onImageSelected"
+        />
         <div v-if="imageUrl" class="relative w-fit">
           <img :src="imageUrl" alt="便利貼附圖" class="h-24 w-24 rounded-lg object-cover" />
           <button
@@ -119,10 +132,20 @@ function publish(visibility: NoteVisibility) {
           </button>
         </div>
         <div v-else class="flex items-center gap-3">
-          <button type="button" class="flex h-10 w-10 items-center justify-center rounded-lg bg-ink-200 text-ink-600" aria-label="新增圖片" @click="pickImage">
+          <button
+            type="button"
+            class="flex h-10 w-10 items-center justify-center rounded-lg bg-ink-200 text-ink-600"
+            aria-label="新增圖片"
+            @click="pickImage"
+          >
             +
           </button>
-          <button type="button" class="flex h-10 w-10 items-center justify-center rounded-lg bg-ink-200 text-ink-600" aria-label="選擇圖片" @click="pickImage">
+          <button
+            type="button"
+            class="flex h-10 w-10 items-center justify-center rounded-lg bg-ink-200 text-ink-600"
+            aria-label="選擇圖片"
+            @click="pickImage"
+          >
             <IconImage class="h-5 w-5" />
           </button>
         </div>
@@ -131,10 +154,21 @@ function publish(visibility: NoteVisibility) {
       <BaseButton variant="primary" :disabled="!content.trim()" @click="openPermissionModal">
         設定便利貼權限 ➨ 發布便利貼
       </BaseButton>
-      <BaseButton variant="outline" @click="router.back()">取消</BaseButton>
+      <BaseButton variant="outline" class="cancel-note" @click="router.back()">取消</BaseButton>
     </div>
 
-    <NotePermissionModal :open="permissionModalOpen" @close="permissionModalOpen = false" @publish="publish" />
+    <NotePermissionModal
+      :open="permissionModalOpen"
+      @close="permissionModalOpen = false"
+      @publish="publish"
+    />
     <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>
+
+<style scoped>
+.cancel-note {
+  border-width: 0.5px;
+  border-color: var(--color-ink-500);
+}
+</style>
