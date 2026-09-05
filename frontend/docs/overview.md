@@ -143,6 +143,10 @@ frontend/
 
 - **`BaselineQuestionsView`（Tab03 心理基準線問卷）修正選項邏輯錯誤**：原本 5 題基準線問卷裡「心情如何」「壓力有多大」這兩題都套用同一組頻率選項（完全沒有/很少/有時候/常常/幾乎每天），語意對不上（心情、壓力程度不該用「頻率」問法）；改成各自專屬選項——心情題用「很好/還不錯/普通/不太好/非常不好」，壓力題用「完全沒有/有一點/普通/很大/非常大」，並在 `id.ts` 補上對應印尼文譯文
 
+**Claude 改的（路由邏輯）：**
+
+- **看護登入後預設頁面改為 Tab03**：`CaregiverOnboardingView.vue` 的 `startUsing()`（onboarding 完成「開始使用」按鈕）從 `router.push('/dashboard')` 改成 `router.push('/chat')`，呼應核心頁是 Tab03 跟我聊聊，不是 Tab01 儀錶板
+
 **Codex 改的（第九輪）：**
 
 - **日記只能寫「今天」**：`stores/diary.ts` 新增 `canWriteDay(day)`（只有等於 `arrivalDay` 才算可寫），`entryForDay` 對非今天的日期會 `throw`；`router/index.ts` 加了 `beforeEach` 守衛，直接打 `/diary/:day` 網址如果不是今天會被導回 `/diary`；`DiaryMapView`/`DiaryDayBubble` 對應加上 `disabled` 樣式（灰底、`cursor-not-allowed`），過去/未來的 Day 泡泡點了沒反應；`DiaryEntryView` 的日期選擇器也鎖 `min`/`max` 都是今天，`save()` 額外檢查日期沒被改到非今天才會真的存

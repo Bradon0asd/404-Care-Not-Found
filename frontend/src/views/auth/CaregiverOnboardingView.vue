@@ -12,7 +12,7 @@ const store = useOnboardingStore()
 const { language, arrivalDate, careRecipientOrdinal } = storeToRefs(store)
 
 function startUsing() {
-  router.push('/dashboard')
+  router.push('/chat')
 }
 </script>
 
