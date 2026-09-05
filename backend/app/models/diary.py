@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from enum import StrEnum
 
 from app.extensions import db
 
@@ -6,6 +7,10 @@ from app.extensions import db
 def utc_now():
     return datetime.now(timezone.utc)
 
+
+class DiaryAiAnalysis(StrEnum):
+    NORMAL = "normal"
+    EMERGENCY = "emergency"
 
 class Diary(db.Model):
     __tablename__ = "diaries"
@@ -20,6 +25,7 @@ class Diary(db.Model):
     title = db.Column(db.String(100), nullable=True)
     content = db.Column(db.Text, nullable=False)
     # One image per diary entry, stored as a URL; the file itself never enters the DB.
+    ai_analysis = db.Column(db.String(64), nullable=True, default=DiaryAiAnalysis.NORMAL.value)
     image_url = db.Column(db.String(500), nullable=True)
     is_private = db.Column(
         db.Boolean,
