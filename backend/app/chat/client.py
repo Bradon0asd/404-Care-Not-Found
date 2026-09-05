@@ -29,7 +29,7 @@ class GeminiClient:
         return (
             self._explicit_model
             or current_app.config.get("GEMINI_MODEL")
-            or "gemini-1.5-flash"
+            or "gemini-3.6-flash"
         )
 
     def generate_content(
@@ -90,7 +90,10 @@ class GeminiClient:
             raise GoogleAiApiError("Google AI returned no candidates")
 
         parts = candidates[0].get("content", {}).get("parts", [])
-        if not parts:
+        # Gemini 3.x can put a thought part first, so join every part that carries text
+        # instead of trusting parts[0].
+        text = "".join(part.get("text", "") for part in parts)
+        if not text:
             raise GoogleAiApiError("Google AI response contained no text")
 
-        return parts[0].get("text", "")
+        return text

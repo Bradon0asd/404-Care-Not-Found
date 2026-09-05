@@ -102,6 +102,44 @@ Dashboard 每項指標回 `latest`、`current_average`、`previous_average`、`d
 
 `is_private` 預設 `true`（僅自己），對應「日記預設全封閉」的鐵則。
 
+## Tab03 跟我聊聊（樹洞）
+
+### 建檔模式（一次性）
+
+| 方法 | 路徑 | 說明 | 身分 |
+| --- | --- | --- | --- |
+| GET | `/api/chat/agent` | 讀取已建立的 Care Agent | session |
+| POST | `/api/chat/agent` | 建立或更新 Agent（body：`care_recipient_id`、`system_prompt`、`temperature`、`guardrail`） | session |
+| GET | `/api/chat/agent/baseline` | 取得一次性的開場問句 | session |
+| POST | `/api/chat/agent/baseline` | 儲存一次性作答（body：`answers`） | session |
+
+`POST /api/chat/agent` 會呼叫模型生成照護 context／每日提醒／照護 tips／風險訊號四項，存進 `generated_profile` 之後每天複用，不重複生成。`temperature` 限 0–2。免費版一人一個 Agent，超過回 `CARE_AGENT_LIMIT_REACHED`。
+
+`guardrail` 不是存起來就算，它每次對話都會併進 system instruction 一起送出。
+
+baseline 問句由 AI 生成成聊天句（「最近有睡飽嗎？」），文案不得出現測驗／檢測字眼。完成後 `baseline_completed_at` 有值，Tab 03 從此走對話模式。
+
+### 對話模式（每天）
+
+| 方法 | 路徑 | 說明 | 身分 |
+| --- | --- | --- | --- |
+| GET | `/api/chat/rooms` | 列出聊天室 | session |
+| POST | `/api/chat/rooms` | 開聊天室（body：`title`、`mood_weather`） | session |
+| GET | `/api/chat/rooms/<room_id>` | 讀聊天室與其訊息 | session |
+| POST | `/api/chat/rooms/<room_id>/messages` | 送出訊息並取得回覆 | session |
+
+`mood_weather` 四種：`sunny`、`cloudy`、`rainy`、`storm`。免費版一天一間，超過回 `CHAT_ROOM_QUOTA_REACHED`；未完成 baseline 就開房回 `BASELINE_REQUIRED`。
+
+送出訊息時，後端在同一次請求裡做三件事，但**回應只含前者**：
+
+1. 印尼語陪伴式回覆（回給看護）
+2. 情緒分析 → 判定高壓則寫 `StressEvent` 並推播雇主 LINE
+3. 抽取照護事實 → 中文寫入 `CareSchedule` / `VitalSignLog`
+
+**回應永遠不含壓力分數、風險等級或觀察清單**，`ChatMessage` 的欄位只有 `id`、`room_id`、`sender`、`text`、`created_at`。第 2、3 步失敗時靜默略過並記 log，第 1 步失敗時回預先寫好的陪伴語句，**端點一律不因 AI 失敗而回 5xx**。
+
+組 prompt 時只帶存檔的病患摘要加最近 6 則對話，不送完整歷史。
+
 ## Tab04 交流板便利貼
 
 | 方法 | 路徑 | 說明 | 身分 |
@@ -157,10 +195,16 @@ Dashboard 每項指標回 `latest`、`current_average`、`previous_average`、`d
 | `LINE_LOGIN_FAILED` | 400 | LINE Login 流程失敗 |
 | `GOOGLE_AI_NOT_CONFIGURED` | 503 | 缺 Gemini 金鑰 |
 | `GOOGLE_AI_API_ERROR` | 502 | Gemini 呼叫失敗 |
+| `CARE_AGENT_NOT_FOUND` | 404 | 尚未建立 Care Agent |
+| `CARE_AGENT_LIMIT_REACHED` | 409 | 超過方案允許的 Agent 數 |
+| `CHAT_ROOM_NOT_FOUND` | 404 | 找不到聊天室 |
+| `CHAT_ROOM_QUOTA_REACHED` | 429 | 超過當日聊天室數上限 |
+| `BASELINE_REQUIRED` | 409 | 尚未完成一次性建檔 |
 
 ## 尚未實作
 
-- **Tab03 跟我聊聊**：`app/chat` 只有 Gemini client（`app/chat/client.py`），blueprint 已註冊但還沒有端點。建檔模式、對話、情緒分析、照護資訊抽取都還沒有 API。
+- **Tab03 的 migration 還沒產出**：`care_agents`、`chat_rooms`、`chat_messages`、`stress_events` 四張表已在 model 與測試中，但因 `1b2c3d4e5f6a` 的 `down_revision` 指向不存在的 revision，Alembic 無法運作，尚未建到共用資料庫。
+- **印尼語語音辨識（ASR）已擱置**，不在本次範圍；Tab03 的輸入為文字。
 - 日記的 `ai_analysis` 欄位已在 model 與 migration 中，但 `DiarySchema` 還沒輸出。
 - Tab05 訂閱方案、語音辨識、翻譯尚無端點。
 - onboarding 目前只存得下 `name` 與 `language`；入境日期、第幾位被照顧者還沒有欄位，留在前端 store。

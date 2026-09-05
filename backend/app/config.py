@@ -76,6 +76,11 @@ class Config:
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
     GEMINI_BASE_URL = os.getenv("GEMINI_BASE_URL", "")
     GEMINI_MODEL = os.getenv("GEMINI_MODEL", "")
+    # Tiered inference: a cheap model judges every message, and only a suspicious one
+    # escalates to the deep model. Both fall back to GEMINI_MODEL so an environment
+    # that only sets the single variable keeps working.
+    GEMINI_MODEL_FAST = os.getenv("GEMINI_MODEL_FAST", "") or GEMINI_MODEL
+    GEMINI_MODEL_DEEP = os.getenv("GEMINI_MODEL_DEEP", "") or GEMINI_MODEL
     # Local disk is enough for the demo; set UPLOAD_FOLDER to a mounted volume in production.
     UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER") or os.path.join(BASE_DIR, "uploads")
     UPLOAD_URL_PATH = "/uploads"

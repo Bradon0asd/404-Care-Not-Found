@@ -110,3 +110,28 @@ class LineLoginError(AppError):
 class RoleMismatchError(AppError):
     status_code = 409
     code = "ROLE_MISMATCH"
+
+
+class CareAgentNotFoundError(AppError):
+    status_code = 404
+    code = "CARE_AGENT_NOT_FOUND"
+
+
+class CareAgentLimitReachedError(AppError):
+    status_code = 409
+    code = "CARE_AGENT_LIMIT_REACHED"
+
+
+class ChatRoomNotFoundError(AppError):
+    status_code = 404
+    code = "CHAT_ROOM_NOT_FOUND"
+
+
+class ChatRoomQuotaReachedError(AppError):
+    status_code = 429
+    code = "CHAT_ROOM_QUOTA_REACHED"
+
+
+class BaselineRequiredError(AppError):
+    status_code = 409
+    code = "BASELINE_REQUIRED"
