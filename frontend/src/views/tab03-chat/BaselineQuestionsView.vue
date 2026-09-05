@@ -16,8 +16,14 @@ const frequencyOptions = ['完全沒有', '很少', '有時候', '常常', '幾�
 const supportOptions = ['一定找得到', '大部分可以', '不一定', '很少', '完全沒有']
 
 const questions = [
-  { question: '過去 7 天，你大部分時間的心情如何？', options: frequencyOptions },
-  { question: '過去 7 天，你覺得照護工作的壓力有多大？', options: frequencyOptions },
+  {
+    question: '過去 7 天，你大部分時間的心情如何？',
+    options: ['很好', '還不錯', '普通', '不太好', '非常不好'],
+  },
+  {
+    question: '過去 7 天，你覺得照護工作的壓力有多大？',
+    options: ['完全沒有', '有一點', '普通', '很大', '非常大'],
+  },
   { question: '過去 7 天，你有得到足夠的休息，讓自己恢復精神嗎？', options: frequencyOptions },
   {
     question: '當你遇到照護上的困難或心情不好時，你覺得有人可以幫助你嗎？',
