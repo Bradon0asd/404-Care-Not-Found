@@ -13,5 +13,4 @@ dist-ssr/
 .vscode/*
 !.vscode/extensions.json
 
-backend/uploads/
-backend/.flask_session/
+/backend/.flask_session/

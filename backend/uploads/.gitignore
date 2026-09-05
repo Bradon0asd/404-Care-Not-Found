@@ -1,0 +1,3 @@
+# Runtime upload storage: keep the directory, ignore whatever lands in it.
+*
+!.gitignore
