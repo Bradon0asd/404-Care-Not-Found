@@ -25,7 +25,11 @@ function startVoiceInput() {
 }
 
 function next() {
-  store.createAgent({ systemPrompt: systemPrompt.value, temperature: temperature.value, guardrail: guardrail.value })
+  store.createAgent({
+    systemPrompt: systemPrompt.value,
+    temperature: temperature.value,
+    guardrail: guardrail.value,
+  })
   router.push('/chat/baseline')
 }
 </script>
@@ -34,12 +38,15 @@ function next() {
   <PageContainer>
     <template #header>
       <AppHeader />
-      <UpgradeLimitBanner message="免費版最多生成「1 個」Agent，" upgrade-text="立即升級享有更完整體驗" />
+      <UpgradeLimitBanner
+        :message="$t('免費版最多生成「1 個」Agent，')"
+        :upgrade-text="$t('立即升級享有更完整體驗')"
+      />
     </template>
 
     <StepProgressIndicator :current="1" />
     <div class="flex-1 space-y-4 px-4 pb-4">
-      <h1 class="text-base font-bold text-ink-950">建置你的客製化 Care Agent</h1>
+      <h1 class="text-base font-bold text-ink-950">{{ $t('建置你的客製化 Care Agent') }}</h1>
 
       <div class="rounded-xl bg-ink-200 p-4">
         <div class="mb-2 flex items-center justify-between">
@@ -49,7 +56,11 @@ function next() {
         <textarea
           v-model="systemPrompt"
           rows="5"
-          placeholder="輸入病患照護情境&#10;例：「你是一位來自印尼的專屬照護員，正在照顧一位90歲，有阿茲海默症、蜂窩性組織炎、四肢無力的女性病患，她每天需要固定做的事情是⋯」&#10;備註：除了文字輸入外，也可點選右上方「AI 語音辨識」新增 System Prompt 內容！"
+          :placeholder="
+            $t(
+              '輸入病患照護情境\n例：「你是一位來自印尼的專屬照護員，正在照顧一位90歲，有阿茲海默症、蜂窩性組織炎、四肢無力的女性病患，她每天需要固定做的事情是⋯」\n備註：除了文字輸入外，也可點選右上方「AI 語音辨識」新增 System Prompt 內容！',
+            )
+          "
           class="w-full bg-transparent text-sm text-ink-950 placeholder:text-ink-600"
         ></textarea>
       </div>
@@ -57,7 +68,9 @@ function next() {
       <TemperatureSlider v-model="temperature" />
       <GuardrailField v-model="guardrail" />
 
-      <BaseButton variant="primary" @click="next">下一步：協助 Agent 建立心理基準線</BaseButton>
+      <BaseButton variant="primary" @click="next">{{
+        $t('下一步：協助 Agent 建立心理基準線')
+      }}</BaseButton>
     </div>
 
     <template #footer><BottomTabBar /></template>

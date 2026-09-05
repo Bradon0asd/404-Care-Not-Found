@@ -31,13 +31,15 @@ const inviteLink = () => `${window.location.origin}/auth/role?invite=${store.inv
       <FamilyIllustration />
 
       <div class="w-full space-y-4">
-        <ExpandableSection title="設定看護基本資訊" />
-        <ExpandableSection title="設定行事曆資訊" />
+        <ExpandableSection :title="$t('設定看護基本資訊')" />
+        <ExpandableSection :title="$t('設定行事曆資訊')" />
       </div>
 
       <div class="mt-auto flex w-full flex-col gap-3">
-        <BaseButton variant="primary" @click="generateInviteCode">生成動態邀請碼</BaseButton>
-        <BaseButton variant="outline" @click="router.back()">返回上一步驟</BaseButton>
+        <BaseButton variant="primary" @click="generateInviteCode">{{
+          $t('生成動態邀請碼')
+        }}</BaseButton>
+        <BaseButton variant="outline" @click="router.back()">{{ $t('返回上一步驟') }}</BaseButton>
       </div>
     </div>
 

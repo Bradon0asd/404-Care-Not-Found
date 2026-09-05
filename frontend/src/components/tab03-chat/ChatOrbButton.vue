@@ -5,7 +5,7 @@ defineEmits<{ click: [] }>()
 <template>
   <button
     type="button"
-    aria-label="新增聊天室"
+    :aria-label="$t('新增聊天室')"
     class="relative flex h-48 w-48 flex-col items-center justify-center gap-3 rounded-full shadow-lg"
     style="
       background: radial-gradient(
@@ -35,6 +35,6 @@ defineEmits<{ click: [] }>()
         d="M54 4H103A12 12 0 0 1 115 16V48A12 12 0 0 1 103 60H98V76L82 60H42V16A12 12 0 0 1 54 4Z"
       />
     </svg>
-    <span class="text-sm font-medium text-black">新增聊天室</span>
+    <span class="text-sm font-medium text-black">{{ $t('新增聊天室') }}</span>
   </button>
 </template>

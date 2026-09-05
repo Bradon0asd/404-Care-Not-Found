@@ -12,7 +12,7 @@ const editing = ref(false)
 
 <template>
   <header class="flex items-center gap-2 border-b border-ink-300 px-3 py-3">
-    <button type="button" aria-label="返回" @click="router.back()">
+    <button type="button" :aria-label="$t('返回')" @click="router.back()">
       <IconArrowLeft class="h-5 w-5 text-ink-950" />
     </button>
     <input
@@ -23,7 +23,7 @@ const editing = ref(false)
       @blur="editing = false"
     />
     <span v-else class="flex-1 truncate text-sm font-bold text-ink-950">{{ title }}</span>
-    <button type="button" aria-label="編輯標題" @click="editing = true">
+    <button type="button" :aria-label="$t('編輯標題')" @click="editing = true">
       <IconPencil class="h-4 w-4 text-ink-600" />
     </button>
   </header>

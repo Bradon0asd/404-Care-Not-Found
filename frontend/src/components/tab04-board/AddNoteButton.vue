@@ -5,7 +5,7 @@ defineEmits<{ click: [] }>()
 <template>
   <button
     type="button"
-    aria-label="新增便利貼"
+    :aria-label="$t('新增便利貼')"
     class="absolute right-4 bottom-4 flex h-[72px] w-[72px] items-center justify-center rounded-full border border-ink-600 bg-white shadow-[0_2px_3px_#00000030] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink-800"
     @click="$emit('click')"
   >

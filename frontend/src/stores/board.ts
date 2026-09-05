@@ -6,6 +6,7 @@ export type NoteVisibility = 'private' | 'employer'
 export type EmployerReadStatus = 'read' | 'unread' | 'no-access'
 
 export interface StickyNote {
+  demo?: boolean
   id: string
   level: NoteLevel
   title: string
@@ -53,7 +54,8 @@ export const useBoardStore = defineStore('board', () => {
       level: 'normal',
       title: '禮拜三想請假',
       tag: '請假',
-      content: '我印尼非常好的朋友來臺灣旅遊，他們很久才來一次，我想請教他們出去玩，不知道可不可以。',
+      content:
+        '我印尼非常好的朋友來臺灣旅遊，他們很久才來一次，我想請教他們出去玩，不知道可不可以。',
       imageUrl: null,
       visibility: 'private',
       employerStatus: 'no-access',
@@ -79,6 +81,10 @@ export const useBoardStore = defineStore('board', () => {
       employerStatus: 'read',
     },
   ])
+
+  notes.value.forEach((note) => {
+    note.demo = true
+  })
 
   function addNote(note: Omit<StickyNote, 'id' | 'employerStatus'>) {
     const id = crypto.randomUUID()

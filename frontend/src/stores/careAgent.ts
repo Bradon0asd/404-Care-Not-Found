@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useAccountStore } from './account'
+import { useOnboardingStore } from './onboarding'
+import { translate } from '@/i18n'
 
 export interface CareAgent {
   systemPrompt: string
@@ -10,11 +12,14 @@ export interface CareAgent {
 }
 
 export interface ChatMessage {
+  demo?: boolean
+  kind?: 'welcome'
   sender: 'user' | 'ai'
   text: string
 }
 
 export interface ChatRoom {
+  demo?: boolean
   id: string
   title: string
   messages: ChatMessage[]
@@ -27,11 +32,15 @@ export interface MoodLog {
   weather: Weather
 }
 
-function welcomeMessage(): ChatMessage {
+export function welcomeMessage(): ChatMessage {
   const account = useAccountStore()
+  const indonesian = useOnboardingStore().language === 'id'
   return {
+    kind: 'welcome',
     sender: 'ai',
-    text: `${account.userName}，歡迎使用【404: Care Can Be Found】\n我是你的 Care Agent ${account.agentName}\n照護對象：${account.careRecipient.name}（${account.careRecipient.nickname}）\n身體狀況：${account.careRecipient.condition}`,
+    text: indonesian
+      ? `Selamat datang, ${account.userName}!\nSaya Care Agent-mu, ${account.agentName}.\nOrang yang dirawat: ${account.careRecipient.name} (${account.careRecipient.nickname})\nKondisi: ${translate(account.careRecipient.condition)}`
+      : `${account.userName}，歡迎使用【404: Care Can Be Found】\n我是你的 Care Agent ${account.agentName}\n照護對象：${account.careRecipient.name}（${account.careRecipient.nickname}）\n身體狀況：${account.careRecipient.condition}`,
   }
 }
 
@@ -73,6 +82,13 @@ export const useCareAgentStore = defineStore('careAgent', () => {
 
   const moodLogs = ref<MoodLog[]>([])
 
+  chatRooms.value.forEach((room) => {
+    room.demo = true
+    room.messages.forEach((message) => {
+      message.demo = true
+    })
+  })
+
   function createAgent(data: Omit<CareAgent, 'baselineAnswers'>) {
     agent.value = { ...data, baselineAnswers: [] }
   }
@@ -88,7 +104,7 @@ export const useCareAgentStore = defineStore('careAgent', () => {
 
   function createRoom(title = '新的聊天'): string {
     const id = crypto.randomUUID()
-    chatRooms.value.push({ id, title, messages: [welcomeMessage()] })
+    chatRooms.value.push({ id, title, demo: title === '新的聊天', messages: [welcomeMessage()] })
     return id
   }
 

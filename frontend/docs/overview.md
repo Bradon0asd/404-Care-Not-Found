@@ -17,6 +17,10 @@ frontend/
     ├── App.vue                只放 <RouterView />
     ├── router/
     │   └── index.ts           所有路由定義（見下方「路由總覽」）
+    ├── i18n/                  中／印尼文介面切換（見下方「多語系」）
+    │   ├── id.ts              中文原文 → 印尼文對照表
+    │   ├── index.ts           註冊全域 $t()，同步 html lang / 頁面標題
+    │   └── README.md          維護規則
     ├── stores/                Pinia，一個 Tab／流程一個 store
     │   ├── onboarding.ts      登入/邀請碼流程狀態（角色、語言、入境日期...）
     │   ├── schedule.ts        Tab01 排程表資料
@@ -104,9 +108,18 @@ frontend/
 
 - **`frontend/README.md`**：原本還是 `create-vue` 產生的預設模板內容，跟專案完全無關；改成簡短說明 + 指到根目錄 `README.md` 和這份 `overview.md`
 
+**Codex 改的（第四輪，中／印尼文介面切換，58 個檔案）：**
+
+- 新增 `src/i18n/`（`id.ts`／`index.ts`／`README.md`），架構跟預設值變動細節見上方「多語系」；`main.ts` 註冊 `installI18n(app)`
+- 幾乎所有 view／component 的固定文案改包 `$t()`，純機械式替換，邏輯行為沒變
+- `NewsAwarenessBanner`（Tab03）新增可收合／展開功能（右上角箭頭按鈕），**跟上面「Tab03 細節」原本寫的「兩支新聞影片永遠顯示在最上面」不同，已在下方段落更新**
+- `DiaryEntryView`（日記標題）／`AddNoteView`（便利貼標題、標籤）拿掉原本「顯示文字 + 編輯按鈕才能改」的切換邏輯（`editingTitle`/`editingTag` ref），改成欄位本身就一直可以直接輸入，行為更單純
+- `stores/board.ts`／`stores/careAgent.ts` 種子資料標上 `demo: true`（詳見「多語系」段落說明目前這個 flag 還沒有實際的翻譯判斷邏輯在用它）
+- 根目錄 `README.md` 補充一段語言切換說明，連結到 `frontend/src/i18n/README.md`
+
 ### Tab03 細節（★核心頁，邏輯較複雜）
 
-`/chat`（`IntroView`）是**持久首頁**：兩支新聞影片永遠顯示在最上面，下方內容依是否已建檔切換：
+`/chat`（`IntroView`）是**持久首頁**：兩支新聞影片區塊永遠顯示在最上面（可收合/展開，右上角箭頭按鈕，收合後只留一行提示文字），下方內容依是否已建檔切換：
 
 - **未建檔**：「建置你的第一個 Care Agent」5 步驟說明 + CTA
 - **已建檔**：`DailyChatHome.vue`（心情天氣打卡 + 聊天室泡泡列表；浮動話題泡泡＝舊聊天室，中央大泡泡＝開新聊天）。頁面右上角有「模擬首次使用畫面」連結，點下去把 `store.agent` 設回 `null`，方便 demo/測試不用真的清資料庫
@@ -153,6 +166,18 @@ Tailwind v4，色票定義在 `src/assets/main.css` 的 `@theme` block，對應 
 - `ink-100`～`ink-950`：黑/灰階（Figma 標 "Balck"，程式碼裡統一叫 `ink`）
 - `accent`：唯一的黃色 `#FCD856`
 
+## 多語系（中／印尼文介面切換，Codex 建）
+
+**純前端本地對照表，不呼叫任何翻譯 API／模型**：
+
+- `src/i18n/id.ts`：中文原文（原封不動當 key）對應印尼文譯文的固定表，共 276 行；譯文尚未經印尼語母語者審校
+- `src/i18n/index.ts`：`installI18n(app)` 在 `main.ts` 掛載時註冊全域 `$t()`；讀 `stores/onboarding.ts` 的 `language` 欄位（`'zh' | 'id'`），比對成功就回傳 `id.ts` 的譯文，否則原樣輸出中文；同時同步 `<html lang>` 跟頁面 `<title>`
+- 語言偏好存在 `localStorage`（key: `care-ui-language`），重新整理後會記得；**未選擇過的預設值現在是中文 `zh`**（`onboarding.ts` 舊版預設是 `id`，這輪改成先讀 localStorage、讀不到才 fallback 中文）。這點跟 `CLAUDE.md`「看護端介面語言：主張印尼文為主」字面上不同，但使用者已確認可以接受——理由是介面本來就能隨時切換語言，預設值不是唯一入口
+- 語言切換入口：`CaregiverOnboardingView`（onboarding 一次性設定）跟 Tab05 `LanguageModal`
+- 幾乎全部 view/component 的固定 UI 文案都已包上 `$t('原文')`（含變數用 `$t('...{name}...', { name })`）；只有**使用者自己輸入的內容**（日記內容、聊天訊息、便利貼內容等）維持原文不翻譯
+- `stores/board.ts`、`stores/careAgent.ts` 的種子資料現在都標了 `demo: true`（`StickyNote.demo`、`ChatRoom.demo`、`ChatMessage.demo`），用來跟使用者之後自己新增的內容區分——**目前這個 flag 前端還沒有實際拿來做「只翻譯 demo 內容」的判斷邏輯，看起來是先標記、翻譯邏輯本身其實對所有字串一視同仁（因為 `$t()` 是包在模板寫死的文案上，使用者輸入的欄位模板裡本來就沒被包 `$t()`）**，這個 flag 目前主要功能是文件用途（跟 `i18n/README.md` 的說明對應），之後有真的動態內容判斷需求時可以重新利用
+- 日記日期顯示：語言為印尼文時改用 `Intl.DateTimeFormat('id-ID', { dateStyle: 'full' })`，中文時維持原本的民國曆 `toMinguoDate()`
+
 ## 跟後端串接（現在還沒做，但已知會需要什麼）
 
 見根目錄 `CLAUDE.md` 的既有 API：
@@ -170,6 +195,7 @@ Tailwind v4，色票定義在 `src/assets/main.css` 的 `@theme` block，對應 
 - Tab05 訂閱方案（`stores/account.ts`）的「變更方案」是 stub，沒有實際付款流程
 - `stores/account.ts` 現在也存了 `careRecipient`／`agentName`，跨 Tab01/Tab03 共用，之後應該對應到「使用者基本資料 + 照顧對象資料」的 API
 - **前後端角色命名不一致**：前端（`stores/onboarding.ts`、`RoleSelectView` 等）用 `caregiver`／`employer`；後端（`backend/app/models/user.py` 的 `UserRole`）用 `nurse`／`owner`。接 API 時要在某一層做映射（`caregiver` ↔ `nurse`、`employer` ↔ `owner`），目前兩邊都還沒有人統一或轉換
+- **UI 介面文字的中/印尼文切換是純前端靜態對照表**（`src/i18n/`），不需要後端翻譯 API。後端真正需要處理的翻譯只有「使用者實際輸入內容」的印尼語→中文（CLAUDE.md 待定技術選型那條），跟這組介面切換是兩回事，不要搞混
 
 ## 已知缺口
 

@@ -17,6 +17,8 @@ defineEmits<{ select: [] }>()
     <span class="[&>svg]:h-10 [&>svg]:w-10" :class="selected ? 'text-white' : 'text-pink-600'">
       <slot name="icon" />
     </span>
-    <span class="text-sm font-bold" :class="selected ? 'text-white' : 'text-ink-700'">{{ label }}</span>
+    <span class="text-sm font-bold" :class="selected ? 'text-white' : 'text-ink-700'">{{
+      $t(label)
+    }}</span>
   </button>
 </template>

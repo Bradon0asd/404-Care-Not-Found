@@ -25,16 +25,15 @@ defineEmits<{ open: [] }>()
       "
       @click="$emit('open')"
     >
-      <span class="text-[9px] font-normal">Day</span>
-      {{ day }}
+      <span class="text-[9px] font-normal">{{ $t('Day') }}</span>
+      {{ $t(day) }}
     </button>
     <button
       type="button"
       class="flex h-5 items-center gap-1 rounded-full border border-ink-400 bg-ink-100 px-2 text-[8px] font-medium whitespace-nowrap text-ink-800"
       @click="$emit('open')"
     >
-      <IconPencil class="h-2 w-2" />
-      撰寫日記
+      <IconPencil class="h-2 w-2" />{{ $t('撰寫日記') }}
     </button>
   </div>
 </template>

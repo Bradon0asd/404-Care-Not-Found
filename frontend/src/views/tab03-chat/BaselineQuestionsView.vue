@@ -19,8 +19,14 @@ const questions = [
   { question: '過去 7 天，你大部分時間的心情如何？', options: frequencyOptions },
   { question: '過去 7 天，你覺得照護工作的壓力有多大？', options: frequencyOptions },
   { question: '過去 7 天，你有得到足夠的休息，讓自己恢復精神嗎？', options: frequencyOptions },
-  { question: '當你遇到照護上的困難或心情不好時，你覺得有人可以幫助你嗎？', options: supportOptions },
-  { question: '過去 7 天，你有沒有覺得「我快撐不住了」或很想暫時離開照護工作？', options: frequencyOptions },
+  {
+    question: '當你遇到照護上的困難或心情不好時，你覺得有人可以幫助你嗎？',
+    options: supportOptions,
+  },
+  {
+    question: '過去 7 天，你有沒有覺得「我快撐不住了」或很想暫時離開照護工作？',
+    options: frequencyOptions,
+  },
 ]
 
 const currentIndex = ref(0)
@@ -63,11 +69,13 @@ function submit() {
         @update:model-value="selectAnswer"
       />
 
-      <BaseButton v-if="isLast" variant="primary" :disabled="answers[4] === null" @click="submit">
-        生成你的客製化 Care Agent
-      </BaseButton>
+      <BaseButton v-if="isLast" variant="primary" :disabled="answers[4] === null" @click="submit">{{
+        $t('生成你的客製化 Care Agent')
+      }}</BaseButton>
 
-      <BaseButton v-if="currentIndex > 0" variant="outline" @click="goBack">返回上一題</BaseButton>
+      <BaseButton v-if="currentIndex > 0" variant="outline" @click="goBack">{{
+        $t('返回上一題')
+      }}</BaseButton>
     </div>
 
     <template #footer><BottomTabBar /></template>

@@ -105,7 +105,9 @@ const vitals = [
       />
     </div>
 
-    <template #fab><FloatingAddButton @click="router.push('/dashboard/add-schedule')" /></template>
+    <template v-if="view === 'schedule'" #fab
+      ><FloatingAddButton @click="router.push('/dashboard/add-schedule')"
+    /></template>
     <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>

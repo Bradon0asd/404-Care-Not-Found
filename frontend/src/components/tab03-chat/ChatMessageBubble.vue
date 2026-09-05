@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ChatMessage } from '@/stores/careAgent'
+import { welcomeMessage } from '@/stores/careAgent'
 
 defineProps<{ message: ChatMessage }>()
 </script>
@@ -13,6 +14,12 @@ defineProps<{ message: ChatMessage }>()
         : 'self-start rounded-bl-sm bg-ink-200 text-ink-950'
     "
   >
-    {{ message.text }}
+    {{
+      message.kind === 'welcome'
+        ? welcomeMessage().text
+        : message.demo
+          ? $t(message.text)
+          : message.text
+    }}
   </div>
 </template>

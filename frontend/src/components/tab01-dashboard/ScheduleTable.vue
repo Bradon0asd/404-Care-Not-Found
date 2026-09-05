@@ -38,7 +38,9 @@ function activityFor(day: string, hour: number) {
 <template>
   <div>
     <div class="mb-3 flex items-center justify-between">
-      <h2 class="text-base font-bold text-ink-950">{{ careRecipientName }} 的日常照護統整排程表</h2>
+      <h2 class="text-base font-bold text-ink-950">
+        {{ $t(careRecipientName) }}{{ $t('的日常照護統整排程表') }}
+      </h2>
     </div>
 
     <SegmentedToggle
@@ -56,14 +58,16 @@ function activityFor(day: string, hour: number) {
       <table class="w-full table-fixed border-collapse text-center text-xs">
         <thead>
           <tr class="text-ink-950">
-            <th class="w-[60px] border-r border-accent bg-accent py-2 font-bold">時間</th>
+            <th class="w-[60px] border-r border-accent bg-accent py-2 font-bold">
+              {{ $t('時間') }}
+            </th>
             <th
               v-for="(col, index) in columns"
               :key="col.day"
               class="border-r border-accent py-2 font-bold last:border-r-0"
               :class="index % 2 === 1 ? 'bg-accent' : 'bg-white'"
             >
-              {{ col.label }}
+              {{ $t(col.label) }}
             </th>
           </tr>
         </thead>
@@ -74,7 +78,7 @@ function activityFor(day: string, hour: number) {
             </tr>
             <tr class="h-[51px] border-t border-accent">
               <td class="border-r border-accent bg-accent py-2 text-sm font-medium text-ink-600">
-                {{ String(hour).padStart(2, '0') }}:00
+                {{ $t(String(hour).padStart(2, '0')) }}:00
               </td>
               <td
                 v-for="(col, index) in columns"
@@ -82,7 +86,7 @@ function activityFor(day: string, hour: number) {
                 class="border-r border-accent px-1 py-2 font-medium last:border-r-0"
                 :class="index % 2 === 1 ? 'bg-accent' : 'bg-white'"
               >
-                {{ activityFor(col.day, hour) ?? '' }}
+                {{ $t(activityFor(col.day, hour) ?? '') }}
               </td>
             </tr>
           </template>

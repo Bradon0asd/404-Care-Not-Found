@@ -29,7 +29,7 @@ defineEmits<{ 'update:modelValue': [string] }>()
       "
       @click="$emit('update:modelValue', option.value)"
     >
-      {{ option.label }}
+      {{ $t(option.label) }}
     </button>
   </div>
 </template>

@@ -24,16 +24,16 @@ const dismissed = ref(false)
       <rect x="11" y="6.5" width="2" height="2" />
     </svg>
     <p class="flex-1">
-      {{ message }}
+      {{ $t(message) }}
       <RouterLink v-if="upgradeText" to="/account" class="font-bold text-blue-600 underline">{{
-        upgradeText
+        $t(upgradeText)
       }}</RouterLink>
     </p>
     <button
       v-if="dismissible"
       type="button"
       class="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-ink-400 text-ink-700"
-      aria-label="關閉提示"
+      :aria-label="$t('關閉提示')"
       @click="dismissed = true"
     >
       <svg

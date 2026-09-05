@@ -25,7 +25,19 @@ function send(text: string) {
 
 <template>
   <PageContainer v-if="room">
-    <template #header><ChatRoomHeader v-model:title="room.title" /></template>
+    <template #header>
+      <ChatRoomHeader
+        :title="room.demo ? $t(room.title) : room.title"
+        @update:title="
+          (title) => {
+            if (room) {
+              room.title = title
+              room.demo = false
+            }
+          }
+        "
+      />
+    </template>
 
     <div class="flex flex-1 flex-col gap-3 px-4 py-4">
       <ChatMessageBubble v-for="(message, i) in room.messages" :key="i" :message="message" />

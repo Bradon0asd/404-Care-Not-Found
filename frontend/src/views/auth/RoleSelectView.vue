@@ -41,28 +41,35 @@ function handleLineRegister() {
     <div class="flex flex-1 flex-col items-center gap-6 px-6 py-10">
       <div class="text-center">
         <h1 class="text-2xl font-bold text-ink-950">
-          歡迎使用 <span class="text-pink-600">照見</span>
+          {{ $t('歡迎使用') }}<span class="text-pink-600">{{ $t('照見') }}</span>
         </h1>
-        <p class="mt-2 text-sm text-ink-700">請先選擇你的身分</p>
+        <p class="mt-2 text-sm text-ink-700">{{ $t('請先選擇你的身分') }}</p>
       </div>
 
       <FamilyIllustration />
 
       <div class="flex gap-4">
-        <RoleCard label="看護" :selected="role === 'caregiver'" @select="store.selectRole('caregiver')">
+        <RoleCard
+          :label="$t('看護')"
+          :selected="role === 'caregiver'"
+          @select="store.selectRole('caregiver')"
+        >
           <template #icon><IconCaregiver /></template>
         </RoleCard>
-        <RoleCard label="雇主" :selected="role === 'employer'" @select="store.selectRole('employer')">
+        <RoleCard
+          :label="$t('雇主')"
+          :selected="role === 'employer'"
+          @select="store.selectRole('employer')"
+        >
           <template #icon><IconEmployer /></template>
         </RoleCard>
       </div>
 
       <div class="mt-auto flex w-full flex-col gap-3">
         <BaseButton variant="line" :disabled="!role" @click="handleLineRegister">
-          <IconLine />
-          使用 LINE 註冊
-        </BaseButton>
-        <BaseButton variant="outline" @click="router.back()">返回上一步驟</BaseButton>
+          <IconLine />{{ $t('使用 LINE 註冊') }}</BaseButton
+        >
+        <BaseButton variant="outline" @click="router.back()">{{ $t('返回上一步驟') }}</BaseButton>
       </div>
     </div>
   </PageContainer>

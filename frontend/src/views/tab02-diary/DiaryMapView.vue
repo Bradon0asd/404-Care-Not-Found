@@ -51,7 +51,7 @@ function openDay(day: number) {
         :care-recipient-count="diaryStore.careRecipientCount"
       />
       <p class="mt-2 shrink-0 px-6 text-center text-[10px] text-ink-600">
-        每天撰寫日記，累積一定天數將獲得特定獎勵
+        {{ $t('每天撰寫日記，累積一定天數將獲得特定獎勵') }}
       </p>
 
       <div class="relative mx-4 my-2 min-h-[280px] flex-1">

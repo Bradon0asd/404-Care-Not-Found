@@ -12,16 +12,22 @@ import AiVoiceButton from '@/components/common/AiVoiceButton.vue'
 import IconLine from '@/components/auth/icons/IconLine.vue'
 import { useDiaryStore } from '@/stores/diary'
 import { toMinguoDate } from '@/utils/date'
+import { useOnboardingStore } from '@/stores/onboarding'
 
 const route = useRoute()
 const router = useRouter()
 const diaryStore = useDiaryStore()
+const settings = useOnboardingStore()
 
 const day = Number(route.params.day)
 const entry = diaryStore.entryForDay(day)
 
-const editingTitle = ref(false)
-const dateLabel = computed(() => toMinguoDate(new Date(`${entry.date}T00:00:00`)))
+const dateLabel = computed(() => {
+  const date = new Date(`${entry.date}T00:00:00`)
+  return settings.language === 'id'
+    ? new Intl.DateTimeFormat('id-ID', { dateStyle: 'full' }).format(date)
+    : toMinguoDate(date)
+})
 
 function openDatePicker(event: MouseEvent) {
   const input = event.currentTarget as HTMLInputElement
@@ -76,36 +82,33 @@ function save(visibility: 'private' | 'shared') {
         <div
           class="flex h-16 w-16 flex-col items-center justify-center rounded-full border-2 border-accent bg-accent text-sm font-bold text-ink-950"
         >
-          <span class="text-[10px] font-normal">Day</span>
-          {{ day }}
+          <span class="text-[10px] font-normal">{{ $t('Day') }}</span>
+          {{ $t(day) }}
         </div>
       </div>
 
-      <div class="flex items-center gap-2 rounded-xl bg-ink-200 px-4 py-3">
-        <span class="text-sm text-ink-700">日記主題</span>
+      <label
+        class="flex items-center gap-2 rounded-xl bg-ink-200 px-4 py-3 focus-within:ring-2 focus-within:ring-pink-500"
+      >
+        <span class="text-sm text-ink-700">{{ $t('日記主題') }}</span>
         <input
-          v-if="editingTitle"
           v-model="entry.title"
           type="text"
-          class="flex-1 bg-transparent text-sm text-ink-950 outline-none"
-          placeholder="輸入主題"
-          @blur="editingTitle = false"
+          class="min-w-0 flex-1 bg-transparent text-sm text-ink-950 outline-none"
+          :placeholder="$t('輸入主題')"
         />
-        <span v-else class="flex-1 text-sm text-ink-950">{{ entry.title }}</span>
-        <button type="button" aria-label="編輯主題" @click="editingTitle = true">
-          <IconPencil class="h-4 w-4 text-ink-600" />
-        </button>
-      </div>
+        <IconPencil aria-hidden="true" class="h-4 w-4 shrink-0 text-ink-600" />
+      </label>
 
       <label
         class="relative flex min-h-11 cursor-pointer items-center gap-2 rounded-xl bg-ink-200 px-4 py-3 focus-within:ring-2 focus-within:ring-pink-500"
       >
-        <span class="shrink-0 text-sm text-ink-700">日記日期</span>
+        <span class="shrink-0 text-sm text-ink-700">{{ $t('日記日期') }}</span>
         <IconCalendar aria-hidden="true" class="h-4 w-4 shrink-0 text-ink-600" />
-        <span class="flex-1 text-sm text-ink-950">{{ dateLabel }}</span>
+        <span class="flex-1 text-sm text-ink-950">{{ $t(dateLabel) }}</span>
         <input
           type="date"
-          aria-label="日記日期"
+          :aria-label="$t('日記日期')"
           :value="entry.date"
           class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
           @click="openDatePicker"
@@ -115,13 +118,17 @@ function save(visibility: 'private' | 'shared') {
 
       <div class="rounded-xl bg-ink-200 p-4">
         <div class="mb-2 flex items-center justify-between">
-          <span class="text-sm text-ink-700">日記內容</span>
+          <span class="text-sm text-ink-700">{{ $t('日記內容') }}</span>
           <AiVoiceButton @click="startVoiceInput" />
         </div>
         <textarea
           v-model="entry.content"
           rows="5"
-          placeholder="今天想分享什麼呢？&#10;阿嬤今天有乖乖吃飯嗎？&#10;印尼家人的健康狀況還好嗎？小孩今天學校發生什麼有趣的事情？&#10;備註：除了文字輸入外，也可點選右上方「AI 語音辨識」新增日記內容！"
+          :placeholder="
+            $t(
+              '今天想分享什麼呢？\n阿嬤今天有乖乖吃飯嗎？\n印尼家人的健康狀況還好嗎？小孩今天學校發生什麼有趣的事情？\n備註：除了文字輸入外，也可點選右上方「AI 語音辨識」新增日記內容！',
+            )
+          "
           class="w-full bg-transparent text-sm text-ink-950 placeholder:text-ink-600"
         ></textarea>
       </div>
@@ -135,11 +142,15 @@ function save(visibility: 'private' | 'shared') {
           @change="onImageSelected"
         />
         <div v-if="entry.imageUrl" class="relative w-fit">
-          <img :src="entry.imageUrl" alt="日記附圖" class="h-24 w-24 rounded-lg object-cover" />
+          <img
+            :src="entry.imageUrl"
+            :alt="$t('日記附圖')"
+            class="h-24 w-24 rounded-lg object-cover"
+          />
           <button
             type="button"
             class="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-ink-950 text-xs text-white"
-            aria-label="移除圖片"
+            :aria-label="$t('移除圖片')"
             @click="removeImage"
           >
             ×
@@ -149,7 +160,7 @@ function save(visibility: 'private' | 'shared') {
           <button
             type="button"
             class="flex h-10 w-10 items-center justify-center rounded-lg bg-ink-200 text-ink-600"
-            aria-label="新增圖片"
+            :aria-label="$t('新增圖片')"
             @click="pickImage"
           >
             +
@@ -157,7 +168,7 @@ function save(visibility: 'private' | 'shared') {
           <button
             type="button"
             class="flex h-10 w-10 items-center justify-center rounded-lg bg-ink-200 text-ink-600"
-            aria-label="選擇圖片"
+            :aria-label="$t('選擇圖片')"
             @click="pickImage"
           >
             <IconImage class="h-5 w-5" />
@@ -168,16 +179,18 @@ function save(visibility: 'private' | 'shared') {
       <div
         class="grid grid-cols-2 gap-3 pt-2 [&_button]:h-11 [&_button]:gap-1.5 [&_button]:px-2 [&_button]:py-0 [&_button]:text-xs [&_button]:whitespace-nowrap"
       >
-        <BaseButton variant="primary" @click="save('private')">新增日記（僅自己）</BaseButton>
+        <BaseButton variant="primary" @click="save('private')">{{
+          $t('新增日記（僅自己）')
+        }}</BaseButton>
         <BaseButton variant="line" @click="save('shared')">
           <IconLine class="h-4 w-4 shrink-0" />
-          <span class="text-[11px]">分享給 LINE 朋友</span>
+          <span class="text-[11px]">{{ $t('分享給 LINE 朋友') }}</span>
         </BaseButton>
       </div>
-      <BaseButton variant="outline" @click="router.back()">取消</BaseButton>
+      <BaseButton variant="outline" @click="router.back()">{{ $t('取消') }}</BaseButton>
 
       <p class="text-center text-xs text-ink-600">
-        提醒：平台絕不會擅自分享你的日記內容，請放心抒發
+        {{ $t('提醒：平台絕不會擅自分享你的日記內容，請放心抒發') }}
       </p>
     </div>
 

@@ -20,8 +20,6 @@ const title = ref('')
 const tag = ref('')
 const content = ref('')
 const imageUrl = ref<string | null>(null)
-const editingTitle = ref(false)
-const editingTag = ref(false)
 const permissionModalOpen = ref(false)
 
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -68,46 +66,45 @@ function publish(visibility: NoteVisibility) {
       <NoteLevelPicker v-model="level" />
 
       <div class="space-y-3 rounded-xl bg-ink-200 p-4">
-        <div class="flex items-center gap-2">
-          <span class="text-sm text-ink-700">便利貼標題</span>
+        <label
+          class="flex items-center gap-2 rounded-md focus-within:ring-2 focus-within:ring-pink-500"
+        >
+          <span class="text-sm text-ink-700">{{ $t('便利貼標題') }}</span>
           <input
-            v-if="editingTitle"
             v-model="title"
             type="text"
-            class="flex-1 bg-transparent text-sm text-ink-950 outline-none"
-            @blur="editingTitle = false"
+            :placeholder="$t('輸入標題')"
+            class="min-w-0 flex-1 bg-transparent text-sm text-ink-950 outline-none"
           />
-          <span v-else class="flex-1 text-sm text-ink-950">{{ title }}</span>
-          <button type="button" aria-label="編輯標題" @click="editingTitle = true">
-            <IconPencil class="h-4 w-4 text-ink-600" />
-          </button>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-sm text-ink-700">設定標籤類別</span>
+          <IconPencil aria-hidden="true" class="h-4 w-4 shrink-0 text-ink-600" />
+        </label>
+        <label
+          class="flex items-center gap-2 rounded-md focus-within:ring-2 focus-within:ring-pink-500"
+        >
+          <span class="text-sm text-ink-700">{{ $t('設定標籤類別') }}</span>
           <input
-            v-if="editingTag"
             v-model="tag"
             type="text"
-            placeholder="例如：請假／照護／費用"
-            class="flex-1 bg-transparent text-sm text-ink-950 outline-none placeholder:text-ink-600"
-            @blur="editingTag = false"
+            :placeholder="$t('例如：請假／照護／費用')"
+            class="min-w-0 flex-1 bg-transparent text-sm text-ink-950 outline-none placeholder:text-ink-600"
           />
-          <span v-else class="flex-1 text-sm text-ink-950">{{ tag }}</span>
-          <button type="button" aria-label="編輯標籤" @click="editingTag = true">
-            <IconPencil class="h-4 w-4 text-ink-600" />
-          </button>
-        </div>
+          <IconPencil aria-hidden="true" class="h-4 w-4 shrink-0 text-ink-600" />
+        </label>
       </div>
 
       <div class="rounded-xl bg-ink-200 p-4">
         <div class="mb-2 flex items-center justify-between">
-          <span class="text-sm text-ink-700">便利貼內容</span>
+          <span class="text-sm text-ink-700">{{ $t('便利貼內容') }}</span>
           <AiVoiceButton @click="startVoiceInput" />
         </div>
         <textarea
           v-model="content"
           rows="5"
-          placeholder="今天想和雇主分享什麼呢？&#10;例如：阿嬤今天9:00開始就一直吵著要下床，一路吵到下午15:00自己累了睡著。&#10;備註：除了文字輸入外，也可點選右上方「AI 語音辨識」新增便利貼內容！"
+          :placeholder="
+            $t(
+              '今天想和雇主分享什麼呢？\n例如：阿嬤今天9:00開始就一直吵著要下床，一路吵到下午15:00自己累了睡著。\n備註：除了文字輸入外，也可點選右上方「AI 語音辨識」新增便利貼內容！',
+            )
+          "
           class="w-full bg-transparent text-sm text-ink-950 placeholder:text-ink-600"
         ></textarea>
       </div>
@@ -121,11 +118,11 @@ function publish(visibility: NoteVisibility) {
           @change="onImageSelected"
         />
         <div v-if="imageUrl" class="relative w-fit">
-          <img :src="imageUrl" alt="便利貼附圖" class="h-24 w-24 rounded-lg object-cover" />
+          <img :src="imageUrl" :alt="$t('便利貼附圖')" class="h-24 w-24 rounded-lg object-cover" />
           <button
             type="button"
             class="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-ink-950 text-xs text-white"
-            aria-label="移除圖片"
+            :aria-label="$t('移除圖片')"
             @click="imageUrl = null"
           >
             ×
@@ -135,7 +132,7 @@ function publish(visibility: NoteVisibility) {
           <button
             type="button"
             class="flex h-10 w-10 items-center justify-center rounded-lg bg-ink-200 text-ink-600"
-            aria-label="新增圖片"
+            :aria-label="$t('新增圖片')"
             @click="pickImage"
           >
             +
@@ -143,7 +140,7 @@ function publish(visibility: NoteVisibility) {
           <button
             type="button"
             class="flex h-10 w-10 items-center justify-center rounded-lg bg-ink-200 text-ink-600"
-            aria-label="選擇圖片"
+            :aria-label="$t('選擇圖片')"
             @click="pickImage"
           >
             <IconImage class="h-5 w-5" />
@@ -151,10 +148,12 @@ function publish(visibility: NoteVisibility) {
         </div>
       </div>
 
-      <BaseButton variant="primary" :disabled="!content.trim()" @click="openPermissionModal">
-        設定便利貼權限 ➨ 發布便利貼
-      </BaseButton>
-      <BaseButton variant="outline" class="cancel-note" @click="router.back()">取消</BaseButton>
+      <BaseButton variant="primary" :disabled="!content.trim()" @click="openPermissionModal">{{
+        $t('設定便利貼權限 ➨ 發布便利貼')
+      }}</BaseButton>
+      <BaseButton variant="outline" class="cancel-note" @click="router.back()">{{
+        $t('取消')
+      }}</BaseButton>
     </div>
 
     <NotePermissionModal

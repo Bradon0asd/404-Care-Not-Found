@@ -18,6 +18,8 @@ const words = [
 
 <template>
   <div class="flex flex-wrap justify-center gap-x-3 gap-y-1 px-2">
-    <span v-for="w in words" :key="w.text" class="font-bold" :class="[w.size, w.color]">{{ w.text }}</span>
+    <span v-for="w in words" :key="w.text" class="font-bold" :class="[w.size, w.color]">{{
+      $t(w.text)
+    }}</span>
   </div>
 </template>

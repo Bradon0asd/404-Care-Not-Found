@@ -44,10 +44,12 @@ function submit() {
     <template #header><AppHeader /></template>
 
     <div class="flex flex-1 flex-col px-5 py-7">
-      <h1 class="mb-3 text-lg font-bold tracking-[0.18em] text-ink-950">新增排程</h1>
+      <h1 class="mb-3 text-lg font-bold tracking-[0.18em] text-ink-950">{{ $t('新增排程') }}</h1>
 
       <div class="flex h-[60px] items-center gap-4 rounded-xl bg-ink-200 px-5">
-        <p class="shrink-0 text-sm font-bold tracking-[0.12em] text-ink-600">選擇類別</p>
+        <p class="shrink-0 text-sm font-bold tracking-[0.12em] text-ink-600">
+          {{ $t('選擇類別') }}
+        </p>
         <SegmentedToggle
           class="flex-1"
           variant="chip"
@@ -66,7 +68,9 @@ function submit() {
       </div>
 
       <label class="mt-5 flex h-[60px] items-center rounded-xl bg-ink-200 px-5">
-        <span class="shrink-0 text-sm font-bold tracking-[0.12em] text-ink-600">選擇星期</span>
+        <span class="shrink-0 text-sm font-bold tracking-[0.12em] text-ink-600">{{
+          $t('選擇星期')
+        }}</span>
         <select
           v-model="day"
           class="ml-auto bg-transparent text-right text-sm font-bold text-ink-600 outline-none"
@@ -76,38 +80,40 @@ function submit() {
             :key="opt.value"
             :value="opt.value"
           >
-            {{ opt.label }}
+            {{ $t(opt.label) }}
           </option>
         </select>
       </label>
 
       <label class="mt-5 flex h-[60px] items-center rounded-xl bg-ink-200 px-5">
-        <span class="shrink-0 text-sm font-bold tracking-[0.12em] text-ink-600"
-          >選擇詳細時間點</span
-        >
+        <span class="shrink-0 text-sm font-bold tracking-[0.12em] text-ink-600">{{
+          $t('選擇詳細時間點')
+        }}</span>
         <select
           v-model.number="hour"
           class="ml-auto bg-transparent text-right font-mono text-base font-bold tracking-[0.12em] text-ink-600 outline-none"
         >
           <option v-for="h in hourOptions" :key="h" :value="h">
-            {{ String(h).padStart(2, '0') }}:00
+            {{ $t(String(h).padStart(2, '0')) }}:00
           </option>
         </select>
       </label>
 
       <label class="mt-5 block h-[200px] rounded-xl bg-ink-200 px-5 py-5">
-        <span class="mb-4 block text-sm font-bold tracking-[0.12em] text-ink-600">新增事項</span>
+        <span class="mb-4 block text-sm font-bold tracking-[0.12em] text-ink-600">{{
+          $t('新增事項')
+        }}</span>
         <textarea
           v-model="note"
           rows="5"
-          :placeholder="`簡單概述 ${account.careRecipient.name} 的日常紀錄`"
+          :placeholder="$t('簡單概述 {name} 的日常紀錄', { name: account.careRecipient.name })"
           class="w-full resize-none bg-transparent px-5 text-sm text-ink-950 outline-none placeholder:text-ink-500"
         ></textarea>
       </label>
 
       <div class="mt-auto space-y-5 pt-8">
-        <BaseButton variant="primary" @click="submit">新增排程</BaseButton>
-        <BaseButton variant="outline" @click="router.back()">取消</BaseButton>
+        <BaseButton variant="primary" @click="submit">{{ $t('新增排程') }}</BaseButton>
+        <BaseButton variant="outline" @click="router.back()">{{ $t('取消') }}</BaseButton>
       </div>
     </div>
 

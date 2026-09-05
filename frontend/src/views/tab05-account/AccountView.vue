@@ -29,7 +29,7 @@ function logout() {
     <div class="flex flex-1 items-start">
       <CareTreeHeader
         :user-name="account.userName"
-        role="看護端"
+        :role="$t('看護端')"
         @language="languageModalOpen = true"
         @logout="logout"
         @plans="router.push('/account/plans')"

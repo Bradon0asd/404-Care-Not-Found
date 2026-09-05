@@ -52,7 +52,7 @@ function isActive(to: string) {
         <span
           class="relative z-10 mt-0.5 whitespace-pre-line text-center text-[9px] leading-[10px] text-ink-950"
           :class="isActive(tab.to) ? 'font-bold' : 'font-medium'"
-          >{{ tab.label }}</span
+          >{{ $t(tab.label) }}</span
         >
       </RouterLink>
     </nav>

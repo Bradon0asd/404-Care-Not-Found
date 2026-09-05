@@ -8,9 +8,9 @@ const router = useRouter()
 
 <template>
   <div class="relative flex items-center justify-center px-3 py-3">
-    <button type="button" class="absolute left-3" aria-label="返回" @click="router.back()">
+    <button type="button" class="absolute left-3" :aria-label="$t('返回')" @click="router.back()">
       <IconArrowLeft class="h-5 w-5 text-ink-950" />
     </button>
-    <h1 class="text-sm font-bold text-ink-950">{{ title }}</h1>
+    <h1 class="text-sm font-bold text-ink-950">{{ $t(title) }}</h1>
   </div>
 </template>

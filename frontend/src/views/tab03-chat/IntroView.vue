@@ -36,27 +36,36 @@ function simulateFirstLogin() {
       </div>
 
       <IntroStepCard :number="1">
-        <p>從 0 開始生成你的專屬 Care Agent 陪你一起認識、認知自己的情緒與壓力</p>
+        <p>{{ $t('從 0 開始生成你的專屬 Care Agent 陪你一起認識、認知自己的情緒與壓力') }}</p>
         <div class="max-w-[220px]">
-          <BaseButton variant="primary" @click="router.push('/chat/setup')"
-            >建置你的第一個 Care Agent</BaseButton
-          >
+          <BaseButton variant="primary" @click="router.push('/chat/setup')">{{
+            $t('建置你的第一個 Care Agent')
+          }}</BaseButton>
         </div>
       </IntroStepCard>
 
       <IntroStepCard :number="2">
-        <p>完成簡單幾個問題，協助 Agent 建立心理基準線<br />你的日常 Care Agent 就完成啦！</p>
+        <p>
+          {{ $t('完成簡單幾個問題，協助 Agent 建立心理基準線') }}<br />{{
+            $t('你的日常 Care Agent 就完成啦！')
+          }}
+        </p>
       </IntroStepCard>
 
       <div class="flex items-center gap-2 text-xs text-ink-500">
-        <span class="h-px flex-1 bg-ink-400"></span>
-        Care Agent 建置完成後
-        <span class="h-px flex-1 bg-ink-400"></span>
+        <span class="h-px flex-1 bg-ink-400"></span>{{ $t('Care Agent 建置完成後')
+        }}<span class="h-px flex-1 bg-ink-400"></span>
       </div>
 
-      <IntroStepCard :number="3"><p>對話模式</p></IntroStepCard>
-      <IntroStepCard :number="4"><p>查看 Care Agent 回應與紀錄</p></IntroStepCard>
-      <IntroStepCard :number="5"><p>歷程回顧</p></IntroStepCard>
+      <IntroStepCard :number="3"
+        ><p>{{ $t('對話模式') }}</p></IntroStepCard
+      >
+      <IntroStepCard :number="4"
+        ><p>{{ $t('查看 Care Agent 回應與紀錄') }}</p></IntroStepCard
+      >
+      <IntroStepCard :number="5"
+        ><p>{{ $t('歷程回顧') }}</p></IntroStepCard
+      >
     </div>
 
     <template v-else>
@@ -64,11 +73,13 @@ function simulateFirstLogin() {
         v-if="showReadyNotice"
         class="mx-3 mt-3 flex items-center gap-2 rounded-xl bg-ink-200 px-3 py-2.5 text-xs"
       >
-        <p class="flex-1 text-ink-700">你的 Care Agent 已經準備好了，陪你一起聊聊今天的心情</p>
+        <p class="flex-1 text-ink-700">
+          {{ $t('你的 Care Agent 已經準備好了，陪你一起聊聊今天的心情') }}
+        </p>
         <button
           type="button"
           class="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-ink-400 text-ink-700"
-          aria-label="關閉提示"
+          :aria-label="$t('關閉提示')"
           @click="showReadyNotice = false"
         >
           <svg
@@ -89,7 +100,7 @@ function simulateFirstLogin() {
           class="text-[11px] text-ink-500 underline"
           @click="simulateFirstLogin"
         >
-          模擬首次使用畫面
+          {{ $t('模擬首次使用畫面') }}
         </button>
       </div>
 

@@ -6,7 +6,7 @@ defineEmits<{ click: [] }>()
   <button
     type="button"
     class="absolute right-4 bottom-4 flex h-14 w-14 items-center justify-center rounded-full bg-pink-500 text-white shadow-lg"
-    aria-label="新增"
+    :aria-label="$t('新增')"
     @click="$emit('click')"
   >
     <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

@@ -8,9 +8,13 @@ defineEmits<{ close: []; 'update:language': [Language] }>()
 
 <template>
   <Teleport to="body">
-    <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6" @click.self="$emit('close')">
+    <div
+      v-if="open"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6"
+      @click.self="$emit('close')"
+    >
       <div class="w-full max-w-xs space-y-4 rounded-2xl bg-white p-5">
-        <h2 class="text-sm font-bold text-ink-950">變更語言</h2>
+        <h2 class="text-sm font-bold text-ink-950">{{ $t('變更語言') }}</h2>
         <SegmentedToggle
           variant="tab"
           :model-value="language"

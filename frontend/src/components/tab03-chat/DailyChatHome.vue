@@ -37,7 +37,7 @@ function startNewChat() {
       <ChatTopicBubble
         v-for="(room, i) in aboveRooms"
         :key="room.id"
-        :title="room.title"
+        :title="room.demo ? $t(room.title) : room.title"
         :align="i % 2 === 0 ? 'right' : 'left'"
         @click="openRoom(room.id)"
       />
@@ -51,7 +51,7 @@ function startNewChat() {
       <ChatTopicBubble
         v-for="(room, i) in belowRooms"
         :key="room.id"
-        :title="room.title"
+        :title="room.demo ? $t(room.title) : room.title"
         :align="i % 2 === 0 ? 'left' : 'right'"
         @click="openRoom(room.id)"
       />

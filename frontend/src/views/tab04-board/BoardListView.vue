@@ -42,8 +42,8 @@ const filteredNotes = computed(() =>
     <template #header>
       <AppHeader />
       <div class="flex items-center justify-between bg-ink-200 px-4 py-3">
-        <FilterSelect v-model="statusFilter" label="狀態" :options="statusOptions" />
-        <FilterSelect v-model="levelFilter" label="層級" :options="levelOptions" />
+        <FilterSelect v-model="statusFilter" :label="$t('狀態')" :options="statusOptions" />
+        <FilterSelect v-model="levelFilter" :label="$t('層級')" :options="levelOptions" />
       </div>
     </template>
 

@@ -19,11 +19,14 @@ function startVoiceInput() {
 </script>
 
 <template>
-  <form class="flex items-center gap-2 border-t border-ink-300 bg-white px-3 py-2" @submit.prevent="submit">
+  <form
+    class="flex items-center gap-2 border-t border-ink-300 bg-white px-3 py-2"
+    @submit.prevent="submit"
+  >
     <button
       type="button"
       class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink-200 text-ink-600"
-      aria-label="語音輸入"
+      :aria-label="$t('語音輸入')"
       @click="startVoiceInput"
     >
       <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -34,13 +37,13 @@ function startVoiceInput() {
     <input
       v-model="text"
       type="text"
-      placeholder="Tulis pesanmu di sini... (印尼語輸入)"
+      :placeholder="$t('Tulis pesanmu di sini... (印尼語輸入)')"
       class="flex-1 rounded-full bg-ink-200 px-4 py-2 text-sm text-ink-950 placeholder:text-ink-600"
     />
     <button
       type="submit"
       class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-500 text-white"
-      aria-label="送出"
+      :aria-label="$t('送出')"
     >
       <IconSend class="h-4 w-4" />
     </button>

@@ -9,10 +9,12 @@ const value = defineModel<string>({ required: true })
 
 <template>
   <label class="flex items-center gap-1 text-sm text-ink-700">
-    {{ label }}
+    {{ $t(label) }}
     <select v-model="value" class="bg-transparent font-medium text-ink-950">
-      <option value="">篩選{{ label }}</option>
-      <option v-for="opt in options" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+      <option value="">{{ $t('篩選') }}{{ $t(label) }}</option>
+      <option v-for="opt in options" :key="opt.value" :value="opt.value">
+        {{ $t(opt.label) }}
+      </option>
     </select>
   </label>
 </template>

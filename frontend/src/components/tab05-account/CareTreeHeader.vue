@@ -22,7 +22,7 @@ const leaves = [
 <template>
   <section
     class="care-tree relative mx-auto aspect-[402/740] w-full max-w-[402px] shrink-0"
-    aria-label="帳戶設定樹"
+    :aria-label="$t('帳戶設定樹')"
   >
     <svg
       class="absolute inset-0 h-full w-full"
@@ -106,25 +106,25 @@ const leaves = [
     >
       <img
         src="https://i.pravatar.cc/256?img=47"
-        alt="使用者頭像"
+        :alt="$t('使用者頭像')"
         class="aspect-square w-[44%] rounded-full border-4 border-white object-cover shadow-sm"
       />
-      <p class="mt-3 text-sm font-medium text-[#594b48]">使用者名稱：{{ userName }}</p>
-      <p class="mt-1 text-xs text-[#75635e]">身分：{{ role }}</p>
+      <p class="mt-3 text-sm font-medium text-[#594b48]">{{ $t('使用者名稱：') }}{{ userName }}</p>
+      <p class="mt-1 text-xs text-[#75635e]">{{ $t('身分：') }}{{ $t(role) }}</p>
     </div>
 
     <button type="button" class="tree-action absolute top-[48%] right-[7%]" @click="$emit('plans')">
-      訂閱方案
+      {{ $t('訂閱方案') }}
     </button>
     <button
       type="button"
       class="tree-action absolute top-[62%] left-[8%]"
       @click="$emit('language')"
     >
-      變更語言
+      {{ $t('變更語言') }}
     </button>
     <button type="button" class="tree-action absolute top-[78%] left-[5%]" @click="$emit('logout')">
-      登出
+      {{ $t('登出') }}
     </button>
   </section>
 </template>

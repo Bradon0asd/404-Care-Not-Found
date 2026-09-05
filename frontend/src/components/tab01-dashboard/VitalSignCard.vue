@@ -16,18 +16,19 @@ defineProps<{
   >
     <div class="mb-2 flex justify-center">
       <h3 class="border-b border-ink-800 px-3 pb-0.5 text-sm font-bold text-ink-950">
-        {{ label }}
+        {{ $t(label) }}
       </h3>
     </div>
 
     <p class="flex items-baseline gap-1.5 text-ink-600">
-      <span>今日{{ label }}</span>
-      <strong class="text-lg leading-none text-ink-950">{{ todayValue }}</strong>
+      <span>{{ $t('今日{label}', { label }) }}</span>
+      <strong class="text-lg leading-none text-ink-950">{{ $t(todayValue) }}</strong>
     </p>
-    <p class="mt-1 text-[9px] text-ink-500">更新於 {{ updatedAt }}</p>
+    <p class="mt-1 text-[9px] text-ink-500">{{ $t('更新於') }} {{ updatedAt }}</p>
 
     <p class="mt-2.5 flex items-baseline gap-1.5 text-ink-600">
-      <span>過去一週平均</span> <strong class="text-base text-ink-950">{{ weekAvgValue }}</strong>
+      <span>{{ $t('過去一週平均') }}</span>
+      <strong class="text-base text-ink-950">{{ $t(weekAvgValue) }}</strong>
     </p>
     <p
       class="mt-1 text-[10px] font-medium"
@@ -39,12 +40,12 @@ defineProps<{
             : 'text-green-600'
       "
     >
-      {{ changeNote }}
+      {{ $t(changeNote) }}
     </p>
 
     <div class="mt-2.5 border-t border-ink-300/80 pt-2">
-      <p class="text-ink-600">綜合評估</p>
-      <p class="mt-0.5 font-medium leading-relaxed text-ink-900">{{ assessment }}</p>
+      <p class="text-ink-600">{{ $t('綜合評估') }}</p>
+      <p class="mt-0.5 font-medium leading-relaxed text-ink-900">{{ $t(assessment) }}</p>
     </div>
   </article>
 </template>

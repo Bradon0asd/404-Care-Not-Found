@@ -22,7 +22,7 @@ const options: { value: NoteLevel; label: string }[] = [
       @click="level = opt.value"
     >
       <NoteStackIcon :level="opt.value" />
-      <span class="text-xs font-medium text-ink-700">{{ opt.label }}</span>
+      <span class="text-xs font-medium text-ink-700">{{ $t(opt.label) }}</span>
     </button>
   </div>
 </template>

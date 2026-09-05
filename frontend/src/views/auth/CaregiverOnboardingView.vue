@@ -25,27 +25,29 @@ function startUsing() {
 
       <div class="w-full space-y-6">
         <fieldset>
-          <legend class="mb-2 text-sm text-ink-700">選擇語言</legend>
+          <legend class="mb-2 text-sm text-ink-700">{{ $t('選擇語言') }}</legend>
           <div class="flex rounded-full border border-ink-400 p-1">
             <label
               class="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full py-2 text-sm"
               :class="language === 'id' ? 'bg-white font-bold text-ink-950 shadow' : 'text-ink-600'"
             >
-              <input type="radio" value="id" v-model="language" class="accent-accent" />
-              印尼文
-            </label>
+              <input type="radio" value="id" v-model="language" class="accent-accent" />{{
+                $t('印尼文')
+              }}</label
+            >
             <label
               class="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full py-2 text-sm"
               :class="language === 'zh' ? 'bg-white font-bold text-ink-950 shadow' : 'text-ink-600'"
             >
-              <input type="radio" value="zh" v-model="language" class="accent-accent" />
-              中文
-            </label>
+              <input type="radio" value="zh" v-model="language" class="accent-accent" />{{
+                $t('中文')
+              }}</label
+            >
           </div>
         </fieldset>
 
         <label class="block">
-          <span class="mb-2 block text-sm text-ink-700">入境臺灣日期</span>
+          <span class="mb-2 block text-sm text-ink-700">{{ $t('入境臺灣日期') }}</span>
           <input
             v-model="arrivalDate"
             type="date"
@@ -54,19 +56,19 @@ function startUsing() {
         </label>
 
         <label class="block">
-          <span class="mb-2 block text-sm text-ink-700">這是我的第幾位照顧者</span>
+          <span class="mb-2 block text-sm text-ink-700">{{ $t('這是我的第幾位照顧者') }}</span>
           <select
             v-model.number="careRecipientOrdinal"
             class="w-full rounded-full border border-ink-400 px-4 py-3 text-sm text-ink-950"
           >
-            <option v-for="n in 10" :key="n" :value="n">{{ n }}</option>
+            <option v-for="n in 10" :key="n" :value="n">{{ $t(n) }}</option>
           </select>
         </label>
       </div>
 
       <div class="mt-auto flex w-full flex-col gap-3">
-        <BaseButton variant="primary" @click="startUsing">開始使用</BaseButton>
-        <BaseButton variant="outline" @click="router.back()">返回上一步驟</BaseButton>
+        <BaseButton variant="primary" @click="startUsing">{{ $t('開始使用') }}</BaseButton>
+        <BaseButton variant="outline" @click="router.back()">{{ $t('返回上一步驟') }}</BaseButton>
       </div>
     </div>
   </PageContainer>

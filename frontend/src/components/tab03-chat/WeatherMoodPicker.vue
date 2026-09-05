@@ -28,7 +28,9 @@ function submit() {
 
 <template>
   <div class="px-4">
-    <p class="mb-3 text-center text-sm text-ink-700">每日心情（下列哪個 icon 最能表達你現在的心情？）</p>
+    <p class="mb-3 text-center text-sm text-ink-700">
+      {{ $t('每日心情（下列哪個 icon 最能表達你現在的心情？）') }}
+    </p>
     <div class="mb-3 flex justify-center gap-4">
       <button
         v-for="opt in options"
@@ -42,7 +44,9 @@ function submit() {
       </button>
     </div>
     <div class="mx-auto max-w-[160px]">
-      <BaseButton variant="primary" :disabled="!selected" @click="submit">送出</BaseButton>
+      <BaseButton variant="primary" :disabled="!selected" @click="submit">{{
+        $t('送出')
+      }}</BaseButton>
     </div>
   </div>
 </template>
