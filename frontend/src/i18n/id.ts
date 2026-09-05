@@ -1,5 +1,7 @@
 // Indonesian interface copy. User-authored content is not translated.
 export const id: Record<string, string> = {
+  '心情已送出，謝謝你分享今天的感受！':
+    'Suasana hati terkirim. Terima kasih sudah berbagi perasaanmu hari ini!',
   Day: 'Hari',
   '今日{label}': 'Hari ini',
   '90 歲，患有阿茲海默症，日常起居需要協助。':

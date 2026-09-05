@@ -26,7 +26,7 @@ function logout() {
   <PageContainer>
     <template #header><AppHeader /></template>
 
-    <div class="flex flex-1 items-start">
+    <div class="account-tree-space flex min-h-0 flex-1 items-center justify-center">
       <CareTreeHeader
         :user-name="account.userName"
         :role="$t('看護端')"
@@ -50,3 +50,9 @@ function logout() {
     <template #footer><BottomTabBar /></template>
   </PageContainer>
 </template>
+
+<style scoped>
+.account-tree-space {
+  container-type: size;
+}
+</style>

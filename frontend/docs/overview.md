@@ -132,12 +132,18 @@ frontend/
 - **`PlanCard`（Tab05 訂閱方案）**：卡片內容改成 `flex-wrap` 版面避免長文案擠爆，費用數字字級加大（`text-lg` → `text-3xl`）
 - `AddScheduleView` 表單 textarea padding 微調
 
+**Codex 改的（第七輪）：**
+
+- **`DailyChatHome`（Tab03 已建檔首頁）**：打卡心情天氣後，畫面上方新增一個 3 秒後自動消失的提示卡「心情已送出，謝謝你分享今天的感受！」（`Teleport` 到 `body`、`role="status"`／`aria-live="polite"`，並尊重 `prefers-reduced-motion`）
+- **`CareTreeHeader`／`AccountView`（Tab05）**：樹狀插圖改用 CSS container query（`container-type: size` + `cqw`/`cqh` 單位）依可用空間縮放，不再是固定 `max-w-[402px]`；頭像跟文字間距同步縮小配合新比例。插圖本身仍是簡化幾何圖形＋`pravatar.cc` 佔位照片，這點沒變（見「已知缺口」）
+- `AddNoteView` 便利貼內容 textarea 字級微調（14px→13px）
+
 ### Tab03 細節（★核心頁，邏輯較複雜）
 
 `/chat`（`IntroView`）是**持久首頁**：兩支新聞影片區塊永遠顯示在最上面（可收合/展開，右上角箭頭按鈕，收合後只留一行提示文字），下方內容依是否已建檔切換：
 
 - **未建檔**：「建置你的第一個 Care Agent」5 步驟說明 + CTA
-- **已建檔**：`DailyChatHome.vue`（心情天氣打卡 + 聊天室泡泡列表；浮動話題泡泡＝舊聊天室，中央大泡泡＝開新聊天）。頁面右上角有「模擬首次使用畫面」連結，點下去把 `store.agent` 設回 `null`，方便 demo/測試不用真的清資料庫
+- **已建檔**：`DailyChatHome.vue`（心情天氣打卡 + 聊天室泡泡列表；浮動話題泡泡＝舊聊天室，中央大泡泡＝開新聊天）。打卡後畫面上方會跳出一個 3 秒消失的「心情已送出」提示卡。頁面右上角有「模擬首次使用畫面」連結，點下去把 `store.agent` 設回 `null`，方便 demo/測試不用真的清資料庫
 
 建檔流程（只有未建檔時才會走到）：
 

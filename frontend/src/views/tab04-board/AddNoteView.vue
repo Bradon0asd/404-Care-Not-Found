@@ -105,7 +105,7 @@ function publish(visibility: NoteVisibility) {
               '今天想和雇主分享什麼呢？\n例如：阿嬤今天9:00開始就一直吵著要下床，一路吵到下午15:00自己累了睡著。\n備註：除了文字輸入外，也可點選右上方「AI 語音辨識」新增便利貼內容！',
             )
           "
-          class="w-full bg-transparent text-sm text-ink-950 placeholder:text-ink-600"
+          class="w-full bg-transparent text-[13px] leading-5 text-ink-950 placeholder:text-ink-600"
         ></textarea>
       </div>
 

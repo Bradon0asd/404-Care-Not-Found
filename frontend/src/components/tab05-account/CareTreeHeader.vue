@@ -21,7 +21,7 @@ const leaves = [
 
 <template>
   <section
-    class="care-tree relative mx-auto aspect-[402/740] w-full max-w-[402px] shrink-0"
+    class="care-tree relative mx-auto aspect-[402/740] shrink-0"
     :aria-label="$t('帳戶設定樹')"
   >
     <svg
@@ -107,10 +107,12 @@ const leaves = [
       <img
         src="https://i.pravatar.cc/256?img=47"
         :alt="$t('使用者頭像')"
-        class="aspect-square w-[44%] rounded-full border-4 border-white object-cover shadow-sm"
+        class="aspect-square w-[40%] rounded-full border-2 border-white object-cover shadow-sm"
       />
-      <p class="mt-3 text-sm font-medium text-[#594b48]">{{ $t('使用者名稱：') }}{{ userName }}</p>
-      <p class="mt-1 text-xs text-[#75635e]">{{ $t('身分：') }}{{ $t(role) }}</p>
+      <p class="mt-1.5 text-xs font-medium text-[#594b48]">
+        {{ $t('使用者名稱：') }}{{ userName }}
+      </p>
+      <p class="mt-1 text-[11px] text-[#75635e]">{{ $t('身分：') }}{{ $t(role) }}</p>
     </div>
 
     <button type="button" class="tree-action absolute top-[48%] right-[7%]" @click="$emit('plans')">
@@ -130,15 +132,19 @@ const leaves = [
 </template>
 
 <style scoped>
+.care-tree {
+  width: min(100cqw, calc(100cqh * 402 / 740), 402px);
+}
+
 .tree-action {
   min-height: 44px;
-  min-width: 88px;
-  padding: 8px 16px;
+  min-width: 76px;
+  padding: 8px 12px;
   border: 1px solid #e8d8d2;
   border-radius: 999px;
   background: #fffaf7;
   color: #594b48;
-  font-size: 14px;
+  font-size: clamp(12px, 2cqh, 14px);
   font-weight: 600;
   box-shadow: 0 3px 8px #795c4810;
   transition:
