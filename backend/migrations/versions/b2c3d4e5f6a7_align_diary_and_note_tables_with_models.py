@@ -21,63 +21,82 @@ depends_on = None
 
 
 def upgrade():
-    op.drop_table('diary_entries')
-    op.create_table(
-        'diaries',
-        sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('creator_id', sa.Integer(), nullable=False),
-        sa.Column('title', sa.String(length=100), nullable=True),
-        sa.Column('content', sa.Text(), nullable=False),
-        sa.Column('is_private', sa.Boolean(), server_default=sa.true(), nullable=False),
-        sa.Column('created_at', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
-        sa.Column('updated_at', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
-        sa.ForeignKeyConstraint(['creator_id'], ['users.id'], ),
-        sa.PrimaryKeyConstraint('id'),
-    )
-    op.create_index(op.f('ix_diaries_creator_id'), 'diaries', ['creator_id'], unique=False)
+    tables = _tables()
+    if 'diary_entries' in tables:
+        op.drop_table('diary_entries')
 
-    op.add_column('notes', sa.Column('images', sa.JSON(), nullable=False))
-    op.add_column(
-        'notes',
-        sa.Column('is_private', sa.Boolean(), server_default=sa.false(), nullable=False),
-    )
-    op.alter_column(
-        'notes',
-        'is_reviewed',
-        existing_type=sa.Boolean(),
-        server_default=sa.false(),
-        nullable=False,
-    )
-    op.drop_column('notes', 'is_read')
-    op.create_index(op.f('ix_notes_creator_id'), 'notes', ['creator_id'], unique=False)
+    if 'diaries' not in tables:
+        op.create_table(
+            'diaries',
+            sa.Column('id', sa.Integer(), nullable=False),
+            sa.Column('creator_id', sa.Integer(), nullable=False),
+            sa.Column('title', sa.String(length=100), nullable=True),
+            sa.Column('content', sa.Text(), nullable=False),
+            sa.Column('is_private', sa.Boolean(), server_default=sa.true(), nullable=False),
+            sa.Column('created_at', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
+            sa.Column('updated_at', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
+            sa.ForeignKeyConstraint(['creator_id'], ['users.id'], ),
+            sa.PrimaryKeyConstraint('id'),
+        )
+
+    if not _has_index('diaries', 'ix_diaries_creator_id'):
+        op.create_index(op.f('ix_diaries_creator_id'), 'diaries', ['creator_id'], unique=False)
+
+    note_columns = _columns('notes')
+    if 'images' not in note_columns:
+        op.add_column('notes', sa.Column('images', sa.JSON(), nullable=True))
+        op.execute("UPDATE notes SET images = '[]' WHERE images IS NULL")
+        op.alter_column('notes', 'images', existing_type=sa.JSON(), nullable=False)
+    if 'is_private' not in note_columns:
+        op.add_column(
+            'notes',
+            sa.Column('is_private', sa.Boolean(), server_default=sa.false(), nullable=False),
+        )
+    if 'is_reviewed' in note_columns:
+        op.alter_column(
+            'notes',
+            'is_reviewed',
+            existing_type=sa.Boolean(),
+            server_default=sa.false(),
+            nullable=False,
+        )
+    if 'is_read' in note_columns:
+        op.drop_column('notes', 'is_read')
+    if not _has_index('notes', 'ix_notes_creator_id'):
+        op.create_index(op.f('ix_notes_creator_id'), 'notes', ['creator_id'], unique=False)
 
 
 def downgrade():
-    op.drop_index(op.f('ix_notes_creator_id'), table_name='notes')
-    op.add_column('notes', sa.Column('is_read', sa.Boolean(), nullable=True))
-    op.alter_column(
-        'notes',
-        'is_reviewed',
-        existing_type=sa.Boolean(),
-        server_default=None,
-        nullable=True,
-    )
-    op.drop_column('notes', 'is_private')
-    op.drop_column('notes', 'images')
+    # This revision reconciles a stamped-but-not-applied shared database with the
+    # clean migration chain. On a clean database most upgrade steps are no-ops, so
+    # the downgrade must be conservative and avoid deleting tables/columns that
+    # already belonged to earlier revisions.
+    note_columns = _columns('notes')
+    if 'is_reviewed' in note_columns:
+        op.alter_column(
+            'notes',
+            'is_reviewed',
+            existing_type=sa.Boolean(),
+            server_default=None,
+            nullable=True,
+        )
 
-    op.drop_index(op.f('ix_diaries_creator_id'), table_name='diaries')
-    op.drop_table('diaries')
-    op.create_table(
-        'diary_entries',
-        sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('creator_id', sa.Integer(), nullable=False),
-        sa.Column('title', sa.String(length=100), nullable=False),
-        sa.Column('content', sa.Text(), nullable=False),
-        sa.Column('images', sa.JSON(), nullable=False),
-        sa.Column('is_private', sa.Boolean(), nullable=True),
-        sa.Column('ai_analysis', sa.String(length=64), nullable=True),
-        sa.Column('created_at', sa.DateTime(), nullable=False),
-        sa.Column('updated_at', sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(['creator_id'], ['users.id'], ),
-        sa.PrimaryKeyConstraint('id'),
-    )
+
+def _inspector():
+    return sa.inspect(op.get_bind())
+
+
+def _tables():
+    return set(_inspector().get_table_names())
+
+
+def _columns(table_name):
+    if table_name not in _tables():
+        return set()
+    return {column['name'] for column in _inspector().get_columns(table_name)}
+
+
+def _has_index(table_name, index_name):
+    if table_name not in _tables():
+        return False
+    return any(index['name'] == index_name for index in _inspector().get_indexes(table_name))
