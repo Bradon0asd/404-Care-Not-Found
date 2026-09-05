@@ -1,8 +1,14 @@
+import logging
+
 from sqlalchemy import or_
 
 from app.shared.errors import DiaryNotFoundError, PermissionDeniedError
 from app.extensions import db
-from app.models import Diary
+from app.models import Diary, DiaryAiAnalysis, StressSource
+from app.stress_signals import service as stress_signals
+
+
+logger = logging.getLogger(__name__)
 
 
 def create_diary(*, current_user, title=None, content, image_url=None, is_private):
@@ -15,6 +21,7 @@ def create_diary(*, current_user, title=None, content, image_url=None, is_privat
     )
     db.session.add(diary)
     db.session.commit()
+    _detect_stress(diary=diary, current_user=current_user)
     return diary
 
 
@@ -47,6 +54,34 @@ def delete_diary(*, current_user, diary_id):
     _require_creator(diary, current_user)
     db.session.delete(diary)
     db.session.commit()
+
+
+def _detect_stress(*, diary, current_user):
+    """Read a private diary for strain, and tell the employer a count if it is there.
+
+    Only a diary kept to herself is read. One she chose to share with her employer is
+    not her unguarded voice, so it never enters detection — that choice is the point
+    of the privacy setting, and reading a shared entry would quietly take it back.
+
+    Whatever happens here, the diary is already saved. Detection failing must never
+    cost her the entry she just wrote.
+    """
+    if not diary.is_private:
+        return
+
+    try:
+        raised = stress_signals.analyze_and_record(
+            nurse=current_user,
+            text=diary.content,
+            source=StressSource.DIARY.value,
+        )
+        diary.ai_analysis = (
+            DiaryAiAnalysis.EMERGENCY.value if raised else DiaryAiAnalysis.NORMAL.value
+        )
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        logger.exception("diary stress detection failed and was skipped")
 
 
 def _load_diary(diary_id):

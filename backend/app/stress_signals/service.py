@@ -17,7 +17,7 @@ from app.chat.client import GeminiClient
 from app.chat.prompts import STRESS_DEEP_PROMPT, STRESS_TRIAGE_PROMPT
 from app.extensions import db
 from app.line.notifications import notify_stress_signal
-from app.models import StressEvent, StressSource
+from app.models import CareAgent, StressEvent, StressSource
 from app.models.diary import utc_now
 from app.shared.errors import AppError
 
@@ -50,7 +50,7 @@ def analyze_and_record(
     """
     if not is_high_stress(
         text=text,
-        baseline_summary=baseline_summary,
+        baseline_summary=baseline_summary or baseline_summary_for(nurse),
         mood_weather=mood_weather,
         recent_turns=recent_turns,
     ):
@@ -98,6 +98,22 @@ def is_high_stress(*, text, baseline_summary=None, mood_weather=None, recent_tur
     # The reason is for the engineering log only and is never stored or pushed.
     logger.info("stress deep pass: score=%s reason=%s", deep.get("score"), deep.get("reason"))
     return bool(deep.get("high_stress")) or _as_score(deep.get("score")) >= HIGH_STRESS_THRESHOLD
+
+
+def baseline_summary_for(nurse):
+    """Her usual state, so the analysis judges a change rather than an absolute level.
+
+    Lives here rather than in `chat` because both callers need it, and a diary must
+    never have to import Tab 03 to be read against her baseline.
+    """
+    agent = CareAgent.query.filter_by(user_id=nurse.id).first()
+    if agent is None or not agent.baseline_answers:
+        return None
+    return "; ".join(
+        f"{answer.get('key')}: {answer.get('answer')}"
+        for answer in agent.baseline_answers
+        if isinstance(answer, dict)
+    )
 
 
 def record_event(*, nurse, source, occurred_at=None):

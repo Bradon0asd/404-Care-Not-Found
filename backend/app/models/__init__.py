@@ -9,7 +9,7 @@ from app.models.chat import (
     MessageSender,
     MoodWeather,
 )
-from app.models.diary import Diary
+from app.models.diary import Diary, DiaryAiAnalysis
 from app.models.invite import Invite
 from app.models.sticky_note import StickyNote, StickyNoteCategory, StickyNotePriority
 from app.models.stress_event import STRESS_SOURCES, StressEvent, StressSource
@@ -26,6 +26,7 @@ __all__ = [
     "ChatMessage",
     "ChatRoom",
     "Diary",
+    "DiaryAiAnalysis",
     "Invite",
     "MessageSender",
     "MoodWeather",

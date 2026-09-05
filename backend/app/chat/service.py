@@ -188,7 +188,6 @@ def process_user_message(*, current_user, room_id, text):
         nurse=current_user,
         text=text,
         source=StressSource.CHAT.value,
-        baseline_summary=_baseline_summary(agent),
         mood_weather=room.mood_weather,
         recent_turns=_recent_turns(room),
     )
@@ -243,17 +242,6 @@ def _care_context(agent):
     profile = agent.generated_profile or {}
     # The generated summary is short by design; the raw prompt is the fallback.
     return profile.get("care_context") or agent.system_prompt
-
-
-def _baseline_summary(agent):
-    answers = agent.baseline_answers
-    if not answers:
-        return None
-    return "; ".join(
-        f"{answer.get('key')}: {answer.get('answer')}"
-        for answer in answers
-        if isinstance(answer, dict)
-    )
 
 
 def _generate_profile(system_prompt):

@@ -102,6 +102,8 @@ Dashboard 每項指標回 `latest`、`current_average`、`previous_average`、`d
 
 `is_private` 預設 `true`（僅自己），對應「日記預設全封閉」的鐵則。
 
+新增日記時，**只有 `is_private=true` 的日記會進 AI 高壓偵測**；分享出去的日記完全不會被讀取，連模型都不會呼叫。判定結果寫進 `Diary.ai_analysis`（`normal` / `emergency`），高壓則寫 `StressEvent` 並推播雇主 LINE，推播內容一樣只有筆數與時間。`ai_analysis` 是後台語言，**不在任何日記 API 的回應中輸出**。偵測失敗不影響日記本身，日記在偵測之前就已存檔。
+
 ## Tab03 跟我聊聊（樹洞）
 
 ### 建檔模式（一次性）
@@ -203,7 +205,7 @@ baseline 問句由 AI 生成成聊天句（「最近有睡飽嗎？」），文�
 
 ## 尚未實作
 
-- **Tab03 的 migration 還沒產出**：`care_agents`、`chat_rooms`、`chat_messages`、`stress_events` 四張表已在 model 與測試中，但因 `1b2c3d4e5f6a` 的 `down_revision` 指向不存在的 revision，Alembic 無法運作，尚未建到共用資料庫。
+- **Tab02／Tab03 的 migration 還沒產出**：`care_agents`、`chat_rooms`、`chat_messages`、`stress_events` 四張表已在 model 與測試中，但因 `1b2c3d4e5f6a` 的 `down_revision` 指向不存在的 revision，Alembic 無法運作，尚未建到共用資料庫。
 - **印尼語語音辨識（ASR）已擱置**，不在本次範圍；Tab03 的輸入為文字。
 - 日記的 `ai_analysis` 欄位已在 model 與 migration 中，但 `DiarySchema` 還沒輸出。
 - Tab05 訂閱方案、語音辨識、翻譯尚無端點。

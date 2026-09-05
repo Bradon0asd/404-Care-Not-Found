@@ -12,11 +12,15 @@ AI 功能的編號（A1–A3、B1–B6）對應 `docs/AI_DEVELOPMENT_HANDOVER.md
 
 ## 0. 目前的阻塞點
 
-**`migrations/versions/1b2c3d4e5f6a_add_user_picture_url.py` 的 `down_revision = '0a1b2c3d4e5f'` 指向一支不存在的 revision**，該 id 遍尋所有分支都只出現在這一行字串裡。Alembic 因此無法載入版本鏈，`db current` / `db heads` / `db migrate` / `db upgrade` **全部失效**。
+**共用資料庫的 alembic 版本是 `2c3d4e5f6a7b`，這支 revision 在 repo 的所有分支都不存在。** Alembic 找不到 DB 現在的位置，因此 `db current` / `db migrate` / `db upgrade` 全部失效。
 
-現況佐證：共用 DB 停在 `f7a8b9c0d1e2`，`users` 表有 `onboarded_at` 但沒有 `picture_url`，而 `User` model 已宣告該欄位。看起來 `down_revision` 應指向 `f7a8b9c0d1e2`。
+推斷：有人在本機做了一支沒推上來的 migration（為 `diaries` 加 `entry_date`，該欄位在 DB 裡但不在 model 裡），並直接套用到共用 DB。
 
-**待該 commit 的作者修復**，修好前所有需要 migration 的工作（含 Tab 03 的 chat 資料表）都無法進行。
+另一個併發問題：該 DB **沒有 `invites` 表**，雖然 `d4e5f6a7b8c9_add_invites.py` 就在 repo 裡、版本指標也宣稱走過它。邀請功能對共用 DB 是壞的。
+
+**待該 migration 的作者推上來**。在那之前，Tab 02／Tab 03 的新資料表無法建到共用 DB，主動線只能在 SQLite 測試中驗證。
+
+註：先前 `1b2c3d4e5f6a` 的 `down_revision` 指向不存在 revision 的問題，已由作者於 commit `3833767` 修復。
 
 ---
 
@@ -48,7 +52,7 @@ AI 功能的編號（A1–A3、B1–B6）對應 `docs/AI_DEVELOPMENT_HANDOVER.md
 
 | 資料夾 | 狀態 | 內容 |
 |:---|:---|:---|
-| `app/chat/` | 已開，未完成 | 目前只有 `__init__.py` + `client.py`（Gemini API 封裝）。要補 `service.py`／`schemas.py`／`routes.py`／`prompts.py`。A2 降級、B2 分層觸發、B3 短 context、B4 guardrail、B5 baseline、B6 心情天氣全在此 |
+| `app/chat/` | **已完成** | `__init__.py`／`client.py`／`prompts.py`／`schemas.py`／`service.py`／`routes.py`，8 條端點。A2 降級、B2 分層觸發、B3 短 context、B4 guardrail、B5 baseline、B6 心情天氣都已實作並有測試 |
 | `app/stress_signals/` | **已建立**，見第 5 節 | A3 按日彙總 ＋ B1 日記高壓偵測的共用落點。只有 `service.py`，**沒有 Blueprint** |
 
 補充：
@@ -79,16 +83,16 @@ AI 功能的編號（A1–A3、B1–B6）對應 `docs/AI_DEVELOPMENT_HANDOVER.md
 
 | 檔案 | 怎麼碰 | 負責人 |
 |:---|:---|:---|
-| `app/diaries/service.py` | `create_diary()` 之後加一行：`is_private=True`（僅自己）才送高壓偵測；「分享給 LINE 好友」的日記絕不進偵測（B1） | |
+| `app/diaries/service.py` | **已接**。`create_diary()` 之後呼叫 `_detect_stress()`：`is_private=True`（僅自己）才送偵測並寫入 `Diary.ai_analysis`；分享出去的日記完全不呼叫模型（B1） | |
+| `app/care_schedules/service.py` | **不用改。** `create_schedule()` 已是 `current_user=` 介面並內建權限檢查，AI 抽取的照護紀錄以看護身分直接呼叫即可 | |
+| `app/vital_signs/service.py` | **不用改。** `create_vital_sign()` 同上，且 `unit` 由 server 依型別決定、不吃 client 輸入 | |
 
-B1 的儲存位置**隊友已經開好，不要另開一份**：`Diary.ai_analysis`（`DiaryAiAnalysis` 列舉，`normal` / `emergency`，見 `app/models/diary.py`）。
+B1 的儲存位置**隊友已經開好，沒有另開一份**：`Diary.ai_analysis`（`DiaryAiAnalysis` 列舉，`normal` / `emergency`，見 `app/models/diary.py`）。
 
 兩點要注意：
 
 - 它只有二值、**沒有時間點**，所以 A3「異常筆數 ＋ 時間」的彙總仍需獨立的 `StressEvent`。兩者並存：`ai_analysis` 記單篇日記的判定，`StressEvent` 記可彙總的訊號。
-- `DiarySchema` 目前**沒有輸出** `ai_analysis`。這符合「壓力是後台語言、不給看護看」的鐵則，維持不輸出；若之後要加，必須確認不會回到看護端。
-| `app/care_schedules/service.py` | **不用改。** `create_schedule()` 已是 `current_user=` 介面並內建權限檢查，AI 抽取的照護紀錄以看護身分直接呼叫即可 | |
-| `app/vital_signs/service.py` | **不用改。** `create_vital_sign()` 同上，且 `unit` 由 server 依型別決定、不吃 client 輸入 | |
+- `DiarySchema` **沒有輸出** `ai_analysis`，且有測試斷言日記 API 的回應不含它。這符合「壓力是後台語言、不給看護看」的鐵則，不要加上去。
 
 ---
 
