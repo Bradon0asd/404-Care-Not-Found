@@ -28,13 +28,10 @@ db.create_all()
 
 ## API
 
+完整端點清單、欄位與錯誤碼見 [後端 API 功能清單](backend/docs/api.md)。
+
 - Swagger UI: `GET /api/docs/swagger`
 - OpenAPI JSON: `GET /api/docs/openapi.json`
-
-- `GET /api/health`
-- `POST /api/users`，JSON：`{"line_user_id": "U...", "name": "Ada"}`
-- `GET /api/users/<id>`
-- `POST /api/line/webhook`
 
 ## 測試
 

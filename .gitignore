@@ -16,4 +16,4 @@ dist-ssr/
 /backend/.flask_session/
 
 # 階段性產出
-docs/
+/docs/
