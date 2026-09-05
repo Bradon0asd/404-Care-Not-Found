@@ -184,13 +184,14 @@ npm run build
 
 ## 團隊成員
 按字母順序排序
+
 | 姓名 | 分工 |
 | --- | --- |
-| [Bradon](https://github.com/bradon0asd) |  |
-| [Daniel](https://github.com/daniellife624) |  |
-| [William](https://github.com/smileakklpl) | LLM Service 功能落地 & Agent 功能串接 |
-| [Willy](https://github.com/weiLiao225) |  |
-| 冠冠 | Demo架構、錄音 |
+| [Bradon](https://github.com/bradon0asd) | 後端架構設計、API功能落地、前後端整合 |
+| [Daniel](https://github.com/daniellife624) |UIUX 設計、產品功能發想、DEMO影片剪輯、前端落地 |
+| [William](https://github.com/smileakklpl) | LLM Service 功能開發與整合 & Agent 對話流程設計與串接、Prompt 與結構化輸出實作 |
+| [Willy](https://github.com/weiLiao225) | LINEBot 開發與部署 & Webhook / Message API 串接  |
+| 冠冠 | Demo 流程設計、情境腳本與錄音 |
 
 ## 授權
 
