@@ -75,3 +75,14 @@ class LineRecipientNotPairedError(AppError):
 class InvalidUploadError(AppError):
     status_code = 400
     code = "INVALID_UPLOAD"
+
+
+class GoogleAiConfigurationError(AppError):
+    status_code = 503
+    code = "GOOGLE_AI_NOT_CONFIGURED"
+
+
+class GoogleAiApiError(AppError):
+    status_code = 502
+    code = "GOOGLE_AI_API_ERROR"
+

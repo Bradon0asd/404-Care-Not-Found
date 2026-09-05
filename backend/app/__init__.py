@@ -41,6 +41,7 @@ def create_app(config_object=Config):
     from app.auth import auth_bp
     from app.care_recipients import care_recipient_bp
     from app.care_schedules import care_schedule_bp
+    from app.chat import chat_bp
     from app.diaries import diary_bp
     from app.line import line_bp
     from app.sticky_notes import sticky_note_bp
@@ -51,6 +52,7 @@ def create_app(config_object=Config):
     api.register_blueprint(auth_bp, url_prefix="/api/auth")
     api.register_blueprint(care_recipient_bp, url_prefix="/api")
     api.register_blueprint(care_schedule_bp, url_prefix="/api")
+    api.register_blueprint(chat_bp, url_prefix="/api")
     api.register_blueprint(diary_bp, url_prefix="/api")
     api.register_blueprint(line_bp, url_prefix="/api/line")
     api.register_blueprint(sticky_note_bp, url_prefix="/api")

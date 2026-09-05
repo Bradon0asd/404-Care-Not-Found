@@ -7,8 +7,13 @@ from sqlalchemy.engine import URL
 
 
 load_dotenv()
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+parent_env = os.path.join(os.path.dirname(BASE_DIR), ".env")
+if os.path.exists(parent_env):
+    load_dotenv(parent_env)
+backend_env = os.path.join(BASE_DIR, ".env")
+if os.path.exists(backend_env):
+    load_dotenv(backend_env)
 
 
 def parse_origins(raw):
@@ -67,6 +72,9 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     LINE_CHANNEL_ACCESS_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN", "")
     LINE_CHANNEL_SECRET = os.getenv("LINE_CHANNEL_SECRET", "")
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+    GEMINI_BASE_URL = os.getenv("GEMINI_BASE_URL", "")
+    GEMINI_MODEL = os.getenv("GEMINI_MODEL", "")
     # Local disk is enough for the demo; set UPLOAD_FOLDER to a mounted volume in production.
     UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER") or os.path.join(BASE_DIR, "uploads")
     UPLOAD_URL_PATH = "/uploads"
