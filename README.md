@@ -187,11 +187,11 @@ npm run build
 
 | 姓名 | 分工 |
 | --- | --- |
-| [Bradon](https://github.com/bradon0asd) | 後端架構設計、API功能落地、前後端整合 |
-| [Daniel](https://github.com/daniellife624) |UIUX 設計、產品功能發想、DEMO影片剪輯、前端落地 |
-| [William](https://github.com/smileakklpl) | LLM Service 功能開發與整合 & Agent 對話流程設計與串接、Prompt 與結構化輸出實作 |
-| [Willy](https://github.com/weiLiao225) | LINEBot 開發與部署 & Webhook / Message API 串接  |
-| 冠冠 | Demo 流程設計、情境腳本與錄音 |
+| [Bradon](https://github.com/bradon0asd) |後端架構設計、API 功能開發、前後端整合 |
+| [Daniel](https://github.com/daniellife624) |UI/UX 設計、產品功能發想、前端功能實作、Demo 影片剪輯 |
+| [William](https://github.com/smileakklpl) | LLM Service 開發與整合、Agent 對話流程設計與串接、Prompt 設計與結構化輸出實作 |
+| [Willy](https://github.com/weiLiao225) | LINE Bot 開發與部署、Webhook / Messaging API 串接  |
+| 冠冠 | Demo 流程設計、情境腳本撰寫與錄音 |
 
 ## 授權
 
