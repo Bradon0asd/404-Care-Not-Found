@@ -1,7 +1,7 @@
 """add users.picture_url
 
 Revision ID: 1b2c3d4e5f6a
-Revises: 0a1b2c3d4e5f
+Revises: f7a8b9c0d1e2
 Create Date: 2026-09-05
 
 """
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 revision = '1b2c3d4e5f6a'
-down_revision = '0a1b2c3d4e5f'
+down_revision = 'f7a8b9c0d1e2'
 branch_labels = None
 depends_on = None
 
