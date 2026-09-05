@@ -7,11 +7,14 @@ from app.shared.errors import LineRecipientNotPairedError, PermissionDeniedError
 
 logger = logging.getLogger(__name__)
 
-STRESS_SIGNAL_TEMPLATE = (
-    "照護提醒\n"
-    "時間：{occurred_at}\n"
-    "需要留意的紀錄：{abnormal_count} 筆\n"
-    "建議找個輕鬆的時間關心一下，聊聊最近的工作與生活。"
+STRESS_SIGNAL_TEMPLATE = "\n".join(
+    [
+        "【{date}】【壓力告知】通知內容",
+        "本日看護壓力偵測異常筆數：{abnormal_count} 筆",
+        "時間點：{occurred_time}",
+        "建議關心一下看護今日心理狀況",
+        "友善職場 從你我的關心開始！",
+    ]
 )
 
 
@@ -23,7 +26,8 @@ def notify_stress_signal(*, nurse, abnormal_count, occurred_at):
     """
     owner = _paired_owner(nurse)
     text = STRESS_SIGNAL_TEMPLATE.format(
-        occurred_at=occurred_at.strftime("%Y-%m-%d %H:%M"),
+        date=occurred_at.strftime("%m%d"),
+        occurred_time=occurred_at.strftime("%H:%M"),
         abnormal_count=abnormal_count,
     )
     LineClient().push_text(user_id=owner.line_id, text=text)

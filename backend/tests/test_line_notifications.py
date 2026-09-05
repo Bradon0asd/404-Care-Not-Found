@@ -32,8 +32,8 @@ def test_stress_signal_reaches_the_paired_owner(line_app, client, pushed_message
     assert response.status_code == 202
     assert len(pushed_messages) == 1
     assert pushed_messages[0]["user_id"] == "owner-line-id"
-    assert "3 筆" in pushed_messages[0]["text"]
-    assert "2026-09-05 14:30" in pushed_messages[0]["text"]
+    assert "異常筆數：3 筆" in pushed_messages[0]["text"]
+    assert "時間點：14:30" in pushed_messages[0]["text"]
 
 
 def test_stress_signal_refuses_to_carry_content(line_app, client, pushed_messages):
@@ -60,10 +60,11 @@ def test_stress_signal_message_only_holds_count_time_and_advice(line_app, client
     )
 
     assert pushed_messages[0]["text"].splitlines() == [
-        "照護提醒",
-        "時間：2026-09-05 09:00",
-        "需要留意的紀錄：2 筆",
-        "建議找個輕鬆的時間關心一下，聊聊最近的工作與生活。",
+        "【0905】【壓力告知】通知內容",
+        "本日看護壓力偵測異常筆數：2 筆",
+        "時間點：09:00",
+        "建議關心一下看護今日心理狀況",
+        "友善職場 從你我的關心開始！",
     ]
 
 
