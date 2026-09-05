@@ -66,6 +66,9 @@ def line_login_callback():
     except AppError as error:
         logger.info("line login failed: %s", error.code)
         return redirect(_login_failure_url(error.code))
+    except Exception:
+        logger.exception("line login callback crashed")
+        return redirect(_login_failure_url("LINE_LOGIN_FAILED"))
 
     return redirect(
         auth_service.frontend_redirect_url(
