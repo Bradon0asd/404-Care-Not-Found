@@ -19,6 +19,8 @@ class Diary(db.Model):
     )
     title = db.Column(db.String(100), nullable=True)
     content = db.Column(db.Text, nullable=False)
+    # One image per diary entry, stored as a URL; the file itself never enters the DB.
+    image_url = db.Column(db.String(500), nullable=True)
     is_private = db.Column(
         db.Boolean,
         nullable=False,

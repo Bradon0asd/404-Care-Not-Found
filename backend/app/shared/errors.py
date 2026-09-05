@@ -70,3 +70,8 @@ class InvalidLineSignatureError(AppError):
 class LineRecipientNotPairedError(AppError):
     status_code = 400
     code = "LINE_RECIPIENT_NOT_PAIRED"
+
+
+class InvalidUploadError(AppError):
+    status_code = 400
+    code = "INVALID_UPLOAD"

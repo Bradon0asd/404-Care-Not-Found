@@ -65,10 +65,13 @@ def update_note(*, current_user, note_id, **changes):
 
 
 def review_note(*, current_user, note_id):
+    """Mark a note as read. Only the paired reader does this, never the author."""
     note = db.session.get(StickyNote, note_id)
     if note is None:
         raise StickyNoteNotFoundError("Sticky note not found")
-    _require_creator(note, current_user)
+    _require_visible(note, current_user)
+    if note.creator_id == current_user.id:
+        raise PermissionDeniedError("Sticky note review is limited to its reader")
 
     note.is_reviewed = True
     db.session.commit()

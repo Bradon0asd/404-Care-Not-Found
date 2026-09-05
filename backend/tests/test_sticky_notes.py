@@ -32,9 +32,8 @@ def test_sticky_note_create_list_update_review_delete(client):
     assert updated.status_code == 200
     assert updated.get_json()["data"]["priority"] == "urgent"
 
-    reviewed = client.patch(f"/api/notes/{note['id']}/review", headers=_headers(user_id))
-    assert reviewed.status_code == 200
-    assert reviewed.get_json()["data"]["is_reviewed"] is True
+    self_review = client.patch(f"/api/notes/{note['id']}/review", headers=_headers(user_id))
+    assert self_review.status_code == 403
 
     deleted = client.delete(f"/api/notes/{note['id']}", headers=_headers(user_id))
     assert deleted.status_code == 200
@@ -65,6 +64,26 @@ def test_sticky_note_visibility_respects_pairing_and_privacy(client):
         json={"priority": "low"},
     )
     assert paired_update.status_code == 403
+
+
+def test_public_sticky_note_is_marked_read_by_the_paired_reader(client):
+    nurse_id = _create_user(client, "note-nurse-review", role="nurse")
+    owner_id = _create_user(client, "note-owner-review", role="owner")
+    stranger_id = _create_user(client, "note-stranger-review", role="nurse")
+    client.post(f"/api/users/{nurse_id}/pair", json={"pair_user_id": owner_id})
+
+    public_note_id = _create_note(client, nurse_id, "Leave request", is_private=False)
+    private_note_id = _create_note(client, nurse_id, "Just for me", is_private=True)
+
+    reviewed = client.patch(f"/api/notes/{public_note_id}/review", headers=_headers(owner_id))
+    assert reviewed.status_code == 200
+    assert reviewed.get_json()["data"]["is_reviewed"] is True
+
+    private_review = client.patch(f"/api/notes/{private_note_id}/review", headers=_headers(owner_id))
+    assert private_review.status_code == 403
+
+    stranger_review = client.patch(f"/api/notes/{public_note_id}/review", headers=_headers(stranger_id))
+    assert stranger_review.status_code == 403
 
 
 def test_sticky_note_create_rejects_server_controlled_fields(client):

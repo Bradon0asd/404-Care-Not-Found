@@ -9,6 +9,7 @@ def test_openapi_docs_include_registered_routes(client):
     assert "/api/users" in spec["paths"]
     assert "/api/diaries" in spec["paths"]
     assert "/api/notes" in spec["paths"]
+    assert "/api/uploads/image" in spec["paths"]
 
 
 def test_swagger_ui_is_available(client):
